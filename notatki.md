@@ -67,7 +67,12 @@ https://css-tricks.com/specifics-on-css-specificity/
     - who can change this, upstream to consumers (dependecies)
 
 - Scope
-    - Impact radius - what will be affected
+    - Impact radius - what dependecies will be affected
+
+- Lifecyle 
+    - When it is created, changes state and destoryed
+    - How often it changes state
+
 
 
 # Komponenty
@@ -75,5 +80,8 @@ https://css-tricks.com/specifics-on-css-specificity/
 ui - Komponent "prezentacyjny" - zależy od rodzica (page)
 page - Komponent "kontrolujący" - ładuje dane dla dzieci (ui)
 
+
+# Open questions 
+- Is app layout core/shared/feature? Depends on ... ?
 
 # Core/Shared/Features
