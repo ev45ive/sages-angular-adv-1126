@@ -2301,6 +2301,14 @@ list all decistions methods etc in this whole chat for good project practices
 
 _**Agent (copilot/claude-haiku-5.5)**_
 
+<think><details><summary>Thought Process</summary>
+`CLAUDE.md` has the same content as `AGENTS.md`, and `shared-module.ts` exists. I'll read the shared module, the agent-customization skill, and the AGENTS.md file to confirm it matches the attachment.    
+
+The shared module exports `SharedForms` and `SharedUI` arrays, and `AGENTS.md` matches the attachment. I'll read the instructions template, then check the Deals page error without opening the browser.
+</details></think>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
 ## Project practices from this chat
 
 **Angular conventions (from `AGENTS.md`)**
@@ -2349,3 +2357,804 @@ _**Agent (copilot/claude-haiku-5.5)**_
 - `deals-page.ts` has a  block with `mat-chip-set { display: flex !important; }`, which you added. The `!important` override is a smell. Prefer a `class` or `style` binding, or a style that is scoped without `!important`.
 - The `//   .banana[...]` comment above  is a leftover. Remove it.
 - The deal list titles truncate, and the "high" chip sits off-baseline in the task rows. These are still open.
+
+I'll start by reading `CLAUDE.md`, the agent-customization template, the new shared module, and the existing instruction files.    
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="search" data-tool-name="file_search"><details>
+<summary>Tool use: **file_search**</summary>
+
+Searched for files matching `c:\Users\ev45i\AppData\Local\Programs\Microsoft VS Code\16507d91be\resources\app\extensions\copilot\assets\prompts\skills\agent-customization\*`, no matches
+
+**Input:**
+
+- query: `c:\Users\ev45i\AppData\Local\Programs\Microsoft VS Code\16507d91be\resources\app\extensions\copilot\assets\prompts\skills\agent-customization\*`
+
+**Result:**
+
+```
+No files found
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="search" data-tool-name="file_search"><details>
+<summary>Tool use: **file_search**</summary>
+
+Searched for files matching `sages-angular-adv-1126` · `src/app/shared/**`, 1 match
+
+**Input:**
+
+- query: `c:\Projects\sages-angular-adv-1126\src\app\shared\**`
+
+**Result:**
+
+```
+1 total result
+c:\Projects\sages-angular-adv-1126\src\app\shared\shared-module.ts
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="search" data-tool-name="file_search"><details>
+<summary>Tool use: **file_search**</summary>
+
+Searched for files matching `sages-angular-adv-1126` · `.github/**`, no matches
+
+**Input:**
+
+- query: `c:\Projects\sages-angular-adv-1126\.github\**`
+
+**Result:**
+
+```
+No files found
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="read" data-tool-name="read_file"><details>
+<summary>Tool use: **read_file**</summary>
+
+Read `CLAUDE.md`
+
+**Input:**
+
+- endLine: `200`
+- filePath: `c:\Projects\sages-angular-adv-1126\CLAUDE.md`
+- startLine: `1`
+
+**Result:**
+
+```
+You are an expert in TypeScript, Angular, and scalable web application development. You write functional, maintainable, performant, and accessible code following Angular and TypeScript best practices.
+
+## TypeScript Best Practices
+
+- Use strict type checking
+- Prefer type inference when the type is obvious
+- Avoid the `any` type; use `unknown` when type is uncertain
+
+## Angular Best Practices
+
+- Always use standalone components over NgModules
+- Must NOT set `standalone: true` inside Angular decorators. It's the default in Angular v20+.
+- Do NOT set `changeDetection: ChangeDetectionStrategy.OnPush` explicitly. `OnPush` is the default in Angular v22+.
+- Use signals for state management
+- Implement lazy loading for feature routes
+- Do NOT use the `@HostBinding` and `@HostListener` decorators. Put host bindings inside the `host` object of the `@Component` or `@Directive` decorator instead
+- Use `NgOptimizedImage` for all static images.
+  - `NgOptimizedImage` does not work for inline base64 images.
+
+## Accessibility Requirements
+
+- It MUST pass all AXE checks.
+- It MUST follow all WCAG AA minimums, including focus management, color contrast, and ARIA attributes.
+
+## Components
+
+- Keep components small and focused on a single responsibility
+- Use `input()` and `output()` functions instead of decorators
+- Use `model()` for two-way bound properties with `[(prop)]` syntax instead of pairing `input()` with `output()`
+- Use `computed()` for derived state
+- Use `linkedSignal()` for state derived from multiple reactive sources that must stay synchronized
+- Prefer inline templates for small components
+- Prefer Signal Forms (`@angular/forms/signals`) for new forms. They are stable in Angular v22+ and provide signal-based state, type-safe field access, and schema-based validation
+- When not using Signal Forms, prefer Reactive forms instead of Template-driven ones
+- Do NOT use `ngClass`, use `class` bindings instead
+- Do NOT use `ngStyle`, use `style` bindings instead
+- Do NOT impor
+… (output truncated)
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+`CLAUDE.md` has the same content as `AGENTS.md`, and `shared-module.ts` exists. I'll read the shared module, the agent-customization skill, and the `AGENTS.md` file to confirm it matches the attachment.    
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="read" data-tool-name="read_file"><details>
+<summary>Tool use: **read_file**</summary>
+
+Read `shared-module.ts`
+
+**Input:**
+
+- endLine: `200`
+- filePath: `c:\Projects\sages-angular-adv-1126\src\app\shared\shared-module.ts`
+- startLine: `1`
+
+**Result:**
+
+```
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+
+import { MatButton } from '@angular/material/button';
+import {
+  MatCard,
+  MatCardActions,
+  MatCardContent,
+  MatCardHeader,
+  MatCardSubtitle,
+  MatCardTitle,
+} from '@angular/material/card';
+import { MatCheckbox } from '@angular/material/checkbox';
+import { MatChip, MatChipSet } from '@angular/material/chips';
+import { MatFormField, MatLabel, MatSuffix } from '@angular/material/form-field';
+import { MatIcon } from '@angular/material/icon';
+import { MatInput } from '@angular/material/input';
+import {
+  MatList,
+  MatListItem,
+  MatListItemIcon,
+  MatListItemLine,
+  MatListItemMeta,
+  MatListItemTitle,
+} from '@angular/material/list';
+import { MatOption, MatSelect } from '@angular/material/select';
+import { MatToolbar } from '@angular/material/toolbar';
+import { MatLineModule } from '@angular/material/core';
+
+// const SharedImports = [
+// ]
+
+export const SharedForms = [
+  MatOption,
+  MatSelect,
+  MatSuffix,
+  MatCheckbox,
+  MatFormField,
+  MatInput,
+  MatLabel,
+  [[[MatButton]]],
+];
+
+export const SharedUI = [
+  CommonModule,
+
+  MatButton,
+  MatCard,
+  MatCardActions,
+  MatCardContent,
+  MatCardHeader,
+  MatCardSubtitle,
+  MatCardTitle,
+
+  MatChip,
+  MatChipSet,
+  MatIcon,
+  MatList,
+  // MatLineModule,
+  MatListItem,
+  MatListItemLine,
+  MatListItemMeta,
+  MatListItemTitle,
+  MatListItemIcon,
+  MatToolbar,
+];
+
+export const SharedImports = [
+  CommonModule,
+  SharedForms,
+  //
+  SharedUI,
+];
+
+@NgModule({
+  declarations: [],
+  imports: [SharedImports],
+  exports: [
+    // ...SharedImports
+    SharedImports,
+  ],
+})
+export class SharedModule {}
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="read" data-tool-name="read_file"><details>
+<summary>Tool use: **read_file**</summary>
+
+Read `AGENTS.md`
+
+**Input:**
+
+- endLine: `80`
+- filePath: `c:\Projects\sages-angular-adv-1126\AGENTS.md`
+- startLine: `1`
+
+**Result:**
+
+```
+You are an expert in TypeScript, Angular, and scalable web application development. You write functional, maintainable, performant, and accessible code following Angular and TypeScript best practices.
+
+## TypeScript Best Practices
+
+- Use strict type checking
+- Prefer type inference when the type is obvious
+- Avoid the `any` type; use `unknown` when type is uncertain
+
+## Angular Best Practices
+
+- Always use standalone components over NgModules
+- Must NOT set `standalone: true` inside Angular decorators. It's the default in Angular v20+.
+- Do NOT set `changeDetection: ChangeDetectionStrategy.OnPush` explicitly. `OnPush` is the default in Angular v22+.
+- Use signals for state management
+- Implement lazy loading for feature routes
+- Do NOT use the `@HostBinding` and `@HostListener` decorators. Put host bindings inside the `host` object of the `@Component` or `@Directive` decorator instead
+- Use `NgOptimizedImage` for all static images.
+  - `NgOptimizedImage` does not work for inline base64 images.
+
+## Accessibility Requirements
+
+- It MUST pass all AXE checks.
+- It MUST follow all WCAG AA minimums, including focus management, color contrast, and ARIA attributes.
+
+## Components
+
+- Keep components small and focused on a single responsibility
+- Use `input()` and `output()` functions instead of decorators
+- Use `model()` for two-way bound properties with `[(prop)]` syntax instead of pairing `input()` with `output()`
+- Use `computed()` for derived state
+- Use `linkedSignal()` for state derived from multiple reactive sources that must stay synchronized
+- Prefer inline templates for small components
+- Prefer Signal Forms (`@angular/forms/signals`) for new forms. They are stable in Angular v22+ and provide signal-based state, type-safe field access, and schema-based validation
+- When not using Signal Forms, prefer Reactive forms instead of Template-driven ones
+- Do NOT use `ngClass`, use `class` bindings instead
+- Do NOT use `ngStyle`, use `style` bindings instead
+- Do NOT impor
+… (output truncated)
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="read" data-tool-name="read_file"><details>
+<summary>Tool use: **read_file**</summary>
+
+Read skill `agent-customization`
+
+**Input:**
+
+- endLine: `400`
+- filePath: `c:\Users\ev45i\AppData\Local\Programs\Microsoft VS Code\16507d91be\resources\app\extensions\copilot\assets\prompts\skills\agent-customization\SKILL.md`
+- startLine: `1`
+
+**Result:**
+
+```
+---
+name: agent-customization
+user-invocable: false # don't show as slash command, we have sepcialized create-agent, create-instructions, create-hook prompts for that
+description: '**WORKFLOW SKILL** — Create, update, review, fix, or debug VS Code agent customization files (.instructions.md, .prompt.md, .agent.md, SKILL.md, copilot-instructions.md, AGENTS.md). USE FOR: saving coding preferences; troubleshooting why instructions/skills/agents are ignored or not invoked; configuring applyTo patterns; defining tool restrictions; creating custom agent modes or specialized workflows; packaging domain knowledge; fixing YAML frontmatter syntax. DO NOT USE FOR: general coding questions (use default agent); runtime debugging or error diagnosis; MCP server configuration (use MCP docs directly); VS Code extension development. INVOKES: file system tools (read/write customization files), ask-questions tool (interview user for requirements), subagents for codebase exploration. FOR SINGLE OPERATIONS: For quick YAML frontmatter fixes or creating a single file from a known pattern, edit the file directly — no skill needed.'
+---
+
+# Agent Customization
+
+## Decision Flow
+
+| Primitive | When to Use |
+|-----------|-------------|
+| agent instructions | Always-on, applies everywhere in the project |
+| File Instructions | Explicit via `applyTo` patterns, or on-demand via `description` |
+| MCP | Integrates external systems, APIs, or data |
+| Hooks | Deterministic shell commands at agent lifecycle points (block tools, auto-format, inject context) |
+| Custom Agents | Subagents for context isolation, or multi-stage workflows with tool restrictions |
+| Prompts | Single focused task with parameterized inputs |
+| Skills | On-demand workflow with bundled assets (scripts/templates) |
+
+## Quick Reference
+
+Consult the reference docs for templates, domain examples, advanced frontmatter options, asset organization, anti-patterns, and creation checklists. If the references are not enough, load the offici
+… (output truncated)
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+The shared module exports  and  arrays, and `AGENTS.md` matches the attachment. I'll read the instructions template, then check the Deals page error without opening the browser.      
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="get_errors"><details>
+<summary>Tool use: **get_errors**</summary>
+
+Checked `shared-module.ts`, `deals-page.ts`, `app.routes.ts`, no problems found
+
+**Input:**
+
+- filePaths:
+
+```
+[
+  "c:\\Projects\\sages-angular-adv-1126\\src\\app\\shared\\shared-module.ts",
+  "c:\\Projects\\sages-angular-adv-1126\\src\\app\\deals-page\\deals-page.ts",
+  "c:\\Projects\\sages-angular-adv-1126\\src\\app\\app.routes.ts"
+]
+```
+
+
+**Result:**
+
+```
+<errors path="c:\\Projects\\sages-angular-adv-1126\\src\\app\\shared\\shared-module.ts">
+No errors found
+</errors>
+<errors path="c:\\Projects\\sages-angular-adv-1126\\src\\app\\deals-page\\deals-page.ts">
+No errors found
+</errors>
+<errors path="c:\\Projects\\sages-angular-adv-1126\\src\\app\\app.routes.ts">
+No errors found
+</errors>
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="read" data-tool-name="read_file"><details>
+<summary>Tool use: **read_file**</summary>
+
+Read skill `agent-customization`: `instructions.md`
+
+**Input:**
+
+- endLine: `200`
+- filePath: `c:\Users\ev45i\AppData\Local\Programs\Microsoft VS Code\16507d91be\resources\app\extensions\copilot\assets\prompts\skills\agent-customization\references\instructions.md`
+- startLine: `1`
+
+**Result:**
+
+````
+# [File-Specific Instructions (.instructions.md)](https://code.visualstudio.com/docs/copilot/customization/custom-instructions)
+
+Guidelines loaded on-demand when relevant to the current task, or explicitly when files match a pattern.
+
+## Locations
+
+| Path | Scope |
+|------|-------|
+| `.github/instructions/*.instructions.md` | Workspace |
+| `<profile>/instructions/*.instructions.md` | User profile |
+
+## Frontmatter
+
+```yaml
+---
+description: "<required>"    # For on-demand discovery—keyword-rich
+name: "Instruction Name"     # Optional, defaults to filename
+applyTo: "**/*.ts"           # Optional, auto-attach for matching files
+---
+```
+
+## Discovery Modes
+
+| Mode | Trigger | Use Case |
+|------|---------|----------|
+| **On-demand** (`description`) | Agent detects task relevance | Task-based: migrations, refactoring, API work |
+| **Explicit** (`applyTo`) | Files matching glob in context | File-based: language standards, framework rules |
+| **Manual** | `Add Context` → `Instructions` | Ad-hoc attachment |
+
+## Template
+
+```markdown
+---
+description: "Use when writing database migrations, schema changes, or data transformations. Covers safety checks and rollback patterns."
+---
+# Migration Guidelines
+
+- Always create reversible migrations
+- Test rollback before merging
+- Never drop columns in the same release as code removal
+```
+
+Note the "Use when..." pattern in the description—this helps on-demand discovery.
+
+## Explicit File Matching (optional)
+
+Use `applyTo` when the instruction applies to specific file types or folders:
+
+```yaml
+applyTo: "**"                           # ALWAYS included, no matter the file or description (use with caution)
+applyTo: "**/*.py"                      # All Python files
+applyTo: ["src/**", "lib/**"]           # Multiple patterns (OR)
+applyTo: src/**, lib/**                 # Multiple patterns without array syntax (OR)
+applyTo: "src/api/**/*.ts"              # Specific folder + extension
+```
+
+Applied when creating or modifying matching files, no
+… (output truncated)
+````
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+The editor reports no errors in the shared module, the Deals page, or the routes. I'll create the two instruction files, then point `AGENTS.md` and `CLAUDE.md` at them. 
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="create_file"><details>
+<summary>Tool use: **create_file**</summary>
+
+Created `angular.instructions.md`
+
+**Input:**
+
+- content:
+
+```
+---
+description: "Use when writing or reviewing Angular components, services, templates, forms, routes, Material imports, or Tailwind and CSS styling in TypeScript. Covers standalone components, signals, inject(), native control flow, host bindings, Material shared imports, and accessibility."
+applyTo: ["src/**/*.ts", "src/**/*.html", "src/**/*.css"]
+---
+# Angular Rules
+
+## TypeScript Best Practices
+
+- Use strict type checking
+- Prefer type inference when the type is obvious
+- Avoid the `any` type; use `unknown` when type is uncertain
+
+## Angular Best Practices
+
+- Always use standalone components over NgModules
+- Must NOT set `standalone: true` inside Angular decorators. It's the default in Angular v20+.
+- Do NOT set `changeDetection: ChangeDetectionStrategy.OnPush` explicitly. `OnPush` is the default in Angular v22+.
+- Use signals for state management
+- Implement lazy loading for feature routes
+- Do NOT use the `@HostBinding` and `@HostListener` decorators. Put host bindings inside the `host` object of the `@Component` or `@Directive` decorator instead
+- Use `NgOptimizedImage` for all static images.
+  - `NgOptimizedImage` does not work for inline base64 images.
+
+## Accessibility Requirements
+
+- It MUST pass all AXE checks.
+- It MUST follow all WCAG AA minimums, including focus management, color contrast, and ARIA attributes.
+
+## Components
+
+- Keep components small and focused on a single responsibility
+- Use `input()` and `output()` functions instead of decorators
+- Use `model()` for two-way bound properties with `[(prop)]` syntax instead of pairing `input()` with `output()`
+- Use `computed()` for derived state
+- Use `linkedSignal()` for state derived from multiple reactive sources that must stay synchronized
+- Prefer inline templates for small components
+- Prefer Signal Forms (`@angular/forms/signals`) for new forms. They are stable in Angular v22+ and provide signal-based state, type-safe field access, and schema-based validation
+- When not using Signal Forms, prefer Reactive forms instead of Template-driven ones
+- Do NOT use `ngClass`, use `class` bindings instead
+- Do NOT use `ngStyle`, use `style` bindings instead
+- Do NOT import `CommonModule`, import only the directives and pipes the template uses, such as `AsyncPipe` or `DatePipe`
+- When using external templates/styles, use paths relative to the component TS file.
+
+## State Management
+
+- Use signals for local component state
+- Use `computed()` for derived state
+- Keep state transformations pure and predictable
+- Do NOT use `mutate` on signals, use `update` or `set` instead
+
+## Templates
+
+- Keep templates simple and avoid complex logic
+- Use native control flow (`@if`, `@for`, `@switch`) instead of `*ngIf`, `*ngFor`, `*ngSwitch`
+- Use the async pipe to handle observables
+- Do not assume globals like (`new Date()`) are available.
+
+## Services
+
+- Design services around a single responsibility
+- Use the `providedIn: 'root'` option for singleton services
+- Prefer the `@Service` decorator over `@Injectable({providedIn: 'root'})` for new singleton services (Angular v22+)
+- Use the `inject()` function instead of constructor injection
+
+## Angular Material
+
+- Import Material components through the arrays exported from `src/app/shared/shared-module.ts` (`SharedForms`, `SharedUI`). Spread them into the component `imports` array, for example `imports: [...SharedUI]`.
+- Add any new Material component to those arrays before using it in a template.
+- Use `button[matButton="filled|outlined|text|tonal|elevated"]`, not the old `mat-raised-button`-style attributes.
+- Verify Material selectors and inputs against `node_modules/@angular/material` before use.
+
+## Styling
+
+- Use semantic classes such as `bg-surface` and `text-on-surface`, not raw palette classes.
+- Extract class sets repeated across multiple components with `@apply` inside `@layer components`.
+- Tailwind utilities override `@layer components` classes. Check for utility conflicts, for example `pr-9` overrode `.field` padding.
+- Remove CSS classes once no markup uses them.
+- Avoid `::ng-deep` and `!important`. Prefer CSS variables and tokens. If an override is unavoidable, use a named class such as `.fix-<name>-override`.
+
+```
+
+- filePath: `c:\Projects\sages-angular-adv-1126\.github\instructions\angular.instructions.md`
+
+**Result:**
+
+```
+The following files were successfully edited:
+c:\Projects\sages-angular-adv-1126\.github\instructions\angular.instructions.md
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="create_file"><details>
+<summary>Tool use: **create_file**</summary>
+
+Created `workflow.instructions.md`
+
+**Input:**
+
+- content:
+
+```
+---
+description: "Use when finishing Angular or template changes, verifying a feature, running prettier, tsc, eslint, the ng serve dev server, or browser checks. Covers verification order, scope of fixes, and asking before browser tools."
+applyTo: ["src/**"]
+---
+# Workflow Rules
+
+## Verification Order
+
+- Format changed files with prettier: `npx prettier --write <files>`. Config is in `.prettierrc`.
+- Type-check with `npx tsc --noEmit -p tsconfig.app.json`.
+- Lint changed files only: `npx eslint <files>`.
+- Use the running `ng serve` session to check the build. Do not run `ng build` unless asked. If no session is running, ask before starting one.
+- Fix only problems in changed files, or problems that stop `ng serve` from rebuilding.
+- The editor's CSS linter reports `@theme` and `@apply` as errors. These are false positives from Tailwind at-rules.
+
+## Browser Checks
+
+- Ask before using `open_browser_page`, `click_element`, or any other browser tool to verify, debug, or fix.
+
+## Scope
+
+- Template-only requests: do not add logic beyond the `imports` array unless the user approves.
+- Do not create markdown files to document changes unless requested.
+
+```
+
+- filePath: `c:\Projects\sages-angular-adv-1126\.github\instructions\workflow.instructions.md`
+
+**Result:**
+
+```
+The following files were successfully edited:
+c:\Projects\sages-angular-adv-1126\.github\instructions\workflow.instructions.md
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **angular.instructions.md**</summary>
+
+@@ lines 1-1 @@
+
+```
+---
+description: "Use when writing or reviewing Angular components, services, templates, forms, routes, Material imports, or Tailwind and CSS styling in TypeScript. Covers standalone components, signals, inject(), native control flow, host bindings, Material shared imports, and accessibility."
+applyTo: ["src/**/*.ts", "src/**/*.html", "src/**/*.css"]
+---
+# Angular Rules
+
+## TypeScript Best Practices
+
+- Use strict type checking
+- Prefer type inference when the type is obvious
+- Avoid the `any` type; use `unknown` when type is uncertain
+
+## Angular Best Practices
+
+- Always use standalone components over NgModules
+- Must NOT set `standalone: true` inside Angular decorators. It's the default in Angular v20+.
+- Do NOT set `changeDetection: ChangeDetectionStrategy.OnPush` explicitly. `OnPush` is the default in Angular v22+.
+- Use signals for state management
+- Implement lazy loading for feature routes
+- Do NOT use the `@HostBinding` and `@HostListener` decorators. Put host bindings inside the `host` object of the `@Component` or `@Directive` decorator instead
+- Use `NgOptimizedImage` for all static images.
+  - `NgOptimizedImage` does not work for inline base64 images.
+
+## Accessibility Requirements
+
+- It MUST pass all AXE checks.
+- It MUST follow all WCAG AA minimums, including focus management, color contrast, and ARIA attributes.
+
+## Components
+
+- Keep components small and focused on a single responsibility
+- Use `input()` and `output()` functions instead of decorators
+- Use `model()` for two-way bound properties with `[(prop)]` syntax instead of pairing `input()` with `output()`
+- Use `computed()` for derived state
+- Use `linkedSignal()` for state derived from multiple reactive sources that must stay synchronized
+- Prefer inline templates for small components
+- Prefer Signal Forms (`@angular/forms/signals`) for new forms. They are stable in Angular v22+ and provide signal-based state, type-safe field access, and schema-based validation
+- When not using Signal Forms, prefer Reactive forms instead of Template-driven ones
+- Do NOT use `ngClass`, use `class` bindings instead
+- Do NOT use `ngStyle`, use `style` bindings instead
+- Do NOT import `CommonModule`, import only the directives and pipes the template uses, such as `AsyncPipe` or `DatePipe`
+- When using external templates/styles, use paths relative to the component TS file.
+
+## State Management
+
+- Use signals for local component state
+- Use `computed()` for derived state
+- Keep state transformations pure and predictable
+- Do NOT use `mutate` on signals, use `update` or `set` instead
+
+## Templates
+
+- Keep templates simple and avoid complex logic
+- Use native control flow (`@if`, `@for`, `@switch`) instead of `*ngIf`, `*ngFor`, `*ngSwitch`
+- Use the async pipe to handle observables
+- Do not assume globals like (`new Date()`) are available.
+
+## Services
+
+- Design services around a single responsibility
+- Use the `providedIn: 'root'` option for singleton services
+- Prefer the `@Service` decorator over `@Injectable({providedIn: 'root'})` for new singleton services (Angular v22+)
+- Use the `inject()` function instead of constructor injection
+
+## Angular Material
+
+- Import Material components through the arrays exported from `src/app/shared/shared-module.ts` (`SharedForms`, `SharedUI`). Spread them into the component `imports` array, for example `imports: [...SharedUI]`.
+- Add any new Material component to those arrays before using it in a template.
+- Use `button[matButton="filled|outlined|text|tonal|elevated"]`, not the old `mat-raised-button`-style attributes.
+- Verify Material selectors and inputs against `node_modules/@angular/material` before use.
+
+## Styling
+
+- Use semantic classes such as `bg-surface` and `text-on-surface`, not raw palette classes.
+- Extract class sets repeated across multiple components with `@apply` inside `@layer components`.
+- Tailwind utilities override `@layer components` classes. Check for utility conflicts, for example `pr-9` overrode `.field` padding.
+- Remove CSS classes once no markup uses them.
+- Avoid `::ng-deep` and `!important`. Prefer CSS variables and tokens. If an override is unavoidable, use a named class such as `.fix-<name>-override`.
+
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **workflow.instructions.md**</summary>
+
+@@ lines 1-1 @@
+
+```
+---
+description: "Use when finishing Angular or template changes, verifying a feature, running prettier, tsc, eslint, the ng serve dev server, or browser checks. Covers verification order, scope of fixes, and asking before browser tools."
+applyTo: ["src/**"]
+---
+# Workflow Rules
+
+## Verification Order
+
+- Format changed files with prettier: `npx prettier --write <files>`. Config is in `.prettierrc`.
+- Type-check with `npx tsc --noEmit -p tsconfig.app.json`.
+- Lint changed files only: `npx eslint <files>`.
+- Use the running `ng serve` session to check the build. Do not run `ng build` unless asked. If no session is running, ask before starting one.
+- Fix only problems in changed files, or problems that stop `ng serve` from rebuilding.
+- The editor's CSS linter reports `@theme` and `@apply` as errors. These are false positives from Tailwind at-rules.
+
+## Browser Checks
+
+- Ask before using `open_browser_page`, `click_element`, or any other browser tool to verify, debug, or fix.
+
+## Scope
+
+- Template-only requests: do not add logic beyond the `imports` array unless the user approves.
+- Do not create markdown files to document changes unless requested.
+
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+Both instruction files are in place. Now I'll replace the rule text in `AGENTS.md` with a pointer to them, and make `CLAUDE.md` reference `AGENTS.md`.   
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **AGENTS.md**</summary>
+
+@@ lines 1-59 @@
+
+```
+# Agent Instructions
+
+Project rules now live in `.github/instructions/`:
+
+- [angular.instructions.md](.github/instructions/angular.instructions.md): TypeScript, Angular, Material, and styling rules. Applies to `src/**/*.ts`, `*.html`, and `*.css`.
+- [workflow.instructions.md](.github/instructions/workflow.instructions.md): prettier, tsc, eslint, `ng serve`, and browser-check rules. Applies to `src/**`.
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+
+```
+
+```
+
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **CLAUDE.md**</summary>
+
+@@ lines 1-59 @@
+
+```
+# Claude Instructions
+
+Follow the project rules in [AGENTS.md](AGENTS.md).
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="task" data-tool-name="manage_todo_list"><details>
+<summary>Tool use: **manage_todo_list**</summary>
+
+Created 4 todos
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+I moved the `AGENTS.md` rules into two instruction files, pointed `AGENTS.md` at them, and made `CLAUDE.md` reference `AGENTS.md`. I did not run prettier, tsc, or eslint, since no source files changed.
+
+- `.github/instructions/angular.instructions.md`: the full Angular and TypeScript rules from `AGENTS.md`, plus Material imports through the shared arrays, `button[matButton]` appearances, and the Tailwind and styling rules you listed. Applies to `src/**/*.ts`, `*.html`, and `*.css`.
+- `.github/instructions/workflow.instructions.md`: prettier, tsc, eslint, reuse of the running `ng serve`, and asking before browser tools. Applies to `src/**`.
+- `AGENTS.md` now only links to the two files. `CLAUDE.md` now only links to `AGENTS.md`.
+
+I read "move into this one" as one file per concern, so the rules are split across two files. Tell me if you want them merged into one.
+
+Things to decide or fix:
+
+- **Shared module conflicts:** `src/app/shared/shared-module.ts` still has problems.  includes , which breaks the no- rule.  has a nested `[[[MatButton]]]`. The file is an `@NgModule`, which conflicts with the standalone-first rule. I did not change it.
+- **Deals page imports:** `src/app/deals-page/deals-page.ts` still imports Material components one by one, not through  and . I left it unchanged because you did not ask for that change yet.
+- **`/deals` error page:** I have not investigated it. The editor reports no errors in the shared module, the Deals page, or the routes. The next step would be checking the `ng serve` output. Browser tools need your approval, so tell me if I should use them.
+
+---
+
+_**User (2026-11-04 14:15:56Z)**_
+
+/create-instructions angular and workflow rules + conditionally include from AGENTS.md
+
+move existing AGENTS.md instructions into this one
+reference AGENTS.md from CLAUDE.md
+
+- Use semantic classes such as `bg-surface` and `text-on-surface`, not raw palette classes.
+- Extract  class sets repeated across multiple components with `@apply` inside `@layer components`
+- Tailwind utilities override `@layer components` classes. For example, `pr-9` overrode `.field` padding.
+- The editor's CSS linter reports `@theme` and `@apply` as errors. These are false positives.
+- Use `button[matButton="filled|outlined|text|tonal|elevated"]`, not the old `mat-raised-button` style.
+- Import any Material component through lists in  app/shared/shared-module into component  `imports` array.
+- Avoid ::ng-deep, !important, prefer css variables / tokens, if needed css overrides should be named classes (.fix-...-override)
+
