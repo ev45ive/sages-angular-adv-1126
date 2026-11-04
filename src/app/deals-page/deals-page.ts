@@ -1,12 +1,26 @@
 import { Component } from '@angular/core';
 import { MatButton } from '@angular/material/button';
-import { MatCard, MatCardActions, MatCardContent, MatCardHeader, MatCardSubtitle, MatCardTitle } from '@angular/material/card';
+import {
+  MatCard,
+  MatCardActions,
+  MatCardContent,
+  MatCardHeader,
+  MatCardSubtitle,
+  MatCardTitle,
+} from '@angular/material/card';
 import { MatCheckbox } from '@angular/material/checkbox';
 import { MatChip, MatChipSet } from '@angular/material/chips';
 import { MatFormField, MatLabel, MatSuffix } from '@angular/material/form-field';
 import { MatIcon } from '@angular/material/icon';
 import { MatInput } from '@angular/material/input';
-import { MatList, MatListItem, MatListItemIcon, MatListItemLine, MatListItemMeta, MatListItemTitle } from '@angular/material/list';
+import {
+  MatList,
+  MatListItem,
+  MatListItemIcon,
+  MatListItemLine,
+  MatListItemMeta,
+  MatListItemTitle,
+} from '@angular/material/list';
 import { MatOption, MatSelect } from '@angular/material/select';
 import { MatToolbar } from '@angular/material/toolbar';
 
@@ -38,6 +52,22 @@ import { MatToolbar } from '@angular/material/toolbar';
     MatSuffix,
     MatToolbar,
   ],
+  styles: [
+    `
+      mat-chip-set {
+        display: flex !important;
+      }
+
+      :host() ::ng-deep mat-chip.special-chip-override [matchipcontent] {
+        background: red !important;
+      }
+
+      ::ng-deep .banana {
+        color: yellow;
+      }
+    `,
+  ],
+  //   .banana[_ngcontent-ng-c398410595]
   template: `
     <div class="min-h-screen bg-surface text-on-surface">
       <mat-toolbar class="border-b border-outline-variant">
@@ -94,10 +124,12 @@ import { MatToolbar } from '@angular/material/toolbar';
             <mat-card appearance="outlined">
               <mat-card-header>
                 <mat-card-title>Enterprise License — Tech Solutions</mat-card-title>
-                <mat-card-subtitle>Annual enterprise license for 50 seats. Awaiting legal review.</mat-card-subtitle>
+                <mat-card-subtitle
+                  >Annual enterprise license for 50 seats. Awaiting legal review.</mat-card-subtitle
+                >
               </mat-card-header>
               <mat-card-content>
-                <mat-chip-set>
+                <mat-chip-set class="special-chip-override">
                   <mat-chip>negotiation</mat-chip>
                 </mat-chip-set>
                 <dl class="mt-4 grid grid-cols-3 gap-4 text-body-md">
@@ -151,7 +183,11 @@ import { MatToolbar } from '@angular/material/toolbar';
                     </mat-chip-set>
                   </mat-list-item>
                   <mat-list-item>
-                    <mat-checkbox matListItemIcon checked aria-label="Mark Schedule call with legal as not done" />
+                    <mat-checkbox
+                      matListItemIcon
+                      checked
+                      aria-label="Mark Schedule call with legal as not done"
+                    />
                     <span matListItemTitle class="line-through">Schedule call with legal</span>
                     <span matListItemLine>Due: 2026-03-10</span>
                     <mat-chip-set matListItemMeta>

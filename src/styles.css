@@ -23,16 +23,3 @@
     @apply text-label-md text-on-surface-variant;
   }
 }
-
-/* Global Overrides - Blast Radius */
-
-mat-chip-set {
-  /* color: banana; */
-  display: flex !important;
-}
-
-/* Specifity */
-/* .mdc-list-item--with-leading-icon.mdc-list-item--with-two-lines.mdc-list-item--with-trailing-meta
-  .mdc-list-item__end {
-  display: flex;
-} */
