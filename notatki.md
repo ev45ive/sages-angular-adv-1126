@@ -18,3 +18,8 @@ Angular CLI       : 22.2.5
 npm i -g @angular/cli@latest
 npm i -g @angular/cli@^22.0.0
 npm i -g @angular/cli@22.2.5
+
+# ng new - workspace
+
+ng new sages --directory "." -s -t --skip-tests --routing --ssr true --standalone true --style tailwind --zoneless false
+
