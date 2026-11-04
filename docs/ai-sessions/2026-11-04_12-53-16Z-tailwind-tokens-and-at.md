@@ -1543,44 +1543,231 @@ After changes verification:
 
 _**Agent (copilot/claude-haiku-5.5)**_
 
+<think><details><summary>Thought Process</summary>
+The user has changed `deals-page.ts` since my last edit: they added a `styles` block, a `special-chip-override` class, and a comment. I'll keep those as they are. I also found a `.prettierrc` and no ESLint config. Next I'll read the prettier config and check whether an `ng serve` is already listening.
+</details></think>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
 I'll check the current file contents first, since they may have changed, and look up the project's prettier, eslint, and tsc setup.    
 
 _**Agent (copilot/claude-haiku-5.5)**_
 
-<tool-use data-tool-type="generic" data-tool-name="copilot_findFiles"><details>
-<summary>Tool use: **copilot_findFiles**</summary>
+<tool-use data-tool-type="search" data-tool-name="file_search"><details>
+<summary>Tool use: **file_search**</summary>
 
 Searched for files matching `sages-angular-adv-1126` · `**/{.prettierrc*,prettier.config.*,.prettierignore,eslint.config.*,.eslintrc*}`, 1 match
+
+**Input:**
+
+- query: `c:\Projects\sages-angular-adv-1126\**\{.prettierrc*,prettier.config.*,.prettierignore,eslint.config.*,.eslintrc*}`
 
 **Result:**
 
 ```
+1 total result
 c:\Projects\sages-angular-adv-1126\.prettierrc
 ```
 </details></tool-use>
 
 _**Agent (copilot/claude-haiku-5.5)**_
 
-<tool-use data-tool-type="generic" data-tool-name="copilot_readFile"><details>
-<summary>Tool use: **copilot_readFile**</summary>
+<tool-use data-tool-type="read" data-tool-name="read_file"><details>
+<summary>Tool use: **read_file**</summary>
 
 Read `deals-page.ts`
+
+**Input:**
+
+- endLine: `400`
+- filePath: `c:\Projects\sages-angular-adv-1126\src\app\deals-page\deals-page.ts`
+- startLine: `1`
+
+**Result:**
+
+```
+import { Component } from '@angular/core';
+import { MatButton } from '@angular/material/button';
+import {
+  MatCard,
+  MatCardActions,
+  MatCardContent,
+  MatCardHeader,
+  MatCardSubtitle,
+  MatCardTitle,
+} from '@angular/material/card';
+import { MatCheckbox } from '@angular/material/checkbox';
+import { MatChip, MatChipSet } from '@angular/material/chips';
+import { MatFormField, MatLabel, MatSuffix } from '@angular/material/form-field';
+import { MatIcon } from '@angular/material/icon';
+import { MatInput } from '@angular/material/input';
+import {
+  MatList,
+  MatListItem,
+  MatListItemIcon,
+  MatListItemLine,
+  MatListItemMeta,
+  MatListItemTitle,
+} from '@angular/material/list';
+import { MatOption, MatSelect } from '@angular/material/select';
+import { MatToolbar } from '@angular/material/toolbar';
+
+@Component({
+  selector: 'app-deals-page',
+  imports: [
+    MatButton,
+    MatCard,
+    MatCardActions,
+    MatCardContent,
+    MatCardHeader,
+    MatCardSubtitle,
+    MatCardTitle,
+    MatCheckbox,
+    MatChip,
+    MatChipSet,
+    MatFormField,
+    MatIcon,
+    MatInput,
+    MatLabel,
+    MatList,
+    MatListItem,
+    MatListItemIcon,
+    MatListItemLine,
+    MatListItemMeta,
+    MatListItemTitle,
+    MatOption,
+    MatSelect,
+    MatSuffix,
+    MatToolbar,
+  ],
+  styles: [
+    `
+      mat-chip-set {
+        display: flex !important;
+      }
+    `,
+  ],
+  //   .banana[_ngcontent-ng-c398410595]
+  template: `
+    <div class="min-h-screen bg-surface text-on-surface">
+      <mat-toolbar class="border-b border-outline-variant">
+        <span class="text-title-md">CRM System</span>
+      </mat-toolbar>
+
+      <main class="mx-auto max-w-5xl p-6">
+        <div class="mb-4 flex items-center justify-between">
+          <h1 class="text-headline-sm">Deals</h1>
+          <button matButton="filled" type="button">New Deal</button>
+        </div>
+
+        <div class="grid grid-cols-[260px_1fr] items-start gap-4">
+… (output truncated)
+```
 </details></tool-use>
 
 _**Agent (copilot/claude-haiku-5.5)**_
 
-<tool-use data-tool-type="generic" data-tool-name="copilot_readFile"><details>
-<summary>Tool use: **copilot_readFile**</summary>
+<tool-use data-tool-type="read" data-tool-name="read_file"><details>
+<summary>Tool use: **read_file**</summary>
 
 Read `styles.css`
+
+**Input:**
+
+- endLine: `200`
+- filePath: `c:\Projects\sages-angular-adv-1126\src\styles.css`
+- startLine: `1`
+
+**Result:**
+
+```
+/* You can add global styles to this file, and also import other style files */
+
+@import 'tailwindcss';
+
+@import './design/material-tokens.css';
+
+/* 
+@source 'app/src/*.ts';
+@source 'app/runtime-mojeklasy.txt';
+@source not 'node_modules'; 
+*/
+
+@theme {
+  /* --spacing: .45rem; */
+
+  /* Local semantic  */
+  --spacing-banana: calc(var(--spacing) * 3);
+  --spacing-monkey: calc(var(--spacing) * 6);
+}
+
+@layer components {
+  .meta {
+    @apply text-label-md text-on-surface-variant;
+  }
+}
+```
 </details></tool-use>
 
 _**Agent (copilot/claude-haiku-5.5)**_
 
-<tool-use data-tool-type="generic" data-tool-name="copilot_readFile"><details>
-<summary>Tool use: **copilot_readFile**</summary>
+<tool-use data-tool-type="read" data-tool-name="read_file"><details>
+<summary>Tool use: **read_file**</summary>
 
 Read `package.json`
+
+**Input:**
+
+- endLine: `120`
+- filePath: `c:\Projects\sages-angular-adv-1126\package.json`
+- startLine: `1`
+
+**Result:**
+
+```
+{
+  "name": "sages",
+  "version": "0.0.0",
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve",
+    "build": "ng build",
+    "watch": "ng build --watch --configuration development",
+    "test": "ng test",
+    "serve:ssr:sages": "node dist/sages/server/server.mjs"
+  },
+  "private": true,
+  "packageManager": "npm@11.12.1",
+  "dependencies": {
+    "@angular/cdk": "^22.2.5",
+    "@angular/common": "^22.2.0",
+    "@angular/compiler": "^22.2.0",
+    "@angular/core": "^22.2.0",
+    "@angular/forms": "^22.2.0",
+    "@angular/material": "^22.2.5",
+    "@angular/platform-browser": "^22.2.0",
+    "@angular/platform-server": "^22.2.0",
+    "@angular/router": "^22.2.0",
+    "@angular/ssr": "^22.2.5",
+    "express": "^5.1.0",
+    "rxjs": "~7.8.0",
+    "tslib": "^2.3.0",
+    "zone.js": "~0.16.0"
+  },
+  "devDependencies": {
+    "@angular/build": "^22.2.5",
+    "@angular/cli": "^22.2.5",
+    "@angular/compiler-cli": "^22.2.0",
+    "@tailwindcss/postcss": "^4.1.12",
+    "@types/express": "^5.0.1",
+    "@types/node": "^22.12.0",
+    "postcss": "^8.5.3",
+    "prettier": "^3.8.1",
+    "tailwindcss": "^4.1.12",
+    "typescript": "~6.0.2"
+  }
+}
+```
 </details></tool-use>
 
 _**Agent (copilot/claude-haiku-5.5)**_
@@ -1593,14 +1780,49 @@ _**Agent (copilot/claude-haiku-5.5)**_
 <summary>Tool use: **run_in_terminal**</summary>
 
 Running ` curl -s -o /dev/null -w "%\{http\_code\}\\n" http://localhost:4200/ || echo "no ...`
+
+Check whether an ng serve dev server is already running on port 4200
+
+```bash
+curl -s -o /dev/null -w "%{http_code}\n" http://localhost:4200/ || echo "no server"
+```
+
+**Result:**
+
+```
+404
+```
 </details></tool-use>
 
 _**Agent (copilot/claude-haiku-5.5)**_
 
-<tool-use data-tool-type="generic" data-tool-name="copilot_readFile"><details>
-<summary>Tool use: **copilot_readFile**</summary>
+<tool-use data-tool-type="read" data-tool-name="read_file"><details>
+<summary>Tool use: **read_file**</summary>
 
 Read `.prettierrc`
+
+**Input:**
+
+- endLine: `50`
+- filePath: `c:\Projects\sages-angular-adv-1126\.prettierrc`
+- startLine: `1`
+
+**Result:**
+
+```
+{
+  "printWidth": 100,
+  "singleQuote": true,
+  "overrides": [
+    {
+      "files": "*.html",
+      "options": {
+        "parser": "angular"
+      }
+    }
+  ]
+}
+```
 </details></tool-use>
 
 _**Agent (copilot/claude-haiku-5.5)**_
@@ -1613,6 +1835,18 @@ _**Agent (copilot/claude-haiku-5.5)**_
 <summary>Tool use: **run_in_terminal**</summary>
 
 Running ` npx prettier --write src/app/deals-page/deals-page.ts src/styles.css`
+
+Format the two changed files with the project's prettier config
+
+```bash
+npx prettier --write src/app/deals-page/deals-page.ts src/styles.css
+```
+
+**Result:**
+
+```
+src/styles.css 16ms (unchanged)
+```
 </details></tool-use>
 
 _**Agent (copilot/claude-haiku-5.5)**_
@@ -1625,6 +1859,19 @@ _**Agent (copilot/claude-haiku-5.5)**_
 <summary>Tool use: **run_in_terminal**</summary>
 
 Running ` npx prettier --check src/app/deals-page/deals-page.ts src/styles.css`
+
+Verify both changed files match prettier formatting
+
+```bash
+npx prettier --check src/app/deals-page/deals-page.ts src/styles.css
+```
+
+**Result:**
+
+```
+Checking formatting...
+All matched files use Prettier code style!
+```
 </details></tool-use>
 
 _**Agent (copilot/claude-haiku-5.5)**_
@@ -1637,6 +1884,20 @@ _**Agent (copilot/claude-haiku-5.5)**_
 <summary>Tool use: **run_in_terminal**</summary>
 
 Running ` npx tsc --noEmit -p tsconfig.app.json`
+
+Type-check the app project without emitting files
+
+```bash
+npx tsc --noEmit -p tsconfig.app.json
+```
+
+**Result:**
+
+```
+
+
+Command produced no output
+```
 </details></tool-use>
 
 _**Agent (copilot/claude-haiku-5.5)**_
@@ -1649,6 +1910,18 @@ _**Agent (copilot/claude-haiku-5.5)**_
 <summary>Tool use: **run_in_terminal**</summary>
 
 Running ` ls node\_modules/.bin | grep -i eslint; ls -a | grep -i eslint; echo "done"`
+
+Check for ESLint binary or config in the project
+
+```bash
+ls node_modules/.bin | grep -i eslint; ls -a | grep -i eslint; echo "done"
+```
+
+**Result:**
+
+```
+done
+```
 </details></tool-use>
 
 _**Agent (copilot/claude-haiku-5.5)**_
@@ -1657,10 +1930,49 @@ ESLint is not installed and has no config in this project. I'll run a final erro
 
 _**Agent (copilot/claude-haiku-5.5)**_
 
-<tool-use data-tool-type="generic" data-tool-name="copilot_getErrors"><details>
-<summary>Tool use: **copilot_getErrors**</summary>
+<tool-use data-tool-type="generic" data-tool-name="get_errors"><details>
+<summary>Tool use: **get_errors**</summary>
 
 Checked `styles.css`, `deals-page.ts`, 2 problems found
+
+**Input:**
+
+- filePaths:
+
+```
+[
+  "c:\\Projects\\sages-angular-adv-1126\\src\\app\\deals-page\\deals-page.ts",
+  "c:\\Projects\\sages-angular-adv-1126\\src\\styles.css"
+]
+```
+
+
+**Result:**
+
+````
+<errors path="c:\\Projects\\sages-angular-adv-1126\\src\\styles.css">
+This code at line 13
+```
+@theme {
+```
+has the problem reported:
+<compileError>
+Unknown at rule @theme
+</compileError>
+This code at line 23
+```
+    @apply text-label-md text-on-surface-variant;
+```
+has the problem reported:
+<compileError>
+Unknown at rule @apply
+</compileError>
+
+</errors>
+<errors path="c:\\Projects\\sages-angular-adv-1126\\src\\app\\deals-page\\deals-page.ts">
+No errors found
+</errors>
+````
 </details></tool-use>
 
 _**Agent (copilot/claude-haiku-5.5)**_
@@ -1669,6 +1981,54 @@ _**Agent (copilot/claude-haiku-5.5)**_
 <summary>Tool use: **vscode_askQuestions**</summary>
 
 Analyzing your answers...
+
+**Input:**
+
+- questions:
+
+```
+[
+  {
+    "allowFreeformInput": true,
+    "header": "browser-verify",
+    "message": "A server is responding on http://localhost:4200 (404 on `/`, so I could not confirm it is `ng serve`). I would open the page and check the layout, console, and the Material components. Reply yes to proceed, or give me the correct URL.",
+    "options": [
+      {
+        "label": "Yes, open http://localhost:4200/deals",
+        "recommended": true
+      },
+      {
+        "label": "No, skip browser checks"
+      },
+      {
+        "label": "Use a different URL"
+      }
+    ],
+    "question": "Run browser verification of the Deals page now?"
+  },
+  {
+    "allowFreeformInput": true,
+    "header": "eslint",
+    "options": [
+      {
+        "label": "Skip ESLint",
+        "recommended": true
+      },
+      {
+        "label": "Set up ESLint for Angular"
+      }
+    ],
+    "question": "ESLint is not installed or configured. Should I set it up, or skip it?"
+  }
+]
+```
+
+
+**Result:**
+
+```
+{"answers":{"browser-verify":{"selected":["Yes, open http://localhost:4200/deals"],"freeText":null,"skipped":false},"eslint":{"selected":["Set up ESLint for Angular"],"freeText":null,"skipped":false}}}
+```
 </details></tool-use>
 
 _**Agent (copilot/claude-haiku-5.5)**_
@@ -1681,6 +2041,37 @@ _**Agent (copilot/claude-haiku-5.5)**_
 <summary>Tool use: **run_in_terminal**</summary>
 
 Running ` npx ng add angular-eslint --skip-confirmation`
+
+Install and configure angular-eslint via the official Angular schematic
+
+```bash
+npx ng add angular-eslint --skip-confirmation
+```
+
+**Result:**
+
+```
+✔ Determining Package Manager
+  › Using package manager: npm
+✔ Searching for compatible package version
+  › Found compatible package version: 22.6.0.
+✔ Loading package information
+✔ Installing package
+    angular-eslint v22 matches this workspace's Angular v22.
+    
+    All angular-eslint dependencies have been successfully installed 🎉
+    
+    Please see https://github.com/angular-eslint/angular-eslint for how to add ESLint configuration to your project.
+    
+    We detected that you have a single project in your workspace and no existing linter wired up, so we are configuring ESLint for you automatically.
+    
+    Please see https://github.com/angular-eslint/angular-eslint for more information.
+    
+CREATE eslint.config.js (1004 bytes)
+UPDATE package.json (1287 bytes)
+UPDATE angular.json (3180 bytes)
+✔ Packages installed successfully.
+```
 </details></tool-use>
 
 _**Agent (copilot/claude-haiku-5.5)**_
@@ -1693,6 +2084,20 @@ _**Agent (copilot/claude-haiku-5.5)**_
 <summary>Tool use: **run_in_terminal**</summary>
 
 Running ` npx eslint src/app/deals-page/deals-page.ts`
+
+Lint the changed deals-page component
+
+```bash
+npx eslint src/app/deals-page/deals-page.ts
+```
+
+**Result:**
+
+```
+
+
+Command produced no output
+```
 </details></tool-use>
 
 _**Agent (copilot/claude-haiku-5.5)**_
@@ -1701,10 +2106,33 @@ ESLint reports no problems in `deals-page.ts`. Before opening the browser, I'll 
 
 _**Agent (copilot/claude-haiku-5.5)**_
 
-<tool-use data-tool-type="generic" data-tool-name="copilot_readFile"><details>
-<summary>Tool use: **copilot_readFile**</summary>
+<tool-use data-tool-type="read" data-tool-name="read_file"><details>
+<summary>Tool use: **read_file**</summary>
 
 Read `app.routes.ts`
+
+**Input:**
+
+- endLine: `60`
+- filePath: `c:\Projects\sages-angular-adv-1126\src\app\app.routes.ts`
+- startLine: `1`
+
+**Result:**
+
+```
+import { Routes } from '@angular/router';
+
+export const routes: Routes = [
+  {
+    path: 'deals',
+    // eager loading
+    // component : DealsPage, 
+    
+    // lazy loading:
+    loadComponent: () => import('./deals-page/deals-page').then((m) => m.DealsPage),
+  },
+];
+```
 </details></tool-use>
 
 _**Agent (copilot/claude-haiku-5.5)**_
@@ -1712,5 +2140,212 @@ _**Agent (copilot/claude-haiku-5.5)**_
 <tool-use data-tool-type="generic" data-tool-name="open_browser_page"><details>
 <summary>Tool use: **open_browser_page**</summary>
 
-Opened browser page at http://localhost:4200/deals
+Opened `Browser`
+
+**Input:**
+
+- url: `http://localhost:4200/deals`
+
+**Result:**
+
+```
+Page ID: 9df7aa7b-2569-4c90-9805-fee348f6d0a2
+
+Summary:
+
+Page Title: Sages
+URL: http://localhost:4200/deals
+Snapshot: 
+- generic [ref=e2]:
+  - heading "Hello, SAGES" [level=1] [ref=e4]
+  - generic [ref=e6]:
+    - generic [ref=e8]: CRM System
+    - main [ref=e9]:
+      - generic [ref=e10]:
+        - heading "Deals" [level=1] [ref=e11]
+        - button "New Deal" [ref=e12]:
+          - generic [ref=e13]: New Deal
+      - generic [ref=e16]:
+        - complementary [ref=e17]:
+          - generic [ref=e20]:
+            - generic [ref=e21]:
+              - generic [ref=e22]: Filter deals
+              - searchbox "Filter deals" [ref=e23]
+            - img [ref=e25]: search
+          - generic [ref=e27]:
+            - button "Enterprise License — Tech Solutions $48,000 negotiation" [ref=e28]:
+              - generic [ref=e29]:
+                - generic [ref=e30]: Enterprise License — Tech Solutions
+                - generic [ref=e31]: $48,000
+              - generic [ref=e35]: negotiation
+            - button "Pilot Program — DataFlow $12,000 new" [ref=e37]:
+              - generic [ref=e38]:
+                - generic [ref=e39]: Pilot Program — DataFlow
+                - generic [ref=e40]: $12,000
+              - generic [ref=e44]: new
+            - button "Design Workshop — Creative Co $5,000 proposal" [ref=e46]:
+              - generic [ref=e47]:
+                - generic [ref=e48]: Design Workshop — Creative Co
+                - generic [ref=e49]: $5,000
+              - generic [ref=e53]: proposal
+            - button "Renewal — BuildRight $24,000 closed-lost" [ref=e55]:
+              - generic [ref=e56]:
+                - generic [ref=e57]: Renewal — BuildRight
+                - generic [ref=e58]: $24,000
+              - generic [ref=e62]: closed-lost
+        - generic [ref=e64]:
+          - generic [ref=e65]:
+            - generic [ref=e67]:
+              - generic [ref=e68]: Enterprise License — Tech Solutions
+              - generic [ref=e69]: Annual enterprise lice
+… (output truncated)
+```
 </details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+The page renders with the Material components in place. The snapshot shows the search icon as text, which could mean the Material Symbols font did not load, so I'll take a screenshot to check visually.  
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="tool_search"><details>
+<summary>Tool use: **tool_search**</summary>
+
+**Input:**
+
+- query: `screenshot page browser`
+
+**Result:**
+
+```
+["screenshot_page","mcp_playwright_browser_take_screenshot","mcp_playwright_browser_snapshot","list_browser_pages","mcp_playwright_browser_hover"]
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="screenshot_page"><details>
+<summary>Tool use: **screenshot_page**</summary>
+
+Captured browser screenshot
+
+**Input:**
+
+- pageId: `9df7aa7b-2569-4c90-9805-fee348f6d0a2`
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+Verification is done. Changed files pass prettier, tsc, and ESLint, and the Deals page renders at `/deals`.
+
+- **Prettier:** `deals-page.ts` and `styles.css` were already formatted, so nothing changed.
+- **tsc:** `tsconfig.app.json` reports no errors.
+- **ESLint:** the project had no ESLint setup, so I ran `ng add angular-eslint`. That added `eslint.config.js` and updated `package.json`, `angular.json`, and the installed dependencies. `deals-page.ts` lints clean. ESLint doesn't cover `styles.css`.
+- **Serve:** port 4200 answers, but `/` returns 404. I couldn't confirm it is `ng serve`. I did not run `ng build`.
+- **Browser:** the page renders with the Material toolbar, form fields, list, cards, chips, and buttons. The search icon shows correctly.
+
+Visual issues I noticed, not fixed:
+- Deal names in the left list truncate ("Enterprise L…").
+- The "high" chip sits above its task row's baseline, so the task rows look misaligned.
+- The  block and `special-chip-override` class in `deals-page.ts` were added by you. I left them alone.
+
+The editor reports `@theme` and `@apply` as errors in `styles.css`. These are Tailwind at-rules the CSS linter doesn't recognize, so I treated them as false positives.
+
+Should I fix the list truncation and task-row alignment, or check the browser console for errors?
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="task" data-tool-name="manage_todo_list"><details>
+<summary>Tool use: **manage_todo_list**</summary>
+
+Created 5 todos
+</details></tool-use>
+
+---
+
+_**User (2026-11-04 13:56:27Z)**_
+
+propse how to fix those issues first
+
+---
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+Here are proposed fixes for the two issues. I haven't changed any files.
+
+**1. Deal names truncate in the left list ("Enterprise L…")**
+
+The aside is a fixed `260px` column (`grid-cols-[260px_1fr]`). The title shares that width with the status chip in the meta slot, so the title is cut off.
+
+- Recommended: widen the column to `grid-cols-[300px_1fr]` in the main grid. Add a `title` attribute on each title span so the full name is still available on hover.
+- Alternative: keep the width and move the status chip under the amount line, out of the meta slot. This frees horizontal space for the title.
+
+**2. Priority chip sits above its task row in the Tasks list**
+
+Material places `matListItemMeta` at the top of a multi-line list item. The chip lines up with the title, not with the item's center, so the row looks uneven next to the checkbox and due date.
+
+- Recommended: add `class="self-center"` to each task's `mat-chip-set matListItemMeta`, then verify with a screenshot. I haven't confirmed that this class takes effect inside the Material list item, so I'd check the result before calling it fixed.
+- Alternative: move the chip into the `matListItemLine` slot next to "Due: …". This keeps every row on two lines with one consistent layout.
+
+Your `mat-chip-set { display: flex !important; }` rule in `deals-page.ts` may also affect chip alignment. I'd keep it for now and remove it only if the fixes above make it unnecessary.
+
+Which options should I apply? I'd suggest option 1 for both, then check the result in the browser.
+
+---
+
+_**User (2026-11-04 13:58:30Z)**_
+
+list all decistions methods etc in this whole chat for good project practices
+
+---
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+## Project practices from this chat
+
+**Angular conventions (from `AGENTS.md`)**
+- Use standalone components. Don't set `standalone: true` (default in v20+).
+- Don't set `changeDetection: OnPush` explicitly (default in v22+).
+- Use signals for state. Use `input()`, `output()`, `model()` for two-way binding, `computed()` for derived state, and `linkedSignal()` for synchronized derived state.
+- Use `update()` or `set()` on signals, never `mutate()`.
+- Use native control flow (`@if`, `@for`, `@switch`). Don't use `*ngIf`, `*ngFor`, `ngClass`, `ngStyle`, or `CommonModule`.
+- Use `inject()`, not constructor injection. Use `@Service` for singletons (v22+).
+- Put host bindings in the `host` object, not `@HostBinding` or `@HostListener`.
+- Use `NgOptimizedImage` for static images, but not for inline base64.
+- Prefer Signal Forms for new forms. Otherwise use reactive forms, not template-driven.
+- Lazy-load feature routes. Keep components small and inline templates for small ones.
+- Use strict TypeScript, prefer inference, and avoid `any` (use `unknown`).
+- Meet AXE checks and WCAG AA, including focus, contrast, and ARIA.
+
+**Styling decisions**
+- Map `--mat-sys-*` roles to Tailwind namespaces with `@theme inline` in `material-tokens.css`. Use semantic classes such as `bg-surface` and `text-on-surface`, not raw palette classes.
+- Extract repeated class sets with `@apply` inside `@layer components` in `styles.css`.
+- Tailwind utilities override `@layer components` classes. For example, `pr-9` overrode `.field` padding.
+- Remove CSS classes once the markup that used them is gone.
+- The editor's CSS linter reports `@theme` and `@apply` as errors. These are false positives.
+
+**Angular Material decisions**
+- Use `button[matButton="filled|outlined|text|tonal|elevated"]`, not the old `mat-raised-button` style.
+- Verify selectors and inputs against the installed package (`fesm2022`) rather than guessing. Material 22.2.5 is installed.
+- Import each Material component in the standalone  array.
+- `mat-icon` ligatures need the Material Symbols font. `index.html` already loads it.
+- Use `mat-list-item` with `button` and `[activated]`, `mat-card appearance="outlined"`, `mat-chip-set`, and `mat-form-field` with `mat-label`.
+
+**Workflow and tooling**
+- Format with prettier (`.prettierrc`: `printWidth` 100, `singleQuote`, Angular parser for HTML). Run `--check` or `--write` on changed files only.
+- Type-check with `npx tsc --noEmit -p tsconfig.app.json`.
+- Add ESLint with `ng add angular-eslint`, then lint changed files only.
+- Prefer the running `ng serve` over `ng build`. Confirm before using browser tools.
+- Use `open_browser_page` and `screenshot_page` to check the UI.
+- Work template-only when the user asks for it, and confirm before adding logic.
+
+**Terminal gotchas (Windows and Git Bash)**
+- The terminal is Git Bash, so PowerShell syntax fails. Use `find`, `grep`, and `du`.
+- `node` is aliased to `winpty node.exe`. Use `node.exe` when output is piped.
+- `tmp` is not visible to Node. Write temp files inside the project and delete them after.
+- Avoid `!` inside `node -e "..."` in double quotes.
+
+**Watch-outs in the current code**
+- `deals-page.ts` has a  block with `mat-chip-set { display: flex !important; }`, which you added. The `!important` override is a smell. Prefer a `class` or `style` binding, or a style that is scoped without `!important`.
+- The `//   .banana[...]` comment above  is a leftover. Remove it.
+- The deal list titles truncate, and the "high" chip sits off-baseline in the task rows. These are still open.
