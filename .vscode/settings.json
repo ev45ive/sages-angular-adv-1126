@@ -1,0 +1,37 @@
+{
+  "terminal.integrated.defaultProfile.windows": "Git Bash",
+
+  /* Prettier */
+  "[html]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[scss]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+
+  /* Tailwind CSS */
+  "tailwindCSS.includeLanguages": {
+    "html": "html",
+    "vue": "vue",
+    "javascript": "javascript",
+    "typescript": "typescript",
+    "css": "css",
+    "scss": "scss",
+    "reacttypescript": "reacttypescript"
+  },
+  "tailwindCSS.emmetCompletions": true,
+  
+  /* ESLint */
+  "eslint.rules.customizations": [
+    {
+      "rule": "*",
+      "severity": "warn"
+    }
+  ]
+}
