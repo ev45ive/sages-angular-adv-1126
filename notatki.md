@@ -23,3 +23,8 @@ npm i -g @angular/cli@22.2.5
 
 ng new sages --directory "." -s -t --skip-tests --routing --ssr true --standalone true --style tailwind --zoneless false
 
+
+
+# Material
+ng add @angular/
+
