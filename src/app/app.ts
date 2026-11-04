@@ -7,9 +7,8 @@ import { RouterOutlet } from '@angular/router';
   styles: [],
   template: `
     <div class="mx-auto p-banana">
-      <h1 class="text-2xl underline text-red-500 bg-red-400">Hello, {{ title().toUpperCase() }}</h1>
+      <h1 class="text-2xl text-primary ">Hello, {{ title().toUpperCase() }}</h1>
     </div>
-    <div class="m-banana border">Test box</div>
     
     <router-outlet />
   `,
