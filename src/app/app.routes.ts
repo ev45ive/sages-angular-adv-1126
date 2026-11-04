@@ -2,6 +2,11 @@ import { Routes } from '@angular/router';
 
 export const routes: Routes = [
   {
+    path:'',
+    redirectTo:'/deals',
+    pathMatch:'full',
+  },
+  {
     path: 'deals',
     // eager loading
     // component : DealsPage, 

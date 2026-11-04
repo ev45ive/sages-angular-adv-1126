@@ -48,3 +48,17 @@ https://cssgridgarden.com/
 
 # CSS Specifity
 https://css-tricks.com/specifics-on-css-specificity/ 
+
+
+
+# Decision Criteria - Constraints / Forcing Functions
+
+- Reusability - DRY-3x / YAGNI
+
+- Responsibility - SRP - Single Reason to Change
+        - What will change together says together
+        - What will change separatly gets separated
+
+- Extensibility - Open/Closed - If its different responsibility:
+        - use extension/port/outlet/input/slot/param/...
+
