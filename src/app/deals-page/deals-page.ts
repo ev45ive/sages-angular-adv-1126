@@ -57,14 +57,6 @@ import { MatToolbar } from '@angular/material/toolbar';
       mat-chip-set {
         display: flex !important;
       }
-
-      :host() ::ng-deep mat-chip.special-chip-override [matchipcontent] {
-        background: red !important;
-      }
-
-      ::ng-deep .banana {
-        color: yellow;
-      }
     `,
   ],
   //   .banana[_ngcontent-ng-c398410595]
