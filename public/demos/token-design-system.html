@@ -1,0 +1,542 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Semantic Tokens Lab</title>
+<style id="lab-styles">
+@layer reset, shell, foundation, themes, components, problems;
+@layer reset {
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #e9eef5; }
+  button, input, select { font: inherit; }
+  button { cursor: pointer; }
+  [hidden] { display: none !important; }
+}
+@layer shell {
+
+/* DEMOSHELL 1.0 — Keep shell chrome and tokens consistent across all demos.
+   Customize only the lesson/world content in .ds-world and the registries in JS. */
+#demo-shell {
+  --shell-bg:#FFFFFF;--shell-side:#F7F9FC;--shell-work:#EEF2F8;
+  --shell-ink:#25344B;--shell-muted:#64758D;--shell-subtle:#8897AA;
+  --shell-border:#D8E0E9;--shell-accent:#315FA8;--shell-accent-soft:#E8F0FD;
+  --shell-warning:#98631B;--shell-warning-bg:#FFF2DB;
+  --shell-danger:#A54747;--shell-success:#287963;--shell-code:#152338;
+  --shell-radius-xs:4px;--shell-radius-sm:6px;--shell-radius-md:9px;--shell-radius-lg:12px;
+  --shell-gap-1:4px;--shell-gap-2:8px;--shell-gap-3:12px;--shell-gap-4:16px;--shell-gap-5:24px;
+  --shell-font:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font:13px/1.5 var(--shell-font); color:var(--shell-ink);background:var(--shell-bg);
+  border:1px solid var(--shell-border);border-radius:var(--shell-radius-lg);
+  max-width:1420px;margin:16px auto;overflow:hidden; box-shadow:0 5px 24px #24344a0a;
+}
+#demo-shell *,#demo-shell *::before,#demo-shell *::after{box-sizing:border-box}
+#demo-shell button,#demo-shell select,#demo-shell input{font:inherit}
+#demo-shell button{cursor:pointer}
+#demo-shell button:focus-visible,#demo-shell input:focus-visible,#demo-shell select:focus-visible{outline:2px solid var(--shell-accent);outline-offset:2px}
+#demo-shell button:disabled{opacity:.5;cursor:default}
+#demo-shell .ds-header{min-height:64px;background:#17263D;color:#F6F9FF;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 18px}
+#demo-shell h1{font-size:16px;line-height:1.15;letter-spacing:-.3px;margin:0;font-weight:700}
+#demo-shell .ds-kicker{font-size:11px;color:#A8B8D0;margin-top:4px}
+#demo-shell .ds-status{border:1px solid #5F7390;border-radius:6px;color:#ECF4FF;font-size:11px;white-space:nowrap;padding:5px 9px}
+#demo-shell .ds-columns{display:grid;grid-template-columns:304px minmax(0,1fr);min-height:690px}
+#demo-shell .ds-sidebar{background:var(--shell-side);padding:14px;border-right:1px solid var(--shell-border);display:flex;flex-direction:column;gap:13px;max-height:820px;overflow:auto}
+#demo-shell .ds-section{border-bottom:1px solid var(--shell-border);padding-bottom:13px;min-width:0}
+#demo-shell .ds-section:last-child{border-bottom:0;padding-bottom:0}
+#demo-shell .ds-section-title{display:flex;align-items:baseline;justify-content:space-between;gap:8px;font-size:12px;font-weight:700;margin:0 0 9px}
+#demo-shell .ds-meta{font-size:11px;color:var(--shell-muted);font-weight:400}
+#demo-shell .ds-label{font-size:11px;color:var(--shell-muted);display:block}
+#demo-shell .ds-hint{font-size:11px;color:var(--shell-muted);margin:7px 0 0}
+#demo-shell .ds-seg{display:flex;background:#FFF;border:1px solid var(--shell-border);border-radius:6px;overflow:hidden;min-width:0}
+#demo-shell .ds-seg button{flex:1;border:0;border-right:1px solid var(--shell-border);color:#52647C;background:transparent;min-height:32px;font-size:11px;padding:5px 6px}
+#demo-shell .ds-seg button:last-child{border:0}
+#demo-shell .ds-seg button[aria-pressed="true"]{background:var(--shell-accent);color:#FFF;font-weight:650}
+#demo-shell .ds-mini-actions{display:flex;align-items:center;gap:7px;margin:9px 0 5px}
+#demo-shell .ds-btn{min-height:32px;border-radius:6px;border:1px solid var(--shell-border);color:#435771;background:white;padding:6px 10px;font-size:11px;font-weight:600}
+#demo-shell .ds-btn-primary{background:var(--shell-accent);color:white;border-color:var(--shell-accent)}
+#demo-shell .ds-btn-block{width:100%}
+#demo-shell .ds-step{flex:1;text-align:center;font-size:11px;color:var(--shell-muted)}
+#demo-shell .ds-field{margin:10px 0}
+#demo-shell .ds-fieldrow{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:4px}
+#demo-shell output{font-size:11px;color:var(--shell-accent);font-variant-numeric:tabular-nums}
+#demo-shell input[type="range"]{width:100%;accent-color:var(--shell-accent);cursor:pointer;display:block;margin:3px 0;height:18px}
+#demo-shell input[type="checkbox"]{width:15px;height:15px;accent-color:var(--shell-accent);cursor:pointer;margin:0}
+#demo-shell .ds-all{display:flex;align-items:center;gap:9px;font-weight:700;font-size:11px;padding:5px 0 9px}
+#demo-shell .ds-problem{display:grid;grid-template-columns:20px minmax(0,1fr) 22px;gap:7px;align-items:center;border-radius:6px;border:1px solid transparent;padding:5px;margin:0 -5px}
+#demo-shell .ds-problem[data-selected="true"]{background:var(--shell-accent-soft);border-color:#BED1F3}
+#demo-shell .ds-problem button{border:0;background:none;color:var(--shell-ink);text-align:left;font-size:11px;min-height:28px;padding:0}
+#demo-shell .ds-issue-icon{font-size:11px;color:var(--shell-warning);text-align:center}
+#demo-shell .ds-inspector{border:1px solid var(--shell-border);border-radius:9px;background:white;padding:10px}
+#demo-shell .ds-inspect-title{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:12px;font-weight:700}
+#demo-shell .ds-pill{display:inline-block;border-radius:6px;background:var(--shell-warning-bg);color:var(--shell-warning);font-size:10px;padding:3px 6px;font-weight:600}
+#demo-shell .ds-pill.ok{color:var(--shell-success);background:#E6F4ED}
+#demo-shell .ds-chain{display:grid;grid-template-columns:85px minmax(0,1fr);gap:5px 9px;margin:10px 0;font-size:11px}
+#demo-shell .ds-chain dt{color:var(--shell-subtle)}
+#demo-shell .ds-chain dd{margin:0;min-width:0;overflow-wrap:anywhere;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:10px}
+#demo-shell .ds-compare-values{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:9px 0}
+#demo-shell .ds-value{background:#F2F5F9;border-radius:6px;padding:8px;min-width:0}
+#demo-shell .ds-value label{display:block;color:var(--shell-muted);font-size:10px}
+#demo-shell .ds-value b{font-size:12px;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+#demo-shell .ds-explain{font-size:11px;color:#586B84;margin:9px 0}
+#demo-shell .ds-workspace{background:var(--shell-work);min-width:0;display:flex;flex-direction:column}
+#demo-shell .ds-toolbar{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;padding:11px 15px;border-bottom:1px solid var(--shell-border)}
+#demo-shell .ds-toolbar strong{font-size:12px}
+#demo-shell .ds-toolbar-group{display:flex;align-items:center;gap:8px}
+#demo-shell select{height:32px;border:1px solid var(--shell-border);border-radius:6px;color:var(--shell-ink);background:white;padding:0 7px;font-size:11px;max-width:100%}
+#demo-shell .ds-stage{border-radius:6px;padding:7px 15px;font-size:11px;color:#546780;border-bottom:1px solid var(--shell-border);background:#F7F9FD}
+#demo-shell .ds-world-wrap{padding:16px;min-width:0;overflow:auto}
+#demo-shell .ds-world{background:#FFF;border:1px solid var(--shell-border);border-radius:9px;max-width:100%;width:100%;padding:16px;min-height:410px;margin:0 auto;transition:background .12s}
+#demo-shell .ds-world-heading{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;flex-wrap:wrap;margin-bottom:14px}
+#demo-shell .ds-world h2{font-size:17px;margin:0;line-height:1.25}
+#demo-shell .ds-world p{font-size:11px;color:var(--shell-muted);margin:4px 0 0}
+#demo-shell .ds-world-badge{background:#EDF4FF;color:#2F5F9D;padding:4px 9px;border-radius:6px;font-weight:650;font-size:10px}
+#demo-shell .ds-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+#demo-shell .ds-metric{border:1px solid var(--shell-border);border-radius:9px;background:white;padding:11px;min-width:0;text-align:left;cursor:pointer;color:var(--shell-ink)}
+#demo-shell .ds-metric span{color:var(--shell-muted);display:block;font-size:11px}
+#demo-shell .ds-metric strong{font-size:22px;display:block;font-variant-numeric:tabular-nums;white-space:nowrap}
+#demo-shell .ds-metric small{color:var(--shell-muted);font-size:10px}
+#demo-shell [data-entity].selected{outline:2px solid var(--shell-accent);outline-offset:2px}
+#demo-shell .ds-chart{border:1px solid var(--shell-border);border-radius:9px;padding:13px;margin-top:12px}
+#demo-shell .ds-chart-label{display:flex;justify-content:space-between;font-size:11px;font-weight:650;gap:10px;margin-bottom:7px}
+#demo-shell .ds-bars{display:flex;align-items:end;gap:4px;height:120px;background:linear-gradient(to top,#E6ECF5 1px,transparent 1px) 0 0/100% 30px}
+#demo-shell .ds-bars div{flex:1;min-width:3px;min-height:0;border-radius:3px 3px 0 0;background:#6E9BD6;transition:height .12s}
+#demo-shell .ds-bars div:last-child{background:var(--shell-accent)}
+#demo-shell .ds-axis{display:flex;justify-content:space-between;color:var(--shell-subtle);font-size:10px;margin-top:6px}
+#demo-shell .ds-question{border-left:3px solid var(--shell-accent);background:#F1F5FB;padding:9px 12px;margin-top:12px;border-radius:0 6px 6px 0}
+#demo-shell .ds-question strong{font-size:11px}
+#demo-shell .ds-question p{font-size:11px;color:var(--shell-ink)}
+#demo-shell .ds-compare-panel{border:1px solid #C6D9F6;border-radius:9px;background:#F2F7FF;padding:10px 12px;margin-top:10px;font-size:11px}
+#demo-shell .ds-compare-panel strong{display:block;font-size:12px;margin-bottom:3px}
+#demo-shell .ds-bottom{background:#FFF;border-top:1px solid var(--shell-border);padding:13px 16px}
+#demo-shell .ds-bottom-title{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:12px;font-weight:700;margin-bottom:9px}
+#demo-shell .ds-code{white-space:pre-wrap;word-break:break-word;max-height:220px;overflow:auto;background:var(--shell-code);color:#E6ECF7;padding:13px;border-radius:6px;font:11px/1.55 ui-monospace,Consolas,monospace;margin:9px 0 0}
+#demo-shell .ds-footer-note{font-size:11px;color:var(--shell-muted);padding:9px 16px;background:#FAFCFE;border-top:1px solid var(--shell-border)}
+@media(max-width:800px){#demo-shell .ds-columns{grid-template-columns:minmax(0,1fr)}#demo-shell .ds-sidebar{max-height:none;border-right:0;border-bottom:1px solid var(--shell-border)}#demo-shell .ds-world-wrap{padding:10px}}
+@media(max-width:430px){#demo-shell{margin:0}#demo-shell .ds-metrics{grid-template-columns:1fr}#demo-shell .ds-world{padding:10px}#demo-shell .ds-header{padding:10px}#demo-shell .ds-metric strong{font-size:19px}}
+@media(prefers-reduced-motion:reduce){#demo-shell *,#demo-shell *::before,#demo-shell *::after{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+
+  #demo-shell .ds-sidebar { max-height: calc(100vh - 100px); }
+  #demo-shell .ds-toolbar-group { flex-wrap: wrap; }
+  #demo-shell .ds-code { min-height: 190px; max-height: 280px; white-space: pre; word-break: normal; }
+  #demo-shell .ds-compare-values { grid-template-columns: 1fr; }
+  #demo-shell .ds-value b { font: 11px/1.5 ui-monospace, Consolas, monospace; }
+  #demo-shell .ds-header { flex-wrap: wrap; }
+  .ds-colors { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 10px; margin-top: 10px; }
+  .ds-color { display: flex; align-items: center; gap: 6px; min-height: 28px; font-size: 11px; }
+  .ds-color input { width: 24px; height: 24px; padding: 2px; border: 1px solid var(--shell-border); border-radius: 4px; background: white; cursor: pointer; flex-shrink: 0; }
+  .ds-lighting { display: flex; align-items: center; gap: 12px; }
+  #light-pad { width: 118px; height: 118px; flex-shrink: 0; touch-action: none; border-radius: 50%; cursor: crosshair; }
+  #light-pad:focus-visible { outline: 2px solid var(--shell-accent); outline-offset: 2px; }
+  .ds-light-values { font: 11px/1.7 ui-monospace, Consolas, monospace; color: var(--shell-muted); }
+  .ds-guide { padding: 12px 16px; border-bottom: 1px solid var(--shell-border); background: #f7f9fc; }
+  .ds-guide p { margin: 6px 0; font-size: 12px; }
+  .ds-guide .ds-mini-actions { margin-top: 0; }
+  .ds-code-note { margin: 8px 0 0; color: var(--shell-muted); font-size: 11px; }
+  .preview-frame { container: preview / inline-size; width: 100%; max-width: 100%; margin: 0 auto; }
+  #contrast-result { font: 11px/1.6 ui-monospace, Consolas, monospace; padding: 7px; background: #f2f5f9; border-radius: 6px; margin: 8px 0; }
+  #demo-shell .ds-problem button { min-height: 28px; }
+  @media(max-width:800px) { #demo-shell .ds-sidebar { max-height: none; display: grid; grid-template-columns: 1fr 1fr; align-items: start; } }
+  @media(max-width:540px) { #demo-shell .ds-sidebar { display: flex; } }
+}
+@layer foundation {
+  #preview {
+    --ref-primary: #315fa8; --ref-on-primary: #ffffff;
+    --ref-background: #f3f6fb; --ref-on-background: #25344b;
+    --ref-surface: #ffffff; --ref-on-surface: #25344b;
+    --ref-secondary: #e8effa; --ref-on-secondary: #2c5083;
+    --ref-warning: #fff2db; --ref-on-warning: #70480d; --ref-border: #d4deeb; --ref-radius: 10px;
+    --sys-primary: var(--live-primary, var(--theme-primary, var(--ref-primary)));
+    --sys-on-primary: var(--live-on-primary, var(--theme-on-primary, var(--ref-on-primary)));
+    --sys-background: var(--live-background, var(--theme-background, var(--ref-background)));
+    --sys-on-background: var(--live-on-background, var(--theme-on-background, var(--ref-on-background)));
+    --sys-surface: var(--live-surface, var(--theme-surface, var(--ref-surface)));
+    --sys-on-surface: var(--live-on-surface, var(--theme-on-surface, var(--ref-on-surface)));
+    --sys-secondary: var(--live-secondary, var(--theme-secondary, var(--ref-secondary)));
+    --sys-on-secondary: var(--live-on-secondary, var(--theme-on-secondary, var(--ref-on-secondary)));
+    --sys-warning: var(--live-warning, var(--theme-warning, var(--ref-warning)));
+    --sys-on-warning: var(--live-on-warning, var(--theme-on-warning, var(--ref-on-warning)));
+    --sys-border: var(--live-border, var(--theme-border, var(--ref-border)));
+    --sys-radius: var(--live-radius, var(--theme-radius, var(--ref-radius)));
+    --sys-density: var(--live-density, 1); --sys-type-scale: var(--live-type-scale, 1);
+    --sys-space: calc(14px * var(--sys-density)); --sys-gap: calc(12px * var(--sys-density));
+    --sys-light-x: calc(var(--live-light-x, -4) * -1px); --sys-light-y: calc(var(--live-light-y, -7) * -1px);
+    --sys-elevation-blur: var(--live-blur, 14px);
+    --sys-shadow: var(--sys-light-x) var(--sys-light-y) var(--sys-elevation-blur) rgb(22 42 75 / 23%);
+    --button-bg: var(--sys-primary); --button-fg: var(--sys-on-primary); --button-radius: var(--sys-radius);
+    --button-padding: calc(9px * var(--sys-density)) calc(15px * var(--sys-density));
+    --card-padding: var(--sys-space); --card-radius: var(--sys-radius); --card-shadow: var(--sys-shadow);
+    --input-radius: var(--sys-radius); --tab-radius: var(--sys-radius);
+  }
+  #preview :focus-visible { outline: 2px solid var(--sys-primary); outline-offset: 3px; }
+}
+@layer themes {
+  #preview.theme-light { --theme-primary: #315fa8; --theme-on-primary: #ffffff; --theme-background: #f3f6fb; --theme-on-background: #25344b; --theme-surface: #ffffff; --theme-on-surface: #25344b; --theme-secondary: #e8effa; --theme-on-secondary: #2c5083; --theme-warning: #fff2db; --theme-on-warning: #70480d; --theme-border: #d4deeb; --theme-radius: 10px; }
+  #preview.theme-dark { --theme-primary: #9fc1ff; --theme-on-primary: #132846; --theme-background: #142033; --theme-on-background: #e1e9f5; --theme-surface: #1e2d43; --theme-on-surface: #e1e9f5; --theme-secondary: #314660; --theme-on-secondary: #d7e6ff; --theme-warning: #49391f; --theme-on-warning: #ffe1a7; --theme-border: #4b607a; --theme-radius: 8px; }
+  #preview.theme-brand { --theme-primary: #7542ad; --theme-on-primary: #ffffff; --theme-background: #f5f0fb; --theme-on-background: #3b2352; --theme-surface: #fffcff; --theme-on-surface: #3b2352; --theme-secondary: #eadcf6; --theme-on-secondary: #593581; --theme-warning: #fff0d8; --theme-on-warning: #6c4108; --theme-border: #dac9e9; --theme-radius: 17px; }
+  #preview.theme-debug { --theme-primary: #ff00ff; --theme-on-primary: #000000; --theme-background: #ff00ff; --theme-on-background: #000000; --theme-surface: #ff00ff; --theme-on-surface: #000000; --theme-secondary: #ff00ff; --theme-on-secondary: #000000; --theme-warning: #ff00ff; --theme-on-warning: #000000; --theme-border: #000000; --theme-radius: 0px; }
+}
+@layer components {
+  #preview { font: calc(14px * var(--sys-type-scale))/1.5 system-ui, -apple-system, 'Segoe UI', sans-serif; background: var(--sys-background); color: var(--sys-on-background); border: 1px solid var(--sys-border); border-radius: 9px; overflow: visible; }
+  #preview button, #preview input { font: inherit; }
+  #preview button { line-height: 1.4; }
+  #preview p, #preview h2, #preview h3 { margin: 0; }
+  #preview .app-nav { display: flex; align-items: center; flex-wrap: wrap; gap: var(--sys-gap); padding: var(--sys-space); background: var(--sys-surface); color: var(--sys-on-surface); border-bottom: 1px solid var(--sys-border); border-radius: 8px 8px 0 0; }
+  #preview .app-brand { font-weight: 750; margin-right: auto; display: flex; align-items: center; gap: 7px; }
+  #preview .app-logo { width: 19px; height: 19px; background: var(--sys-primary); clip-path: polygon(50% 0, 64% 36%, 100% 50%, 64% 64%, 50% 100%, 36% 64%, 0 50%, 36% 36%); }
+  #preview .app-nav-links { display: flex; gap: calc(var(--sys-gap) / 2); flex-wrap: wrap; }
+  #preview .app-nav button { color: var(--sys-on-surface); background: transparent; border: 0; border-radius: var(--button-radius); padding: calc(6px * var(--sys-density)) calc(9px * var(--sys-density)); font-size: .85em; }
+  #preview .app-nav button[aria-current="page"] { background: var(--sys-secondary); color: var(--sys-on-secondary); }
+  #preview .app-main { padding: calc(var(--sys-space) * 1.5); display: grid; grid-template-columns: minmax(0,1fr); gap: calc(var(--sys-gap) * 1.5); min-width: 0; }
+  #preview .app-heading { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: var(--sys-gap); }
+  #preview h2 { font-size: 1.5em; font-weight: 720; letter-spacing: -.025em; line-height: 1.25; }
+  #preview .app-subtitle { font-size: .85em; margin-top: 5px; }
+  #preview .app-button { border: 1px solid transparent; background: var(--button-bg); color: var(--button-fg); padding: var(--button-padding); border-radius: var(--button-radius); min-height: calc(36px * var(--sys-density)); height: auto; font-weight: 650; font-size: .9em; overflow-wrap: anywhere; }
+  #preview .app-button:hover, #preview .app-button.force-hover { background: color-mix(in srgb, var(--button-bg), black 12%); }
+  #preview .app-button.secondary { background: var(--sys-secondary); color: var(--sys-on-secondary); border-color: var(--sys-border); }
+  #preview .app-stats { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: var(--sys-gap); }
+  #preview .app-card { padding: var(--card-padding); border: 1px solid var(--sys-border); border-radius: var(--card-radius); background: var(--sys-surface); color: var(--sys-on-surface); box-shadow: var(--card-shadow); min-width: 0; }
+  #preview .app-card .metric-label { font-size: .85em; }
+  #preview .metric-number { display: block; font-size: 2em; line-height: 1.3; font-weight: 700; margin: 5px 0; }
+  #preview .metric-note { font-size: .8em; }
+  #preview .app-settings { padding: var(--card-padding); border: 1px solid var(--sys-border); border-radius: var(--card-radius); background: var(--sys-surface); color: var(--sys-on-surface); min-width: 0; }
+  #preview .app-tabs { display: flex; flex-wrap: wrap; gap: calc(var(--sys-gap) / 2); border-bottom: 1px solid var(--sys-border); padding-bottom: var(--sys-gap); margin-bottom: var(--sys-space); }
+  #preview [role="tab"] { background: transparent; color: var(--sys-on-surface); border: 1px solid transparent; padding: calc(7px * var(--sys-density)) calc(11px * var(--sys-density)); border-radius: var(--tab-radius); font-size: .9em; }
+  #preview [role="tab"][aria-selected="true"] { background: var(--sys-secondary); color: var(--sys-on-secondary); border-color: var(--sys-border); }
+  #preview h3 { font-size: 1.05em; font-weight: 700; line-height: 1.4; }
+  #preview .app-fields { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: var(--sys-gap); margin: var(--sys-space) 0; }
+  #preview .app-field { display: grid; gap: calc(6px * var(--sys-density)); min-width: 0; font-size: .85em; }
+  #preview input { width: 100%; min-width: 0; padding: calc(9px * var(--sys-density)) calc(10px * var(--sys-density)); background: var(--sys-background); color: var(--sys-on-background); border: 1px solid var(--sys-border); border-radius: var(--input-radius); }
+  #preview .app-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sys-gap); }
+  #preview .app-badge { background: var(--sys-secondary); color: var(--sys-on-secondary); border-radius: var(--sys-radius); padding: 4px 8px; font-size: .75em; }
+  #preview .app-alert { padding: var(--sys-space); border: 1px solid var(--sys-border); border-radius: var(--sys-radius); background: var(--sys-warning); color: var(--sys-on-warning); font-size: .85em; }
+  #preview .app-info { display: grid; gap: var(--sys-gap); padding: var(--sys-space) 0; }
+  #preview [data-inspect] { cursor: pointer; }
+  #preview [data-inspect].inspected { outline: 2px dashed var(--sys-on-background); outline-offset: 4px; }
+  @container preview (max-width: 540px) { #preview .app-stats, #preview .app-fields { grid-template-columns: minmax(0,1fr); } #preview .app-main { padding: var(--sys-space); } }
+}
+@layer problems {
+  #preview.problem-layout .app-stats { display: flex; gap: 0; padding-left: 13px; }
+  #preview.problem-layout .app-card { min-width: 205px; flex: 1; }
+  #preview.problem-layout #team-card { margin-left: 23px; }
+  #preview.problem-layout #nav-team { margin-left: 19px; }
+  #preview.problem-contrast #save-button { background: #7799d8; color: #b9ccf0; }
+  #preview.problem-contrast #save-button:hover, #preview.problem-contrast #save-button.force-hover { background: #99b3e5; color: #cbd9f4; }
+  #preview.problem-typography #form-title { font-family: Georgia, 'Times New Roman', serif; font-style: italic; font-size: 1.55em; font-weight: 400; line-height: 1.8; letter-spacing: .045em; }
+  #preview.problem-shadow #team-card { box-shadow: -9px 3px 8px rgb(22 42 83 / 43%); }
+  #preview.problem-radius #team-card { border-radius: 2px; }
+  #preview.problem-radius #workspace-name { border-radius: 21px; }
+  #preview.problem-density #save-button { height: 49px; min-height: 0; padding: 16px 23px; }
+  #preview.problem-theme #warning-alert { background: #fff0c9; color: #69441a; }
+}
+</style>
+</head>
+<body>
+<div id="demo-shell">
+  <header class="ds-header"><div><h1>Semantic Tokens Lab</h1><div class="ds-kicker">Shared decisions → component contracts → local overrides</div></div><span class="ds-status" id="status">CSS Mess · 8 problems</span></header>
+  <div class="ds-columns">
+    <aside class="ds-sidebar" aria-label="Experiment controls">
+      <section class="ds-section"><h2 class="ds-section-title">Scenario <span class="ds-meta">Explore or investigate</span></h2><div class="ds-seg" role="group" aria-label="Demo mode"><button data-mode="explore" aria-pressed="true">Explore</button><button data-mode="guided" aria-pressed="false">Guided</button></div><p class="ds-hint">Change a shared decision. Find the components that stop following it.</p></section>
+      <section class="ds-section"><h2 class="ds-section-title">Theme & colors <span class="ds-meta">Semantic roles</span></h2><div class="ds-seg" role="group" aria-label="Theme"><button data-theme="light" aria-pressed="true">Light</button><button data-theme="dark" aria-pressed="false">Dark</button><button data-theme="brand" aria-pressed="false">Brand</button><button data-theme="debug" aria-pressed="false">Debug</button></div><div class="ds-colors" id="colors"></div><p class="ds-hint">Colors remember edits per theme until reset. The shell stays neutral.</p></section>
+      <section class="ds-section"><h2 class="ds-section-title">Shape & sizing <span class="ds-meta">Shared relationships</span></h2><div id="sliders"></div></section>
+      <section class="ds-section"><h2 class="ds-section-title">Lighting <span class="ds-meta">Direction</span></h2><div class="ds-lighting"><svg id="light-pad" viewBox="0 0 120 120" tabindex="0" role="group" aria-label="Light position. Drag or use arrow keys." aria-describedby="light-help"><circle cx="60" cy="60" r="55" fill="#e8effa" stroke="#c5d4e9"/><path d="M60 5V115M5 60H115" stroke="#c5d4e9" stroke-dasharray="3 4"/><line id="light-ray" x1="60" y1="60" x2="46" y2="35" stroke="#8fa9cc"/><rect id="light-object" x="49" y="49" width="22" height="22" rx="5" fill="#fff" stroke="#7f99bb"/><g id="light-bulb" transform="translate(46,35)" fill="#fff0b3" stroke="#98631b" stroke-width="1.5"><path d="M-4 4C-12-4-6-12 0-12S12-4 4 4L3 8H-3Z"/><path d="M-3 11H3M0-17V-20M-12-11L-15-14M12-11L15-14" fill="none"/></g></svg><div class="ds-light-values"><div id="light-values"></div><div id="shadow-values"></div><p class="ds-hint" id="light-help">Drag the bulb.<br>Arrow keys move 1 unit.</p></div></div><div class="ds-field"><div class="ds-fieldrow"><label class="ds-label" for="blur">Elevation · blur</label><output id="val-blur" for="blur">14 px</output></div><input id="blur" data-control="blur" type="range" min="0" max="40" step="1" value="14"></div></section>
+      <section class="ds-section"><h2 class="ds-section-title">Problems <span class="ds-meta" id="problems-count">8 active</span></h2><label class="ds-all"><input type="checkbox" id="all-problems" checked> Enable all problems</label><div id="problems"></div><p class="ds-hint">Checkbox toggles the defect. Name locates and inspects it.</p></section>
+      <section class="ds-section"><h2 class="ds-section-title">Token Inspector <span class="ds-meta">Computed evidence</span></h2><div class="ds-inspector"><div class="ds-inspect-title"><span id="inspector-name"></span><span class="ds-pill" id="inspector-state"></span></div><dl class="ds-chain" id="inspector-chain"></dl><div class="ds-compare-values"><div class="ds-value"><label>Expected · selected fault removed</label><b id="expected"></b></div><div class="ds-value"><label>Actual · current computed value</label><b id="actual"></b></div></div><div id="contrast-result"></div><label class="ds-all" id="hover-control"><input id="force-hover" type="checkbox"> Hold Save hover state</label><p class="ds-explain" id="explain"></p><button class="ds-btn ds-btn-block" id="disable-selected">Fix selected problem</button></div><p class="ds-hint">Values come from the browser. Ancestry is registered metadata, not automatic CSS provenance.</p></section>
+      <section class="ds-section"><button class="ds-btn ds-btn-block" id="reset">Reset full experiment</button></section>
+    </aside>
+    <main class="ds-workspace">
+      <div class="ds-toolbar"><strong>Live application preview</strong><div class="ds-toolbar-group"><span class="ds-meta" id="width-readout"></span><select id="viewport" aria-label="Preview width"><option value="auto">Auto width</option><option value="540">540 px</option><option value="360">360 px</option><option value="280">280 px</option></select></div></div>
+      <div id="guided" class="ds-guide" hidden><div class="ds-mini-actions"><button class="ds-btn" id="step-prev" aria-label="Previous experiment">←</button><span class="ds-step" id="step-counter"></span><button class="ds-btn" id="step-next" aria-label="Next experiment">→</button></div><strong id="step-title"></strong><p id="step-question"></p><button class="ds-btn" id="reveal" aria-expanded="false">Reveal mechanism</button><p id="step-answer" hidden></p><p class="ds-hint">Each step sets up a reproducible experiment. All controls remain live.</p></div>
+      <div class="ds-stage" id="stage-caption">CSS Mess · Click a component to inspect its token chain</div>
+      <div class="ds-world-wrap"><div class="preview-frame" id="preview-frame"><div id="preview" class="theme-light">
+        <nav class="app-nav" aria-label="Application navigation"><span class="app-brand"><span class="app-logo" aria-hidden="true"></span>Northstar</span><div class="app-nav-links"><button data-nav="Overview" aria-current="page">Overview</button><button data-nav="Projects">Projects</button><button id="nav-team" data-nav="Team">Team</button></div></nav>
+        <div class="app-main">
+          <div class="app-heading"><div><h2>Project overview</h2><p class="app-subtitle">A little clarity for the work ahead.</p></div><button class="app-button" id="new-project" data-inspect="new-project">+ New project</button></div>
+          <div class="app-stats" id="stats-grid"><article class="app-card" id="projects-card" data-inspect="projects-card" tabindex="0" aria-label="Inspect active projects card"><span class="metric-label">Active projects</span><strong class="metric-number">12</strong><span class="metric-note">3 ready for review</span></article><article class="app-card" id="team-card" data-inspect="team-card" tabindex="0" aria-label="Inspect team members card"><span class="metric-label">Team members</span><strong class="metric-number">24</strong><span class="metric-note">Across 4 project teams</span></article></div>
+          <section class="app-settings"><div class="app-tabs" id="app-tabs" role="tablist" aria-label="Workspace settings" data-inspect="app-tabs"><button id="tab-general" role="tab" aria-selected="true" aria-controls="panel-general" tabindex="0" data-tab="general">General</button><button id="tab-activity" role="tab" aria-selected="false" aria-controls="panel-activity" tabindex="-1" data-tab="activity">Activity</button><button id="tab-access" role="tab" aria-selected="false" aria-controls="panel-access" tabindex="-1" data-tab="access">Access</button></div>
+            <div id="panel-general" role="tabpanel" aria-labelledby="tab-general"><form id="workspace-form"><h3 id="form-title" data-inspect="form-title" tabindex="0">Workspace settings</h3><div class="app-fields"><label class="app-field">Workspace name<input id="workspace-name" data-inspect="workspace-name" value="Northstar Studio" required></label><label class="app-field">Team email<input id="team-email" type="email" value="team@northstar.example" required></label></div><div class="app-actions"><button type="submit" class="app-button" id="save-button" data-inspect="save-button">Save changes</button><button type="button" class="app-button secondary" id="cancel">Cancel</button><span class="app-badge" id="pending-badge" data-inspect="pending-badge" tabindex="0">Pending</span></div></form></div>
+            <div id="panel-activity" class="app-info" role="tabpanel" aria-labelledby="tab-activity" tabindex="0" hidden><h3>Recent activity</h3><p>Design review completed. Three projects are ready for your feedback.</p></div>
+            <div id="panel-access" class="app-info" role="tabpanel" aria-labelledby="tab-access" tabindex="0" hidden><h3>Workspace access</h3><p>24 members · 4 project teams. Workspace admins manage invitations.</p></div>
+          </section>
+          <div class="app-alert" id="warning-alert" data-inspect="warning-alert" tabindex="0"><strong>Review access before sharing.</strong> Two invitations are still pending.</div>
+          <p id="app-feedback" class="app-subtitle" role="status" hidden></p>
+        </div>
+      </div></div></div>
+      <div class="ds-bottom"><div class="ds-bottom-title"><span>Live CSS</span><span class="ds-meta">From this document</span></div><div class="ds-seg" role="group" aria-label="CSS view"><button data-code="tokens" aria-pressed="true">Tokens</button><button data-code="components" aria-pressed="false">Components</button><button data-code="problems" aria-pressed="false">Problems</button></div><pre class="ds-code" id="code"></pre><p class="ds-code-note" id="code-note"></p></div>
+      <div class="ds-footer-note">Real DOM, CSS cascade and keyboard events. Fixed sample data; no backend. Contrast is a paired-color diagnostic, not a full accessibility audit.</div>
+    </main>
+  </div>
+</div>
+<script>
+(() => {
+  'use strict';
+  // 1. Minimal synchronous reactivity. Effects clean up dynamic dependencies.
+  let activeEffect = null;
+  function signal(initial) {
+    let value = initial; const subscribers = new Set();
+    return {get() { if (activeEffect) { subscribers.add(activeEffect); activeEffect.deps.add(subscribers); } return value; },
+      set(next) { if (Object.is(value, next)) return; value = next; [...subscribers].forEach(run => run()); }};
+  }
+  function effect(callback) {
+    const run = () => { run.deps.forEach(set => set.delete(run)); run.deps.clear(); const previous = activeEffect; activeEffect = run; try { callback(); } finally { activeEffect = previous; } };
+    run.deps = new Set(); run(); return () => run.deps.forEach(set => set.delete(run));
+  }
+  const $ = id => document.getElementById(id);
+  const $$ = selector => [...document.querySelectorAll(selector)];
+  const preview = $('preview');
+  const clamp = (v, min, max) => Math.min(max, Math.max(min, v));
+
+  // 2. Vocabulary and probes; theme VALUES live exclusively in CSS.
+  const roles = ['primary','on-primary','background','on-background','surface','on-surface','secondary','on-secondary','warning','on-warning','border'];
+  const label = value => value.split('-').map(x => x[0].toUpperCase() + x.slice(1)).join(' ');
+  const controls = {
+    radius: {label:'Shape · radius', min:0, max:28, step:1, unit:'px', token:'radius'},
+    density: {label:'Density', min:.70, max:1.40, step:.05, unit:'×', token:'density'},
+    legibility: {label:'Legibility', min:.80, max:1.50, step:.05, unit:'×', token:'type-scale'},
+    blur: {min:0, max:40, step:1, unit:'px', token:'blur'}
+  };
+  const issues = {
+    layout: {name:'Layout system', target:'team-card', targets:['team-card','projects-card','stats-grid','nav-team'], probe:'stats-grid', property:'display', ref:'--live-density', semantic:'--sys-gap', component:'grid / gap', explain:'A spacing token cannot repair fixed minimum widths and local margins. Narrow the preview to expose overflow.'},
+    keyboard: {name:'Keyboard / tabs', target:'app-tabs', targets:['app-tabs'], property:null, ref:'Keyboard input', semantic:'Tab interaction contract', component:'roving tabindex + panels', explain:'Tokens govern appearance. Correct tabs also need an explicit keyboard contract. With this fault, hover activates tabs and arrow/Home/End navigation is ignored.'},
+    contrast: {name:'Contrast / hover', target:'save-button', targets:['save-button'], property:'background-color', ref:'--theme-primary / --live-primary', semantic:'--sys-primary + on-primary', component:'--button-bg / --button-fg', explain:'A literal background and foreground bypass semantic roles, including hover. Change Primary and compare Save with New project.'},
+    typography: {name:'Typography drift', target:'form-title', targets:['form-title'], property:'font-family', ref:'--live-type-scale', semantic:'--sys-type-scale', component:'heading hierarchy', explain:'A local font family, italic style and exaggerated type metrics override the shared hierarchy. Scaling the system cannot remove that independent style.'},
+    shadow: {name:'Inconsistent shadows', target:'team-card', targets:['team-card'], property:'box-shadow', ref:'--live-light-x / y / blur', semantic:'--sys-shadow', component:'--card-shadow', explain:'The fixed shadow ignores the common light source. Drag the bulb: clean shadows fall in the opposite direction, while this one stays put.'},
+    radius: {name:'Radius / shape', target:'team-card', targets:['team-card','workspace-name'], property:'border-radius', ref:'--theme-radius / --live-radius', semantic:'--sys-radius', component:'--card-radius / --input-radius', explain:'The card uses 2px and the input uses 21px. Move Shape to see both local constants ignore the shared radius.'},
+    density: {name:'Density / fixed height', target:'save-button', targets:['save-button'], property:'height', ref:'--live-density', semantic:'--sys-density', component:'button padding / min-height', explain:'A fixed 49px height and hardcoded padding disconnect Save from the common sizing scale. Change Density to compare controls.'},
+    theme: {name:'Theme-incompatible alert', target:'warning-alert', targets:['warning-alert'], property:'background-color', ref:'--theme-warning / --live-warning', semantic:'--sys-warning + on-warning', component:'alert background / foreground', explain:'The local pale-yellow pair survives Dark and Debug. Disable the literal to restore the semantic warning roles.'}
+  };
+  const keys = Object.keys(issues);
+  const cleanProbes = {
+    'new-project': {name:'New project · primary button', property:'background-color', semantic:'--sys-primary', component:'--button-bg'},
+    'projects-card': {name:'Active projects · card', property:'box-shadow', semantic:'--sys-shadow', component:'--card-shadow'},
+    'pending-badge': {name:'Pending badge', property:'background-color', semantic:'--sys-secondary', component:'badge background'}
+  };
+  const allProblems = enabled => Object.fromEntries(keys.map(key => [key, enabled]));
+  const defaults = () => ({theme:'light', radius:null, density:1, legibility:1, blur:14, lightX:-4, lightY:-7,
+    problems:allProblems(true), selection:{entity:'save-button', problem:'contrast'}, width:'auto', code:'tokens',
+    tab:'general', nav:'Overview', palettes:{}, hover:false, mode:'explore', step:0, reveal:false});
+  const state = signal(defaults());
+  const revision = signal(0); // DOM probe invalidation after owned style/behavior effects.
+  const steps = [
+    {name:'1 · Establish a baseline', question:'Turn problems off. Change radius, density and type scale. Which decisions propagate together?', answer:'Semantic roles feed component aliases. Shared decisions propagate because clean component rules consume those aliases.', setup:{problems:allProblems(false)}},
+    {name:'2 · Break a color dependency', question:'Change Primary, then hover Save. Why does New project respond while Save retains its colors?', answer:'Save overrides final background/color properties. Changing a token cannot defeat that later local rule.', setup:{problems:{...allProblems(false),contrast:true}, selection:{entity:'save-button',problem:'contrast'}}},
+    {name:'3 · Add another theme', question:'Choose Dark or Debug. Which component still carries an old palette?', answer:'The alert uses a literal yellow pair. Theme-specific patches can work, but semantic warning roles avoid repeating the exception for every theme.', setup:{theme:'debug',problems:{...allProblems(false),theme:true},selection:{entity:'warning-alert',problem:'theme'}}},
+    {name:'4 · Change spatial constraints', question:'At 360px, change Density. Compare Layout on and off. Can a gap token fix a 205px minimum on each card?', answer:'The fault changes the layout mechanism and adds fixed constraints. A clean responsive Grid must own both spacing and column collapse.', setup:{theme:'light',width:'360',problems:{...allProblems(false),layout:true},selection:{entity:'team-card',problem:'layout'}}},
+    {name:'5 · Give shadows a meaning', question:'Drag the light source, then adjust blur. Which card is disconnected?', answer:'Shared lighting encodes a direction, not just a reusable CSS string. A local shadow can be legitimate, but it needs an explicit owner and reason.', setup:{width:'auto',problems:{...allProblems(false),shadow:true},selection:{entity:'team-card',problem:'shadow'}}},
+    {name:'6 · Test the interaction contract', question:'Focus General and press Right or End. Turn Keyboard off and repeat. What can tokens guarantee here?', answer:'CSS roles cannot supply interaction semantics. Tabs need roving focus, activation and panel synchronization in behavior code.', setup:{tab:'general',problems:{...allProblems(false),keyboard:true},selection:{entity:'app-tabs',problem:'keyboard'}}}
+  ];
+
+  // 3. Pure transitions. Live palette edits are immutable, owned per theme.
+  function reduce(s, action) {
+    switch(action.type) {
+      case 'theme': return {...s,theme:action.value,radius:null};
+      case 'control': { const c=controls[action.key]; return {...s,[action.key]:clamp(Number(action.value),c.min,c.max)}; }
+      case 'color': return {...s,palettes:{...s.palettes,[s.theme]:{...s.palettes[s.theme],[action.key]:action.value}}};
+      case 'problem': return {...s,problems:{...s.problems,[action.key]:action.value}};
+      case 'all': return {...s,problems:allProblems(action.value)};
+      case 'select': return {...s,selection:action.value};
+      case 'light': { const length=Math.hypot(action.x,action.y), scale=length>15?15/length:1; return {...s,lightX:action.x*scale,lightY:action.y*scale}; }
+      case 'step': { const step=clamp(action.value,0,steps.length-1); const setup=steps[step].setup; return {...s,...setup,step,reveal:false,radius:setup.theme?null:s.radius}; }
+      case 'reset': return defaults();
+      case 'field': return {...s,[action.key]:action.value};
+      default: return s;
+    }
+  }
+  const dispatch = action => state.set(reduce(state.get(),action));
+  const field = (key,value) => dispatch({type:'field',key,value});
+
+  // 4. One-time controls. Subsequent renders preserve DOM, focus and scroll.
+  $('colors').innerHTML = roles.map(role => `<label class="ds-color"><input type="color" data-color="${role}" id="color-${role}"><span>${label(role)}</span></label>`).join('');
+  $('sliders').innerHTML = Object.entries(controls).filter(([id])=>id!=='blur').map(([id,c]) => `<div class="ds-field"><div class="ds-fieldrow"><label class="ds-label" for="${id}">${c.label}</label><output id="val-${id}" for="${id}"></output></div><input type="range" data-control="${id}" id="${id}" min="${c.min}" max="${c.max}" step="${c.step}"></div>`).join('');
+  $('problems').innerHTML = keys.map(id => `<div class="ds-problem" id="problem-row-${id}" data-selected="false"><input type="checkbox" id="prob-${id}" data-problem-toggle="${id}" aria-label="Enable ${issues[id].name}"><button data-problem-select="${id}">${issues[id].name}</button><span class="ds-issue-icon" id="issue-${id}"></span></div>`).join('');
+
+  // 5. Stylesheet introspection and measured evidence; never duplicate fault CSS.
+  const sheet = $('lab-styles').sheet;
+  const layerRules = name => [...sheet.cssRules].find(rule => rule.name===name)?.cssRules || [];
+  const cssRules = name => [...layerRules(name)].map(rule=>rule.cssText);
+  const colorCanvas=document.createElement('canvas');colorCanvas.width=colorCanvas.height=1;
+  const colorContext=colorCanvas.getContext('2d',{willReadFrequently:true});
+  function rgb(color) {
+    if(!CSS.supports('color',color))return null;
+    colorContext.clearRect(0,0,1,1);colorContext.fillStyle=color;colorContext.fillRect(0,0,1,1);
+    const values=[...colorContext.getImageData(0,0,1,1).data];
+    return values[3]===255?values.slice(0,3):null;
+  }
+  function toHex(color) { const values=rgb(color); return values ? '#'+values.map(v=>Math.round(v).toString(16).padStart(2,'0')).join('') : '#000000'; }
+  function contrast(fg,bg) {
+    const a=rgb(fg),b=rgb(bg); if(!a||!b) return null;
+    const lum=channels=>channels.map(v=>{v/=255;return v<=.04045?v/12.92:((v+.055)/1.055)**2.4;}).reduce((sum,v,i)=>sum+v*[.2126,.7152,.0722][i],0);
+    const x=lum(a),y=lum(b); return (Math.max(x,y)+.05)/(Math.min(x,y)+.05);
+  }
+  function readProbe(el, property) {
+    const css=getComputedStyle(el);
+    const value=css.getPropertyValue(property);
+    const extra=property==='background-color' ? `; text ${css.color}` : property==='font-family' ? `; ${css.fontSize} / ${css.lineHeight}; ${css.fontStyle}` : property==='display' ? `; gap ${css.gap}; scroll ${el.scrollWidth}px / client ${el.clientWidth}px` : '';
+    return {value:value+extra,fg:css.color,bg:css.backgroundColor};
+  }
+  function probeSelection(s) {
+    const {entity,problem}=s.selection; const issue=issues[problem], meta=issue||cleanProbes[entity];
+    if(!meta) return null;
+    const target=$(issue?.probe||entity); const active=Boolean(issue&&s.problems[problem]);
+    if(problem==='keyboard') return {meta,active,expected:'Left/Right · Home/End move focus and activate tabs.',actual:active?'Arrow/Home/End ignored; hover activates tabs.':'Left/Right · Home/End move focus and activate tabs.',behavior:true};
+    const actual=readProbe(target,meta.property);
+    // Removing only the selected fault preserves all other experimental inputs.
+    const className='problem-'+problem;
+    if(active) preview.classList.remove(className);
+    let expected;
+    try { expected=readProbe(target,meta.property); }
+    finally { if(active) preview.classList.add(className); }
+    return {meta,active,expected:expected.value,actual:actual.value,colors:{actual,expected}};
+  }
+
+  // 6. Effects: apply state -> CSS and behavior first, then refresh instruments.
+  effect(() => {
+    const s=state.get();
+    preview.className='theme-'+s.theme+' '+keys.filter(id=>s.problems[id]).map(id=>'problem-'+id).join(' ');
+    roles.forEach(role=>{const value=s.palettes[s.theme]?.[role]; if(value) preview.style.setProperty('--live-'+role,value); else preview.style.removeProperty('--live-'+role);});
+    Object.entries(controls).forEach(([id,c])=>{if(s[id]===null) preview.style.removeProperty('--live-'+c.token); else preview.style.setProperty('--live-'+c.token,s[id]+(c.unit==='px'?'px':''));});
+    preview.style.setProperty('--live-light-x',s.lightX); preview.style.setProperty('--live-light-y',s.lightY);
+    $('preview-frame').style.width=s.width==='auto'?'100%':s.width+'px';
+    $('save-button').classList.toggle('force-hover',s.hover);
+    $$('[data-tab]').forEach(tab=>{const selected=tab.dataset.tab===s.tab; tab.setAttribute('aria-selected',selected);tab.tabIndex=selected?0:-1;$('panel-'+tab.dataset.tab).hidden=!selected;});
+    $$('[data-nav]').forEach(nav=>{if(nav.dataset.nav===s.nav)nav.setAttribute('aria-current','page');else nav.removeAttribute('aria-current');});
+    $$('[data-inspect]').forEach(el=>el.classList.toggle('inspected',el.id===s.selection.entity));
+    // Avoid subscribing this writer to its own invalidation signal.
+    const previous=activeEffect;activeEffect=null;revision.set(revision.get()+1);activeEffect=previous;
+  });
+  effect(() => {
+    const s=state.get(); const css=getComputedStyle(preview);
+    $$('[data-theme]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.theme===s.theme));
+    roles.forEach(role=>{$('color-'+role).value=toHex(css.getPropertyValue('--sys-'+role).trim());});
+    Object.entries(controls).forEach(([id,c])=>{const value=id==='radius'&&s.radius===null?parseFloat(css.getPropertyValue('--sys-radius')):s[id];$(id).value=value;$('val-'+id).textContent=c.unit==='×'?value.toFixed(2)+'×':value+' px';});
+    const active=keys.filter(id=>s.problems[id]).length;
+    $('status').textContent=(active?'CSS Mess':'Clean Tokens')+' · '+active+' problem'+(active===1?'':'s');
+    $('stage-caption').textContent=(active?'Local overrides active':'All components use their shared contracts')+' · Click a component to inspect';
+    $('problems-count').textContent=active+' active';
+    $('all-problems').checked=active===keys.length; $('all-problems').indeterminate=active>0&&active<keys.length;
+    keys.forEach(id=>{$('prob-'+id).checked=s.problems[id];$('issue-'+id).textContent=s.problems[id]?'!':'✓';$('issue-'+id).style.color=s.problems[id]?'var(--shell-warning)':'var(--shell-success)';$('problem-row-'+id).dataset.selected=String(s.selection.problem===id);});
+    const x=60+s.lightX*2.5,y=60+s.lightY*2.5;
+    $('light-bulb').setAttribute('transform',`translate(${x},${y})`);$('light-ray').setAttribute('x2',x);$('light-ray').setAttribute('y2',y);
+    $('light-object').style.filter=`drop-shadow(${-s.lightX*.5}px ${-s.lightY*.5}px ${s.blur*.15}px #25344b50)`;
+    $('light-values').textContent=`Light ${s.lightX.toFixed(1)}, ${s.lightY.toFixed(1)}`;
+    $('light-pad').setAttribute('aria-label',`Light position X ${s.lightX.toFixed(1)}, Y ${s.lightY.toFixed(1)}. Drag or use arrow keys.`);
+    $('shadow-values').textContent=`Shadow ${(-s.lightX).toFixed(1)}, ${(-s.lightY).toFixed(1)}px`;
+    $('viewport').value=s.width;$('force-hover').checked=s.hover;
+    $$('[data-mode]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.mode===s.mode));
+    $('guided').hidden=s.mode!=='guided';const step=steps[s.step];
+    $('step-counter').textContent=`Experiment ${s.step+1} of ${steps.length}`;
+    $('step-prev').disabled=s.step===0;$('step-next').disabled=s.step===steps.length-1;
+    $('step-title').textContent=step.name;$('step-question').textContent=step.question;$('step-answer').textContent=step.answer;$('step-answer').hidden=!s.reveal;$('reveal').setAttribute('aria-expanded',s.reveal);
+  });
+  function renderInspector() {
+    const s=state.get(),p=probeSelection(s); if(!p)return;
+    const {entity,problem}=s.selection,meta=p.meta;
+    $('inspector-name').textContent=meta.name;
+    $('inspector-state').textContent=p.active?'Fault active':'Clean rule';$('inspector-state').classList.toggle('ok',!p.active);
+    const chain=[['Reference',meta.ref||'Theme / live palette'],['Semantic',meta.semantic],['Component',meta.component],['Override',problem?(p.active?'.problem-'+problem:'Disabled'):'No selected fault'],['Target','#'+entity]];
+    $('inspector-chain').replaceChildren(...chain.flatMap(([name,value])=>{const dt=document.createElement('dt'),dd=document.createElement('dd');dt.textContent=name;dd.textContent=value;return [dt,dd];}));
+    $('expected').textContent=p.expected;$('actual').textContent=p.actual;
+    $('explain').textContent=meta.explain||'This component follows the shared semantic roles. Change a live value and inspect the computed result.';
+    $('disable-selected').disabled=!p.active;
+    $('hover-control').hidden=entity!=='save-button';
+    $('contrast-result').hidden=entity!=='save-button';
+    if(entity==='save-button'&&p.colors) {
+      const actual=contrast(p.colors.actual.fg,p.colors.actual.bg),expected=contrast(p.colors.expected.fg,p.colors.expected.bg);
+      $('contrast-result').textContent=actual===null||expected===null?'Contrast unavailable for this color format.':`Contrast: ${actual.toFixed(2)}:1 actual · ${expected.toFixed(2)}:1 expected. ${actual>=4.5?'Passes':'Below'} 4.5:1 normal-text threshold.`;
+    }
+  }
+  function renderCode() {
+    const s=state.get(),css=getComputedStyle(preview);
+    $$('[data-code]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.code===s.code));
+    if(s.code==='tokens') {
+      const tokens=[...roles.map(role=>'--sys-'+role),'--sys-radius','--sys-density','--sys-type-scale','--sys-space','--sys-gap','--sys-light-x','--sys-light-y','--sys-elevation-blur','--sys-shadow'];
+      $('code').textContent=`/* Computed custom properties · ${s.theme} */\n#preview {\n`+tokens.map(token=>`  ${token}: ${css.getPropertyValue(token).trim()};`).join('\n')+'\n}';
+      $('code-note').textContent='Custom-property values are read from getComputedStyle(). CSS may preserve calc() expressions; property probes show used values.';
+    } else if(s.code==='components') {
+      const foundation=[...layerRules('foundation')][0].style;
+      const aliases=[...foundation].filter(name=>/^--(button|card|input|tab)-/.test(name));
+      $('code').textContent='#preview {\n'+aliases.map(name=>`  ${name}: ${foundation.getPropertyValue(name).trim()};`).join('\n')+'\n}\n\n'+cssRules('components').filter(rule=>/^#preview \.(app-button |app-card |app-field )/.test(rule)).join('\n\n')+`\n\n/* Current Save background: ${getComputedStyle($('save-button')).backgroundColor} */\n/* Current card shadow: ${getComputedStyle($('team-card')).boxShadow} */`;
+      $('code-note').textContent='Aliases and component rules are extracted from the actual stylesheet.';
+    } else {
+      const active=keys.filter(id=>s.problems[id]);
+      $('code').textContent=cssRules('problems').filter(rule=>active.some(id=>rule.includes('.problem-'+id+' '))).join('\n\n') || '/* No active CSS problem overrides. */';
+      if(s.problems.keyboard)$('code').textContent+='\n\n/* Behavioral fault: hover activates tabs; keyboard navigation returns early. */\n'+onTabKey.toString()+'\n\n'+onTabHover.toString();
+      $('code-note').textContent='Only enabled fault rules from @layer problems are shown. Keyboard behavior comes from the actual event handlers.';
+    }
+  }
+  effect(()=>{revision.get();renderInspector();renderCode();});
+  function refreshProbes() { renderInspector(); renderCode(); }
+  new ResizeObserver(()=>{$('width-readout').textContent=Math.round($('preview-frame').getBoundingClientRect().width)+' px actual';refreshProbes();}).observe($('preview-frame'));
+
+  // 7. Event delegation. Native interaction still works while inspecting.
+  function selectProblem(id) {
+    const issue=issues[id]; field('tab','general');
+    dispatch({type:'select',value:{entity:issue.target,problem:id}});
+    $(issue.target).scrollIntoView({block:'nearest',inline:'nearest',behavior:'instant'});
+  }
+  function inspectEntity(entity) {
+    const s=state.get();
+    const related=keys.filter(id=>issues[id].targets.includes(entity));
+    const problem=related.find(id=>s.problems[id])||(cleanProbes[entity]?null:related[0])||null;
+    dispatch({type:'select',value:{entity,problem}});
+  }
+  $('demo-shell').addEventListener('input',event=>{
+    const t=event.target;
+    if(t.dataset.control)dispatch({type:'control',key:t.dataset.control,value:t.value});
+    else if(t.dataset.color)dispatch({type:'color',key:t.dataset.color,value:t.value});
+  });
+  $('demo-shell').addEventListener('change',event=>{
+    const t=event.target;
+    if(t.dataset.problemToggle)dispatch({type:'problem',key:t.dataset.problemToggle,value:t.checked});
+    else if(t.id==='all-problems')dispatch({type:'all',value:t.checked});
+    else if(t.id==='viewport')field('width',t.value);
+    else if(t.id==='force-hover')field('hover',t.checked);
+  });
+  function feedback(message) { $('app-feedback').hidden=false;$('app-feedback').textContent=message; }
+  $('demo-shell').addEventListener('click',event=>{
+    const target=event.target, button=target.closest('button');
+    if(button?.dataset.theme)dispatch({type:'theme',value:button.dataset.theme});
+    else if(button?.dataset.problemSelect)selectProblem(button.dataset.problemSelect);
+    else if(button?.dataset.code)field('code',button.dataset.code);
+    else if(button?.dataset.mode) { field('mode',button.dataset.mode);if(button.dataset.mode==='guided')dispatch({type:'step',value:state.get().step}); }
+    else if(button?.id==='step-prev')dispatch({type:'step',value:state.get().step-1});
+    else if(button?.id==='step-next')dispatch({type:'step',value:state.get().step+1});
+    else if(button?.id==='reveal')field('reveal',!state.get().reveal);
+    else if(button?.id==='disable-selected')dispatch({type:'problem',key:state.get().selection.problem,value:false});
+    else if(button?.id==='reset') { $('workspace-form').reset();$('pending-badge').textContent='Pending';$('app-feedback').hidden=true;dispatch({type:'reset'}); }
+    else if(button?.dataset.tab)field('tab',button.dataset.tab);
+    else if(button?.dataset.nav)field('nav',button.dataset.nav);
+    else if(button?.id==='new-project')feedback('Demo action: a new project would open here. No project data is stored.');
+    else if(button?.id==='cancel') { $('workspace-form').reset();$('pending-badge').textContent='Pending';feedback('Form restored to its sample values.'); }
+    const inspected=target.closest('[data-inspect]');
+    if(inspected&&preview.contains(inspected))inspectEntity(inspected.id);
+  });
+  $('workspace-form').addEventListener('submit',event=>{event.preventDefault();$('pending-badge').textContent='Saved locally';feedback('Sample form saved in this page only. Reload or reset restores sample values.');});
+  const tabs=['general','activity','access'];
+  function onTabKey(event) {
+    const tab=event.target.closest('[data-tab]');if(!tab)return;
+    if(state.get().problems.keyboard)return;
+    const index=tabs.indexOf(tab.dataset.tab);
+    const next=event.key==='ArrowRight'?(index+1)%3:event.key==='ArrowLeft'?(index+2)%3:event.key==='Home'?0:event.key==='End'?2:null;
+    if(next===null)return;
+    event.preventDefault();field('tab',tabs[next]);$('tab-'+tabs[next]).focus();
+  }
+  function onTabHover(event) {
+    const tab=event.target.closest('[data-tab]');
+    if(tab&&state.get().problems.keyboard)field('tab',tab.dataset.tab);
+  }
+  $('app-tabs').addEventListener('keydown',onTabKey);
+  $('app-tabs').addEventListener('pointerover',onTabHover);
+  preview.addEventListener('keydown',event=>{const el=event.target.closest('[data-inspect]');if(el&&!el.matches('input,button,[role="tablist"]')&&(event.key==='Enter'||event.key===' ')){event.preventDefault();inspectEntity(el.id);}});
+  ['pointerenter','pointerleave','focus','blur'].forEach(type=>$('save-button').addEventListener(type,()=>requestAnimationFrame(refreshProbes)));
+
+  // 8. Two-dimensional light control, using SVG coordinates and pointer capture.
+  const pad=$('light-pad'); let dragging=false;
+  function moveLight(event) { const point=new DOMPoint(event.clientX,event.clientY).matrixTransform(pad.getScreenCTM().inverse());dispatch({type:'light',x:(point.x-60)/2.5,y:(point.y-60)/2.5}); }
+  pad.addEventListener('pointerdown',event=>{if(event.button!==0)return;dragging=true;pad.setPointerCapture(event.pointerId);pad.focus();moveLight(event);});
+  pad.addEventListener('pointermove',event=>{if(dragging)moveLight(event);});
+  ['pointerup','pointercancel','lostpointercapture'].forEach(type=>pad.addEventListener(type,()=>dragging=false));
+  pad.addEventListener('keydown',event=>{const offsets={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1]}[event.key];if(!offsets)return;event.preventDefault();const s=state.get();dispatch({type:'light',x:s.lightX+offsets[0],y:s.lightY+offsets[1]});});
+})();
+</script>
+</body>
+</html>

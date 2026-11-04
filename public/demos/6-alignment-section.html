@@ -1,0 +1,481 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CSS Alignment · Section 6</title>
+<style id="shell-styles">
+/* DEMOSHELL 1.0 — Keep shell chrome and tokens consistent across all demos.
+   Customize only the lesson/world content in .ds-world and the registries in JS. */
+#demo-shell {
+  --shell-bg:#FFFFFF;--shell-side:#F7F9FC;--shell-work:#EEF2F8;
+  --shell-ink:#25344B;--shell-muted:#64758D;--shell-subtle:#8897AA;
+  --shell-border:#D8E0E9;--shell-accent:#315FA8;--shell-accent-soft:#E8F0FD;
+  --shell-warning:#98631B;--shell-warning-bg:#FFF2DB;
+  --shell-danger:#A54747;--shell-success:#287963;--shell-code:#152338;
+  --shell-radius-xs:4px;--shell-radius-sm:6px;--shell-radius-md:9px;--shell-radius-lg:12px;
+  --shell-gap-1:4px;--shell-gap-2:8px;--shell-gap-3:12px;--shell-gap-4:16px;--shell-gap-5:24px;
+  --shell-font:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font:13px/1.5 var(--shell-font); color:var(--shell-ink);background:var(--shell-bg);
+  border:1px solid var(--shell-border);border-radius:var(--shell-radius-lg);
+  max-width:1420px;margin:16px auto;overflow:hidden; box-shadow:0 5px 24px #24344a0a;
+}
+#demo-shell *,#demo-shell *::before,#demo-shell *::after{box-sizing:border-box}
+#demo-shell button,#demo-shell select,#demo-shell input{font:inherit}
+#demo-shell button{cursor:pointer}
+#demo-shell button:focus-visible,#demo-shell input:focus-visible,#demo-shell select:focus-visible{outline:2px solid var(--shell-accent);outline-offset:2px}
+#demo-shell button:disabled{opacity:.5;cursor:default}
+#demo-shell .ds-header{min-height:64px;background:#17263D;color:#F6F9FF;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 18px}
+#demo-shell h1{font-size:16px;line-height:1.15;letter-spacing:-.3px;margin:0;font-weight:700}
+#demo-shell .ds-kicker{font-size:11px;color:#A8B8D0;margin-top:4px}
+#demo-shell .ds-status{border:1px solid #5F7390;border-radius:6px;color:#ECF4FF;font-size:11px;white-space:nowrap;padding:5px 9px}
+#demo-shell .ds-columns{display:grid;grid-template-columns:304px minmax(0,1fr);min-height:690px}
+#demo-shell .ds-sidebar{background:var(--shell-side);padding:14px;border-right:1px solid var(--shell-border);display:flex;flex-direction:column;gap:13px;max-height:820px;overflow:auto}
+#demo-shell .ds-section{border-bottom:1px solid var(--shell-border);padding-bottom:13px;min-width:0}
+#demo-shell .ds-section:last-child{border-bottom:0;padding-bottom:0}
+#demo-shell .ds-section-title{display:flex;align-items:baseline;justify-content:space-between;gap:8px;font-size:12px;font-weight:700;margin:0 0 9px}
+#demo-shell .ds-meta{font-size:11px;color:var(--shell-muted);font-weight:400}
+#demo-shell .ds-label{font-size:11px;color:var(--shell-muted);display:block}
+#demo-shell .ds-hint{font-size:11px;color:var(--shell-muted);margin:7px 0 0}
+#demo-shell .ds-seg{display:flex;background:#FFF;border:1px solid var(--shell-border);border-radius:6px;overflow:hidden;min-width:0}
+#demo-shell .ds-seg button{flex:1;border:0;border-right:1px solid var(--shell-border);color:#52647C;background:transparent;min-height:32px;font-size:11px;padding:5px 6px}
+#demo-shell .ds-seg button:last-child{border:0}
+#demo-shell .ds-seg button[aria-pressed="true"]{background:var(--shell-accent);color:#FFF;font-weight:650}
+#demo-shell .ds-mini-actions{display:flex;align-items:center;gap:7px;margin:9px 0 5px}
+#demo-shell .ds-btn{min-height:32px;border-radius:6px;border:1px solid var(--shell-border);color:#435771;background:white;padding:6px 10px;font-size:11px;font-weight:600}
+#demo-shell .ds-btn-primary{background:var(--shell-accent);color:white;border-color:var(--shell-accent)}
+#demo-shell .ds-btn-block{width:100%}
+#demo-shell .ds-step{flex:1;text-align:center;font-size:11px;color:var(--shell-muted)}
+#demo-shell .ds-field{margin:10px 0}
+#demo-shell .ds-fieldrow{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:4px}
+#demo-shell output{font-size:11px;color:var(--shell-accent);font-variant-numeric:tabular-nums}
+#demo-shell input[type="range"]{width:100%;accent-color:var(--shell-accent);cursor:pointer;display:block;margin:3px 0;height:18px}
+#demo-shell input[type="checkbox"]{width:15px;height:15px;accent-color:var(--shell-accent);cursor:pointer;margin:0}
+#demo-shell .ds-all{display:flex;align-items:center;gap:9px;font-weight:700;font-size:11px;padding:5px 0 9px}
+#demo-shell .ds-problem{display:grid;grid-template-columns:20px minmax(0,1fr) 22px;gap:7px;align-items:center;border-radius:6px;border:1px solid transparent;padding:5px;margin:0 -5px}
+#demo-shell .ds-problem[data-selected="true"]{background:var(--shell-accent-soft);border-color:#BED1F3}
+#demo-shell .ds-problem button{border:0;background:none;color:var(--shell-ink);text-align:left;font-size:11px;min-height:28px;padding:0}
+#demo-shell .ds-issue-icon{font-size:11px;color:var(--shell-warning);text-align:center}
+#demo-shell .ds-inspector{border:1px solid var(--shell-border);border-radius:9px;background:white;padding:10px}
+#demo-shell .ds-inspect-title{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:12px;font-weight:700}
+#demo-shell .ds-pill{display:inline-block;border-radius:6px;background:var(--shell-warning-bg);color:var(--shell-warning);font-size:10px;padding:3px 6px;font-weight:600}
+#demo-shell .ds-pill.ok{color:var(--shell-success);background:#E6F4ED}
+#demo-shell .ds-chain{display:grid;grid-template-columns:85px minmax(0,1fr);gap:5px 9px;margin:10px 0;font-size:11px}
+#demo-shell .ds-chain dt{color:var(--shell-subtle)}
+#demo-shell .ds-chain dd{margin:0;min-width:0;overflow-wrap:anywhere;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:10px}
+#demo-shell .ds-compare-values{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:9px 0}
+#demo-shell .ds-value{background:#F2F5F9;border-radius:6px;padding:8px;min-width:0}
+#demo-shell .ds-value label{display:block;color:var(--shell-muted);font-size:10px}
+#demo-shell .ds-value b{font-size:12px;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+#demo-shell .ds-explain{font-size:11px;color:#586B84;margin:9px 0}
+#demo-shell .ds-workspace{background:var(--shell-work);min-width:0;display:flex;flex-direction:column}
+#demo-shell .ds-toolbar{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;padding:11px 15px;border-bottom:1px solid var(--shell-border)}
+#demo-shell .ds-toolbar strong{font-size:12px}
+#demo-shell .ds-toolbar-group{display:flex;align-items:center;gap:8px}
+#demo-shell select{height:32px;border:1px solid var(--shell-border);border-radius:6px;color:var(--shell-ink);background:white;padding:0 7px;font-size:11px;max-width:100%}
+#demo-shell .ds-stage{border-radius:6px;padding:7px 15px;font-size:11px;color:#546780;border-bottom:1px solid var(--shell-border);background:#F7F9FD}
+#demo-shell .ds-world-wrap{padding:16px;min-width:0;overflow:auto}
+#demo-shell .ds-world{background:#FFF;border:1px solid var(--shell-border);border-radius:9px;max-width:100%;width:100%;padding:16px;min-height:410px;margin:0 auto;transition:background .12s}
+#demo-shell .ds-world-heading{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;flex-wrap:wrap;margin-bottom:14px}
+#demo-shell .ds-world h2{font-size:17px;margin:0;line-height:1.25}
+#demo-shell .ds-world p{font-size:11px;color:var(--shell-muted);margin:4px 0 0}
+#demo-shell .ds-world-badge{background:#EDF4FF;color:#2F5F9D;padding:4px 9px;border-radius:6px;font-weight:650;font-size:10px}
+#demo-shell .ds-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+#demo-shell .ds-metric{border:1px solid var(--shell-border);border-radius:9px;background:white;padding:11px;min-width:0;text-align:left;cursor:pointer;color:var(--shell-ink)}
+#demo-shell .ds-metric span{color:var(--shell-muted);display:block;font-size:11px}
+#demo-shell .ds-metric strong{font-size:22px;display:block;font-variant-numeric:tabular-nums;white-space:nowrap}
+#demo-shell .ds-metric small{color:var(--shell-muted);font-size:10px}
+#demo-shell [data-entity].selected{outline:2px solid var(--shell-accent);outline-offset:2px}
+#demo-shell .ds-chart{border:1px solid var(--shell-border);border-radius:9px;padding:13px;margin-top:12px}
+#demo-shell .ds-chart-label{display:flex;justify-content:space-between;font-size:11px;font-weight:650;gap:10px;margin-bottom:7px}
+#demo-shell .ds-bars{display:flex;align-items:end;gap:4px;height:120px;background:linear-gradient(to top,#E6ECF5 1px,transparent 1px) 0 0/100% 30px}
+#demo-shell .ds-bars div{flex:1;min-width:3px;min-height:0;border-radius:3px 3px 0 0;background:#6E9BD6;transition:height .12s}
+#demo-shell .ds-bars div:last-child{background:var(--shell-accent)}
+#demo-shell .ds-axis{display:flex;justify-content:space-between;color:var(--shell-subtle);font-size:10px;margin-top:6px}
+#demo-shell .ds-question{border-left:3px solid var(--shell-accent);background:#F1F5FB;padding:9px 12px;margin-top:12px;border-radius:0 6px 6px 0}
+#demo-shell .ds-question strong{font-size:11px}
+#demo-shell .ds-question p{font-size:11px;color:var(--shell-ink)}
+#demo-shell .ds-compare-panel{border:1px solid #C6D9F6;border-radius:9px;background:#F2F7FF;padding:10px 12px;margin-top:10px;font-size:11px}
+#demo-shell .ds-compare-panel strong{display:block;font-size:12px;margin-bottom:3px}
+#demo-shell .ds-bottom{background:#FFF;border-top:1px solid var(--shell-border);padding:13px 16px}
+#demo-shell .ds-bottom-title{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:12px;font-weight:700;margin-bottom:9px}
+#demo-shell .ds-code{white-space:pre-wrap;word-break:break-word;max-height:220px;overflow:auto;background:var(--shell-code);color:#E6ECF7;padding:13px;border-radius:6px;font:11px/1.55 ui-monospace,Consolas,monospace;margin:9px 0 0}
+#demo-shell .ds-footer-note{font-size:11px;color:var(--shell-muted);padding:9px 16px;background:#FAFCFE;border-top:1px solid var(--shell-border)}
+@media(max-width:800px){#demo-shell .ds-columns{grid-template-columns:minmax(0,1fr)}#demo-shell .ds-sidebar{max-height:none;border-right:0;border-bottom:1px solid var(--shell-border)}#demo-shell .ds-world-wrap{padding:10px}}
+@media(max-width:430px){#demo-shell{margin:0}#demo-shell .ds-metrics{grid-template-columns:1fr}#demo-shell .ds-world{padding:10px}#demo-shell .ds-header{padding:10px}#demo-shell .ds-metric strong{font-size:19px}}
+@media(prefers-reduced-motion:reduce){#demo-shell *,#demo-shell *::before,#demo-shell *::after{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+</style>
+<style>
+body{margin:0;padding:0 12px;background:#e8edf4}button,input,select{font:inherit}button{cursor:pointer}
+#demo-shell .lab-tabs{display:flex;flex-wrap:wrap;gap:4px;padding:8px 12px;border-bottom:1px solid var(--shell-border);background:white}
+#demo-shell .lab-tabs button{flex:1 1 155px;min-height:36px;border:1px solid transparent;border-radius:6px;background:white;color:var(--shell-muted);font-size:12px}
+#demo-shell .lab-tabs [aria-selected=true]{background:var(--shell-accent-soft);color:var(--shell-accent);border-color:#bed1f3;font-weight:700}
+#demo-shell .control{margin:10px 0}#demo-shell .control>label{display:block;font-size:11px;color:var(--shell-muted);margin-bottom:4px}
+#demo-shell .control select{width:100%}#demo-shell .control input[type=number]{width:100%;height:32px;border:1px solid var(--shell-border);border-radius:6px;padding:5px}
+#demo-shell .control-head{display:flex;justify-content:space-between;gap:6px;font-size:11px;color:var(--shell-muted)}
+#demo-shell .check{display:flex;gap:8px;align-items:center;min-height:30px;font-size:11px}#demo-shell details>summary{cursor:pointer;font-size:12px;font-weight:700;min-height:30px;align-content:center}
+#demo-shell .small-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 10px;min-width:0}#demo-shell .small-grid>*{min-width:0}
+#demo-shell .ds-sidebar{max-height:960px}#demo-shell .ds-code{white-space:pre;word-break:normal;max-height:290px}
+#demo-shell .ds-stage{border-radius:0;min-height:42px}#demo-shell .ds-stage strong{display:block;color:var(--shell-ink)}
+#demo-shell .ds-question{margin:12px 16px}#demo-shell .ds-question p{margin:4px 0;font-size:12px}
+#demo-shell .why{padding:0 16px 12px;font-size:12px}#demo-shell .why p{margin:6px 0;color:#586b84}
+#demo-shell .ds-world-wrap{padding:16px;min-height:425px;max-height:690px;position:relative;isolation:isolate}
+#demo-shell .measure-surface{position:relative;width:max-content;min-width:100%;padding:38px 40px 45px;background:white;border:1px solid var(--shell-border);border-radius:9px;min-height:360px}
+#demo-shell .fixture{position:relative;box-sizing:border-box;border:1px solid #a5b6cd;background:#f8fafd;color:#25344b;overflow:visible}
+#demo-shell .item{box-sizing:border-box;border:1px solid #9cb3d0;border-radius:6px;background:#eaf1fb;color:#25344b;padding:12px;min-width:0;overflow:visible;overflow-wrap:normal;font:14px/1.4 system-ui,sans-serif}
+#demo-shell .item:nth-child(2){background:#eef5ed;border-color:#a4bca0}#demo-shell .item:nth-child(3){background:#fff3df;border-color:#d5b985}
+#demo-shell [data-entity]{cursor:pointer}#demo-shell [data-entity][data-picked=true]{outline:2px solid #315fa8;outline-offset:2px}
+#demo-shell .item strong{font-size:inherit}#demo-shell .item .sub{display:block;font-size:11px;margin-top:4px}
+#demo-shell .area-probe{position:absolute;inset:0;visibility:hidden;pointer-events:none}
+#demo-shell .toolbar-fixture{min-height:90px;padding:12px;background:#fff}
+#demo-shell .action-group{display:flex;align-items:center;gap:6px;white-space:nowrap;width:max-content}
+#demo-shell .world-button{font:12px/1.3 system-ui,sans-serif;border:1px solid #a5b6cd;border-radius:5px;background:#f6f9fe;color:#25344b;padding:8px 10px;white-space:nowrap;min-height:32px}
+#demo-shell .central{border:1px solid #b3c4da;border-radius:5px;padding:9px 12px;background:#eaf1fb;white-space:nowrap;font-size:15px;font-weight:650;box-sizing:border-box}
+#demo-shell .central input{width:100%;min-width:0;border:0;background:transparent;color:inherit;font:inherit}
+#demo-shell .panel-host{width:100%;height:130px;margin-top:30px;background:#f8fafd;border:1px dashed #a5b6cd}
+#demo-shell .standalone{padding:12px;border:1px solid #a5b6cd;background:#eef4fc;border-radius:6px;box-sizing:border-box}
+#demo-shell .editor-fixture{padding:14px}#demo-shell .typo-item{border:1px solid #afbdd0;border-radius:4px;background:#eef3fb;padding:7px;font-family:system-ui,sans-serif;box-sizing:border-box;flex-shrink:0}
+#demo-shell .typo-item input{font:inherit;line-height:inherit;width:120px;max-width:100%;padding:0;border:0;outline-offset:4px;background:transparent;color:inherit}
+#demo-shell .typo-item .helper{display:block;font-size:.7em;color:#64758d}#demo-shell .baseline-marker{display:inline-block;width:0;height:0;padding:0;margin:0;border:0;vertical-align:baseline}
+#demo-shell .inline-fixture{font:18px/2 system-ui,sans-serif}#demo-shell .inline-fixture .typo-item{display:inline-block;margin-inline-end:10px}
+#demo-shell .message-panel{padding:20px;background:#eaf1fb;border:1px solid #9cb3d0;border-radius:7px;box-sizing:border-box;flex-shrink:0;font:14px/1.5 system-ui,sans-serif}
+#demo-shell .message-panel h2{font-size:18px;margin:0 0 8px}#demo-shell .message-panel p{margin:0 0 12px}#demo-shell .message-panel .message-actions{display:flex;gap:8px;flex-wrap:wrap}
+#demo-shell .overlay{position:absolute;inset:0;pointer-events:none;overflow:visible;z-index:3;font:10px/1.25 system-ui,sans-serif;color:#315fa8}
+#demo-shell .guide-box{position:absolute;border:1px dashed #315fa8;box-sizing:border-box}#demo-shell .guide-box.area{border-color:#8864ae;background:#8864ae0c}
+#demo-shell .guide-box span{position:absolute;top:-16px;left:0;white-space:nowrap;background:#ffffffed;padding:1px 3px;border-radius:3px}
+#demo-shell .guide-line{position:absolute;background:currentColor;opacity:.8}#demo-shell .guide-line span{position:absolute;white-space:nowrap;background:#ffffffed;padding:1px 3px}
+#demo-shell .guide-line.horizontal{height:1px}#demo-shell .guide-line.vertical{width:1px}#demo-shell .guide-line.baseline{color:#a54747;border-top:1px dashed currentColor;background:none}
+#demo-shell .guide-line.axis.vertical span{writing-mode:vertical-rl;top:5px!important;left:3px!important}#demo-shell .overlay span:empty{display:none}
+#demo-shell .guide-line.center{color:#a54747}#demo-shell .guide-line.axis{color:#287963}#demo-shell .guide-line.track{color:#8864ae;border-top:1px dotted currentColor;background:none}
+#demo-shell .free-region{position:absolute;background:#f3ca5c33;border:1px dotted #ae8b32;box-sizing:border-box}
+#demo-shell .legend{display:flex;gap:14px;flex-wrap:wrap;padding:9px 16px;font-size:10px;color:#64758d}#demo-shell .legend span::before{content:'';display:inline-block;width:12px;border-top:2px solid var(--mark,#315fa8);margin-right:5px;vertical-align:middle}
+#demo-shell .readouts{display:flex;gap:8px;flex-wrap:wrap;padding:10px 16px;background:#f8fafd;border-top:1px solid var(--shell-border);font-size:11px;font-variant-numeric:tabular-nums}
+#demo-shell .readouts span{background:white;border:1px solid var(--shell-border);border-radius:5px;padding:5px 8px}
+#demo-shell .applicability{margin:0 16px 10px;font-size:11px;color:#586b84;overflow-wrap:anywhere}
+#demo-shell [hidden]{display:none!important}#demo-shell .muted{color:var(--shell-muted);font-size:11px}
+#demo-shell .ds-chain{grid-template-columns:80px minmax(0,1fr)}#demo-shell .step-select{width:100%}
+@media(max-width:800px){#demo-shell .ds-world-wrap{padding:10px}#demo-shell .ds-sidebar{max-height:none}}
+@media(max-width:430px){body{padding:0}#demo-shell .ds-header{align-items:flex-start;flex-wrap:wrap}#demo-shell .ds-toolbar-group{flex-wrap:wrap}#demo-shell .lab-tabs button{flex-basis:120px}#demo-shell .readouts{padding:10px}#demo-shell .ds-question{margin:10px}#demo-shell .ds-toolbar{padding:10px}}
+</style>
+<style id="lesson-rules"></style>
+</head>
+<body>
+<main id="demo-shell">
+ <header class="ds-header"><div><h1>CSS Alignment · Section 6</h1><div class="ds-kicker">Context · axes · subject · space · constraints</div></div><span class="ds-status" id="status">Explore</span></header>
+ <nav class="lab-tabs" role="tablist" aria-label="Alignment demonstrations">
+  <button role="tab" id="tab-a" data-tab="a" aria-controls="lab-panel" aria-selected="true">6A · Coordinate Lab</button>
+  <button role="tab" id="tab-b" data-tab="b" aria-controls="lab-panel" aria-selected="false" tabindex="-1">6B · Space Ownership</button>
+  <button role="tab" id="tab-c" data-tab="c" aria-controls="lab-panel" aria-selected="false" tabindex="-1">6C · Baselines & Controls</button>
+  <button role="tab" id="tab-d" data-tab="d" aria-controls="lab-panel" aria-selected="false" tabindex="-1">6D · Safe & Logical</button>
+ </nav>
+ <div class="ds-columns" id="lab-panel" role="tabpanel" aria-labelledby="tab-a">
+  <aside class="ds-sidebar" aria-label="Experiment controls">
+   <section class="ds-section"><h2 class="ds-section-title">Scenario <span class="ds-meta" id="lab-name"></span></h2>
+    <div class="ds-seg" role="group" aria-label="Exploration mode"><button data-mode="explore" aria-pressed="true">Explore</button><button data-mode="guided" aria-pressed="false">Guided</button></div>
+    <div class="ds-mini-actions"><button class="ds-btn" id="previous" aria-label="Previous challenge">←</button><span id="step-counter" class="ds-step"></span><button class="ds-btn" id="next" aria-label="Next challenge">→</button></div>
+    <label class="ds-label" for="stage-select">Challenge</label><select id="stage-select" class="step-select"></select>
+    <p id="stage-summary" class="ds-hint"></p>
+   </section>
+   <section class="ds-section"><h2 class="ds-section-title">Controls <span class="ds-meta">Live CSS</span></h2><div id="controls"></div></section>
+   <section class="ds-section"><details id="inspector"><summary>Alignment Inspector</summary><div class="ds-inspector"><label class="ds-label" for="inspect-property">Investigate property</label><select id="inspect-property"></select><p id="inspect-status" class="ds-explain"></p><dl id="geometry" class="ds-chain"></dl><p class="ds-hint" id="inspect-note"></p></div></details></section>
+   <section class="ds-section"><details id="overlay-options"><summary>Diagnostic overlays</summary><div id="diagnostic-controls"></div></details></section>
+   <section class="ds-section"><button id="reset" class="ds-btn ds-btn-block">Reset active demo</button></section>
+  </aside>
+  <section class="ds-workspace" aria-label="Live alignment experiment">
+   <div class="ds-toolbar"><strong id="world-title"></strong><div class="ds-toolbar-group"><button id="remember" class="ds-btn">Remember position</button><button id="clear-remembered" class="ds-btn" hidden>Clear reference</button></div></div>
+   <div class="ds-stage"><strong id="stage-title"></strong><span id="stage-description"></span></div>
+   <div class="ds-question"><strong>Predict</strong><p id="prediction"></p></div>
+   <div class="ds-world-wrap" id="world-scroll"><div class="measure-surface" id="surface"><div id="world"></div><div id="overlay" class="overlay" aria-hidden="true"></div></div></div>
+   <div class="legend"><span>Element</span><span style="--mark:#8864ae">Grid area / tracks</span><span style="--mark:#287963">Axes</span><span style="--mark:#a54747">Centers / text guides</span></div>
+   <div id="readouts" class="readouts" aria-live="off"></div><p id="applicability" class="applicability"></p>
+   <details class="why"><summary>Mechanism, alternatives & deciding factors</summary><p id="explanation"></p><p id="decision"></p></details>
+   <div class="ds-bottom"><div class="ds-bottom-title"><span>Effective CSS</span><button class="ds-btn" id="copy">Copy CSS</button></div><pre class="ds-code" id="css-output"></pre></div>
+  </section>
+ </div>
+</main>
+<script>
+'use strict';
+// Ownership: defaults → formatting model → guided constraints → permitted live values.
+// Guided challenges are reproducible deltas folded over defaults, not a second engine.
+// Geometry is derived only from browser layout; diagnostics never position lesson items.
+const $=id=>document.getElementById(id), esc=v=>String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const clone=v=>JSON.parse(JSON.stringify(v));
+const alignment=['start','end','center','stretch','baseline','first baseline','last baseline'];
+const distribution=['start','end','center','space-between','space-around','space-evenly','stretch'];
+const opt=(value,label=value)=>[value,label];
+const select=(key,label,values,when=()=>true)=>({key,label,type:'select',values:values.map(x=>Array.isArray(x)?x:opt(x)),when});
+const range=(key,label,min,max,unit='px',step=1,when=()=>true)=>({key,label,type:'range',min,max,unit,step,when});
+const check=(key,label,when=()=>true)=>({key,label,type:'checkbox',when});
+const controls={
+ a:[select('presentation','Presentation',['abstract','realistic']),select('context','Formatting context',['block','flex','grid']),range('width','Parent width',240,1000),range('height','Parent height',160,600),select('selected','Selected element',[opt(0,'A · Deal title'),opt(1,'B · Deal status'),opt(2,'C · Actions')]),select('itemWidthMode','Selected width',['fixed','auto']),range('itemWidth','Selected width',40,320,'px',1,s=>s.itemWidthMode==='fixed'),select('itemHeightMode','Selected height',['fixed','auto']),range('itemHeight','Selected height',28,220,'px',1,s=>s.itemHeightMode==='fixed'),select('flexDirection','Flex direction',['row','row-reverse','column','column-reverse'],s=>s.context==='flex'),select('wrap','Flex wrap',['nowrap','wrap'],s=>s.context==='flex'),range('trackWidth','Grid column size',65,220,'px',1,s=>s.context==='grid'),range('trackHeight','Grid row size',70,220,'px',1,s=>s.context==='grid'),select('justifyContent','justify-content',distribution),select('alignContent','align-content',distribution),select('justifyItems','justify-items',['stretch','start','end','center']),select('alignItems','align-items',alignment),select('justifySelf','Selected justify-self',['auto','start','end','center','stretch']),select('alignSelf','Selected align-self',['auto',...alignment]),select('autoMargin','Selected auto margin',[opt('none','None'),opt('inline-start','inline-start: auto'),opt('block-start','block-start: auto'),opt('all','All: auto')]),range('gap','Gap',0,48),select('shorthand','Shorthand display',['longhands','place-content','place-items','place-self'])],
+ b:[range('width','Available width',280,1100),range('leftCount','Left actions',1,4,'',1),range('rightCount','Right actions',1,6,'',1),select('labels','Label length',['short','long']),select('context','Layout',['inline','flex','grid']),select('centerContent','Central region',['title','search']),range('gap','Gap',0,48),select('justifyContent','justify-content',distribution),check('autoMargin','Actions: margin-inline-start: auto',s=>s.context==='flex'),range('grow','Search grow factor',0,3,'',.5,s=>s.context==='flex'),select('gridMode','Grid track structure',['symmetric','auto'],s=>s.context==='grid'),range('centerMin','Central min-width',0,280),range('centerMax','Central max-width',140,600),select('responsive','Narrow layout',['none','short-labels','wrap','stack']),select('blockCenter','Standalone panel centering',['auto-margins','flex-parent']),range('blockWidth','Standalone panel max-width',140,520),check('centerGuide','Show geometric center'),check('elementCenters','Show group centers')],
+ c:[select('presentation','Presentation',['editor','abstract']),select('context','Formatting context',['flex','inline']),range('width','Available width',300,1000),range('height','Available height',150,480),range('fontSize','Label / value font size',12,40),range('lineHeight','Line height',1,2,'',.05),select('labelLength','Label length',['short','long','multiline']),check('wrapping','Allow text wrapping'),check('helper','Show helper text'),select('controlHeightMode','Control height',['fixed','auto']),range('controlHeight','Fixed control height',24,80,'px',1,s=>s.controlHeightMode==='fixed'),select('alignItems','align-items',alignment),select('selected','Selected element',[opt(0,'Label / value'),opt(1,'Input / unit'),opt(2,'Validation icon'),opt(3,'Save action')]),select('alignSelf','Selected align-self',['auto',...alignment]),select('verticalAlign','vertical-align',['baseline','middle','top','bottom','text-top','text-bottom','-6px','6px']),check('centers','Show box centers'),check('baselines','Show baseline guides')],
+ d:[range('width','Container width',220,900),range('height','Container height',150,600),range('contentWidth','Content width',160,760),range('contentHeight','Content height',100,520),select('content','Message length',['short','long','identifier']),select('context','Layout context',['flex','grid']),select('property','Alignment property',['justify-content','align-items','justify-items','align-content','justify-self','align-self']),select('value','Alignment value',['start','end','center','flex-start','flex-end','left','right']),select('safety','Overflow alignment',['none','safe','unsafe']),select('overflow','Overflow policy',['visible','hidden','clip','auto']),select('direction','Writing direction',['ltr','rtl']),select('writingMode','Writing mode',['horizontal-tb','vertical-rl','vertical-lr']),select('flexDirection','Flex direction',['row','row-reverse','column','column-reverse'],s=>s.context==='flex')]
+};
+const defaults={
+ a:{presentation:'abstract',context:'block',width:640,height:300,selected:0,items:[{width:90,height:56,widthMode:'fixed',heightMode:'fixed'},{width:110,height:90,widthMode:'fixed',heightMode:'fixed'},{width:95,height:70,widthMode:'fixed',heightMode:'fixed'}],flexDirection:'row',wrap:'nowrap',trackWidth:140,trackHeight:130,justifyContent:'start',alignContent:'start',justifyItems:'start',alignItems:'start',justifySelf:'auto',alignSelf:'auto',autoMargin:'none',gap:16,shorthand:'longhands',inspect:'justify-content'},
+ b:{width:800,leftCount:1,rightCount:2,labels:'short',context:'inline',centerContent:'title',gap:16,justifyContent:'start',autoMargin:false,grow:0,gridMode:'symmetric',centerMin:0,centerMax:400,responsive:'none',blockCenter:'auto-margins',blockWidth:320,centerGuide:true,elementCenters:true,selected:1,inspect:'justify-content'},
+ c:{presentation:'editor',context:'flex',width:760,height:220,fontSize:24,lineHeight:1.3,labelLength:'short',wrapping:true,helper:false,controlHeightMode:'fixed',controlHeight:42,alignItems:'start',selected:0,alignSelf:'auto',verticalAlign:'baseline',centers:true,baselines:true,inspect:'align-items'},
+ d:{width:640,height:280,contentWidth:360,contentHeight:180,content:'short',context:'flex',property:'justify-content',value:'center',safety:'none',overflow:'visible',direction:'ltr',writingMode:'horizontal-tb',flexDirection:'row',selected:0,inspect:'justify-content'}
+};
+// Each stage changes only the listed keys. Replaying the deltas yields the same state.
+const stage=(title,description,delta,question,why,decide)=>({title,description,delta,question,why,decide});
+const stages={
+ a:[
+ stage('A1 · Context first','Begin with normal block flow.',{},'Does justify-content distribute ordinary blocks in this fixture?','Ordinary block flow stacks the children. A property can be valid CSS without controlling this formatting context.','Identify the layout context before choosing alignment rules. Block align-content support is distinct from Flex line distribution.'),
+ stage('A2 · Main and cross','Switch to Flex, then reverse or rotate its direction.',{context:'flex'},'Which edge is main-start after row-reverse?','Flex direction determines the main axis; the cross axis is perpendicular. Reverse changes visual flow, preserving DOM order.','Use the direction control and axis arrows to distinguish row, column and reverse variants.'),
+ stage('A3 · Leftover space','Distribute positive main-axis space.',{justifyContent:'space-between'},'What happens to distributed spacing when you shrink the parent?','justify-content distributes remaining main-axis space after sizing and auto margins. Fixed gaps remain a separate minimum separation.','Compare start, center and the three space-* values; remove space without changing the rule.'),
+ stage('A4 · Position or stretch','Make cross sizes automatic.',{alignItems:'stretch',autoCross:true},'Which explicit dimension would prevent cross-axis stretch?','Stretch sizes eligible auto-sized items. Center/start/end position boxes without assigning the same cross size.','An explicit cross size or min/max constraint can limit stretching.'),
+ stage('A5 · Individual override','Move B independently; compare cross-axis auto margins.',{selected:1,alignSelf:'end',alignItems:'start'},'Will align-self still decide position if the same axis has an auto margin?','align-self overrides the parent default, but Flex auto margins absorb available space and can take priority on that axis.','Change only the selected item; compare its block-start auto margin in a row.'),
+ stage('A6 · Inside a Grid area','Use fixed Grid tracks.',{context:'grid',justifyItems:'center',alignItems:'center',alignSelf:'auto',justifyContent:'start',autoMargin:'none'},'Can the item move while its grid area stays in place?','justify-items / align-items position items inside their areas. Individual self properties override those defaults.','The purple area and blue item boundary identify different alignment subjects.'),
+ stage('A7 · Move tracks or items','Keep tracks smaller than the container.',{justifyContent:'space-between',alignContent:'center'},'Which rule moves the entire set of tracks?','Content alignment distributes tracks within the grid container. Item alignment acts within each grid area.','Compare the area boundary before and after changing content versus item alignment.'),
+ stage('A8 · Shorthand expansion','Expose the two underlying axes.',{shorthand:'place-items'},'Which value in place-items belongs to align-items?','place-items expands to align-items then justify-items. The same axis order is used by place-content and place-self.','Use shorthands after identifying both longhand effects; the CSS panel shows the expansion.'),
+ stage('A9 · Inapplicable self alignment','Attempt justify-self in Flex.',{context:'flex',justifySelf:'end',alignSelf:'auto',justifyContent:'start',alignContent:'start',shorthand:'longhands',inspect:'justify-self'},'Why does justify-self: end leave the flex item in place?','justify-self does not control the main-axis position of normal Flex items. No substitute property is changed for this experiment.','Alternatives are parent distribution or an item auto margin, chosen by ownership.'),
+ stage('A10 · Lines versus items','Wrap three wide items into multiple lines.',{wrap:'wrap',width:300,height:400,wideItems:true,alignItems:'start',alignContent:'space-between',inspect:'align-content'},'Does align-content still distribute lines after switching to nowrap?','A multi-line flex container can distribute line boxes in the cross axis. A nowrap single-line container does not use align-content for this.','Compare line distribution with item alignment, keeping the same container size.'),
+ stage('A11 · Diagnose','Try the diagnostic cases below.',{wrap:'nowrap',width:640,height:300,wideItems:false,inspect:'justify-self'},'Which smallest change would affect the selected alignment subject?','No-space, wrong-axis, inapplicable-property, auto-margin, fixed-size and Grid-subject problems have different causes.','Use the diagnostic cases to predict first; compare geometry and the investigated property.')],
+ b:[
+ stage('B1 · Ordinary flow','Navigation, title and actions begin inline.',{},'Who owns the spacing between these groups?','Inline formatting positions groups within line boxes; independent group changes affect wrapping and available space.','This baseline is reasonable for a short header without structural centering requirements.'),
+ stage('B2 · Fixed separation','Use a Flex row and gap.',{context:'flex'},'Does increasing gap consume all remaining width?','Gap sets fixed separation. It does not allocate all remaining space.','Use gap when separation is the requirement.'),
+ stage('B3 · Space distribution','Distribute leftover space.',{justifyContent:'space-between'},'Will the title center stay on the toolbar center with asymmetric sides?','justify-content distributes free space between groups, not symmetric side tracks.','Use distribution when the relationship between groups matters more than the container midpoint.'),
+ stage('B4 · One space owner','Let the action group absorb space.',{autoMargin:true},'What space remains for justify-content after the auto margin?','An auto margin receives positive free space before justification. It expresses a split before the trailing group.','Compare with space-between as left and right action counts change.'),
+ stage('B5 · Grow the search','Give the central search region space through sizing.',{autoMargin:false,centerContent:'search',grow:1,justifyContent:'start',inspect:'flex-grow'},'Does search growth change box width or just the surrounding gaps?','flex-grow participates in sizing. It changes the central region width, subject to its basis and constraints.','Use growth for a region that should consume space; use alignment to position existing sizes.'),
+ stage('B6 · A separate block','Compare normal-flow and parent-owned centering.',{},'How does margin-inline: auto center the constrained panel below?','Normal block auto margins divide available inline space around a constrained width. Flex parent centering delegates that arrangement to the parent.','The separate panel has its own centering requirement; toggle its mechanism without changing the toolbar.'),
+ stage('B7 · Asymmetry','Increase the action group width.',{centerContent:'title',grow:0,rightCount:4,labels:'long',width:1000,justifyContent:'space-between'},'What is the measured displacement of the title center?','Three Flex groups with unequal side widths generally place the middle box away from the container center.','Decide whether geometric centering is required before changing the layout structure.'),
+ stage('B8 · Symmetric tracks','Create equal outer Grid tracks.',{context:'grid',gridMode:'symmetric',labels:'short',rightCount:3},'Why does the title center now match the toolbar center?','minmax(0,1fr) auto minmax(0,1fr) creates equal side tracks and a central intrinsic track.','This gives structural symmetry; it does not guarantee that side content fits.'),
+ stage('B9 · Insufficient space','Keep symmetry while action labels grow.',{width:460,labels:'long',rightCount:4},'Can side groups collide with a geometrically centered title?','Zero-minimum side tracks may be narrower than their content, producing visible collision or overflow.','Symmetry and sufficient room are separate constraints; do not hide collisions with clipping.'),
+ stage('B10 · Change composition','Stack groups when the toolbar becomes narrow.',{responsive:'stack'},'Which actions should survive the narrow context?','Changing composition relinquishes horizontal centering pressure. Short labels and wrapping are other explicit alternatives.','Compare none, short labels, wrapping and stacking under the same width.')],
+ c:[
+ stage('C1 · Mixed geometry','Different control heights and typography.',{},'Which relationship looks wrong: box edges, centers or text?','Different font metrics, padding and heights create distinct geometric and typographic references.','Choose a relationship before choosing a property.'),
+ stage('C2 · Box centers','Align geometrical centers.',{alignItems:'center'},'Are text baselines also aligned?','Center aligns item margin-box centers in the cross axis. Different typography can retain different baselines.','Center suits icons and geometrical objects when their boxes are the intended reference.'),
+ stage('C3 · Text baselines','Use baseline alignment for mixed font sizes.',{alignItems:'baseline'},'Do baseline markers line up while box edges differ?','Baseline alignment uses the participating baseline sets. Inline text probes show the lines containing those probes, not all internal baselines of native controls.','Use a baseline relationship when adjacent text should read as one typographic row.'),
+ stage('C4 · First or last','Use a multiline label.',{labelLength:'multiline',helper:true,alignItems:'first baseline'},'Which text line aligns after switching to last baseline?','A multiline item has different first and last baselines. The guide identifies the first and last line of each instrumented text element.','Compare first baseline with last baseline using the same content.'),
+ stage('C5 · Individual policy','Give the validation icon its own alignment.',{selected:2,alignSelf:'end'},'Which element stops following the parent policy?','An explicit align-self overrides align-items for the selected item.','Use an individual override for a local requirement rather than changing every control.'),
+ stage('C6 · Stretch eligibility','Make control cross sizes automatic.',{alignItems:'stretch',alignSelf:'auto',controlHeightMode:'auto'},'What changes when a fixed height is restored?','Stretch changes eligible auto cross sizes. Fixed heights keep their own sizes while other eligible items stretch.','Compare automatic and explicit control dimensions at the same parent height.'),
+ stage('C7 · Inline formatting','Switch to actual inline-block boxes.',{context:'inline',verticalAlign:'baseline'},'Does align-items still own these inline-block positions?','vertical-align participates in inline formatting; middle, text-top and baseline use typographic references, unlike Flex alignment.','The vertical-align control changes the selected inline-block only.'),
+ stage('C8 · Typography is geometry','Increase text size and line height.',{fontSize:36,lineHeight:1.7,labelLength:'long'},'Which boxes and line references change as text wraps?','Text size, line height and wrapping affect intrinsic sizes and line construction.','Use the measured boxes and text probes; no claim is made to expose every browser line box.')],
+ d:[
+ stage('D1 · Spacious alignment','Start with positive available space.',{},'Where are start, center and end while the content fits?','Alignment positions the subject within its alignment area when space permits.','First identify the relevant axis and alignment subject.'),
+ stage('D2 · Too little space','Make content wider than its alignment container.',{width:300,contentWidth:480},'Can centered overflow extend before the scrollable start edge?','A larger fixed-size subject has negative remaining space. Desired center positioning may overflow both sides.','No positive space, element overflow and clipping are separate observations.'),
+ stage('D3 · Safe versus unsafe','Compare explicit overflow-alignment choices.',{safety:'safe'},'Does safe center fall back toward start for this oversized item?','Safe alignment can fall back to start when the requested alignment would overflow unsafely. Unsafe honors the requested position.','Compare safe and unsafe with identical sizes; inspect the actual computed declaration.'),
+ stage('D4 · Visibility policy','Introduce scrollable overflow.',{safety:'unsafe',overflow:'auto'},'Which content can be reached under hidden, clip and auto?','Overflow policy changes clipping and scroll-container behavior; it does not make the fixed content smaller.','Switch visible, hidden, clip and auto without changing alignment or dimensions.'),
+ stage('D5 · Logical directions','Restore space and switch to RTL.',{width:640,contentWidth:360,safety:'none',overflow:'visible',direction:'rtl',value:'start'},'Do start and physical left still point to the same edge?','Logical start/end follow the relevant writing axis. Flex-start/end follow the flex axis, including reversal; left/right are physical where applicable.','Compare start, flex-start and left, then reverse the Flex direction.'),
+ stage('D6 · Vertical writing','Rotate the writing axes.',{writingMode:'vertical-rl',height:430,contentHeight:240},'Which physical direction is inline-start now?','Writing mode changes inline and block axes. Flex row follows the inline axis; column follows the block axis.','Read inline/block and main/cross arrows independently.'),
+ stage('D7 · New composition','Use a column Flex composition.',{flexDirection:'column',value:'center',safety:'safe'},'Is the requirement logical start, a physical edge or safe centering?','Changing composition changes which physical axis a Flex alignment property acts on.','Transfer the diagnosis to another direction using context, subject, axis and available space.')]
+};
+const diagnosticCases=[
+ ['No free space',{context:'flex',width:334,gap:16,justifyContent:'center',alignItems:'start',autoMargin:'none',inspect:'justify-content',exactItems:true}],
+ ['Wrong axis',{context:'flex',flexDirection:'column',width:640,height:400,justifyContent:'center',alignItems:'start',inspect:'justify-content'}],
+ ['Inapplicable property',{context:'flex',justifySelf:'end',autoMargin:'none',inspect:'justify-self'}],
+ ['Auto margin owns space',{context:'flex',flexDirection:'row',autoMargin:'inline-start',justifyContent:'center',inspect:'justify-content'}],
+ ['Fixed size limits stretch',{context:'flex',flexDirection:'row',alignItems:'stretch',fixedItems:true,inspect:'align-items'}],
+ ['Grid subject',{context:'grid',width:640,trackWidth:140,trackHeight:130,justifyContent:'center',justifyItems:'end',autoMargin:'none',inspect:'justify-items'}]
+];
+const names={a:'Coordinate Lab',b:'Space Ownership',c:'Baselines & Controls',d:'Safe & Logical Alignment'};
+const state={active:'a',labs:Object.fromEntries(Object.entries(defaults).map(([k,v])=>[k,{values:clone(v),step:0,mode:'explore',modified:false,reference:null}])),diagnostics:{bounds:true,axes:true,free:false,tracks:true,overflow:true}};
+let pendingMeasure=0, lastModel=null, lastGeometry=null, cssText='';
+const current=()=>state.labs[state.active], values=()=>current().values;
+function getValue(s,key){if(state.active==='a'&&key.startsWith('item')){return s.items[s.selected][{itemWidth:'width',itemHeight:'height',itemWidthMode:'widthMode',itemHeightMode:'heightMode'}[key]];}return s[key];}
+function setValue(s,key,value){if(state.active==='a'&&key.startsWith('item'))s.items[s.selected][{itemWidth:'width',itemHeight:'height',itemWidthMode:'widthMode',itemHeightMode:'heightMode'}[key]]=value;else s[key]=value;}
+function applyDelta(s,delta){const d=clone(delta);for(const flag of ['autoCross','wideItems','fixedItems','exactItems'])delete d[flag];Object.assign(s,d);if(delta.autoCross)s.items.forEach(i=>i[s.flexDirection.startsWith('row')?'heightMode':'widthMode']='auto');if(delta.wideItems)s.items.forEach(i=>{i.width=170;i.widthMode='fixed';});if(delta.wideItems===false)s.items=clone(defaults.a.items);if(delta.fixedItems)s.items.forEach(i=>{i.heightMode='fixed';});if(delta.exactItems)s.items.forEach(i=>{i.width=100;i.widthMode='fixed';});}
+function dispatch(action){
+ const lab=current();
+ if(action.type==='tab'){state.active=action.key;buildControls();render();return;}
+ if(action.type==='stage'){lab.step=Math.max(0,Math.min(stages[state.active].length-1,action.index));lab.values=clone(defaults[state.active]);for(let i=0;i<=lab.step;i++)applyDelta(lab.values,stages[state.active][i].delta);lab.mode='guided';lab.modified=false;lab.reference=null;}
+ if(action.type==='control'){setValue(lab.values,action.key,action.value);lab.modified=true;if(action.key==='property')lab.values.inspect=action.value;const inspected={justifyContent:'justify-content',alignContent:'align-content',justifyItems:'justify-items',alignItems:'align-items',justifySelf:'justify-self',alignSelf:'align-self',verticalAlign:'vertical-align',grow:'flex-grow'}[action.key];if(inspected&&[...$('inspect-property').options].some(o=>o.value===inspected))lab.values.inspect=inspected;}
+ if(action.type==='mode')lab.mode=action.value;
+ if(action.type==='inspect')lab.values.inspect=action.value;
+ if(action.type==='case'){lab.values=clone(defaults.a);applyDelta(lab.values,diagnosticCases[action.index][1]);lab.mode='explore';lab.modified=true;lab.reference=null;}
+ if(action.type==='reset'){state.labs[state.active]={values:clone(defaults[state.active]),step:0,mode:'explore',modified:false,reference:null};}
+ if(action.type==='selected'){lab.values.selected=action.index;}
+ if(action.type==='diagnostic')state.diagnostics[action.key]=action.value;
+ if(action.type==='remember'){if(lastGeometry)lab.reference=clone(lastGeometry.selectedRelative);}
+ if(action.type==='clear-reference')lab.reference=null;
+ render();
+}
+function buildControls(){
+ $('controls').innerHTML=controls[state.active].map(c=>c.type==='select'?`<div class="control" data-control-row="${c.key}"><label for="control-${c.key}">${esc(c.label)}</label><select id="control-${c.key}" data-control="${c.key}">${c.values.map(([v,l])=>`<option value="${v}">${esc(l)}</option>`).join('')}</select></div>`:c.type==='checkbox'?`<div class="control" data-control-row="${c.key}"><label class="check"><input type="checkbox" id="control-${c.key}" data-control="${c.key}">${esc(c.label)}</label></div>`:`<div class="control" data-control-row="${c.key}"><div class="control-head"><label for="control-${c.key}">${esc(c.label)}</label><output id="output-${c.key}" for="control-${c.key}"></output></div><input type="range" id="control-${c.key}" data-control="${c.key}" min="${c.min}" max="${c.max}" step="${c.step}"></div>`).join('');
+ $('stage-select').innerHTML=stages[state.active].map((s,i)=>`<option value="${i}">${esc(s.title)}</option>`).join('');
+ if(state.active==='a')$('controls').insertAdjacentHTML('beforeend',`<details><summary>Diagnostic cases</summary>${diagnosticCases.map(([label],i)=>`<button class="ds-btn" style="margin:3px 0;width:100%" data-case="${i}">${label}</button>`).join('')}</details>`);
+ $('diagnostic-controls').innerHTML=Object.entries({bounds:'Container & selected bounds',axes:'Axes',free:'Edge spaces / residual space',tracks:'Grid areas / inferred Flex lines',overflow:'Overflow bounds'}).map(([key,label])=>`<label class="check"><input type="checkbox" data-diagnostic="${key}">${label}</label>`).join('');
+ const props=state.active==='d'?['justify-content','align-items','justify-items','align-content','justify-self','align-self']:state.active==='c'?['align-items','align-self','vertical-align']:state.active==='b'?['justify-content','margin-inline-start','flex-grow']:['justify-content','align-content','justify-items','align-items','justify-self','align-self'];
+ $('inspect-property').innerHTML=props.map(p=>`<option>${p}</option>`).join('');
+}
+function syncControls(){
+ const s=values(),visibility=state.active==='a'?{...s,itemWidthMode:s.items[s.selected].widthMode,itemHeightMode:s.items[s.selected].heightMode}:s;for(const c of controls[state.active]){const node=$('control-'+c.key),val=getValue(s,c.key);if(c.type==='checkbox')node.checked=val;else node.value=val;if(c.type==='range')$('output-'+c.key).textContent=String(Math.round(Number(val)*100)/100)+(c.unit?' '+c.unit:'');const applicable=c.when(visibility);node.disabled=!applicable;document.querySelector(`[data-control-row="${c.key}"]`).hidden=!applicable;}
+ for(const node of document.querySelectorAll('[data-diagnostic]'))node.checked=state.diagnostics[node.dataset.diagnostic];
+ for(const node of document.querySelectorAll('[data-tab]')){const active=node.dataset.tab===state.active;node.setAttribute('aria-selected',active);node.tabIndex=active?0:-1;}
+ for(const node of document.querySelectorAll('[data-mode]'))node.setAttribute('aria-pressed',node.dataset.mode===current().mode);
+ $('inspect-property').value=s.inspect;$('stage-select').value=current().step;
+}
+function rule(selector,properties){return '#demo-shell '+selector+' {\n'+Object.entries(properties).map(([k,v])=>'  '+k+': '+v+';').join('\n')+'\n}';}
+function gridProbes(count,selected){return Array.from({length:count},(_,i)=>`<div class="area-probe" data-track-probe ${i===Number(selected)?'id="area-probe"':''} aria-hidden="true" style="grid-column:${i+1} / ${i+2};grid-row:1 / 2"></div>`).join('');}
+function resolveA(s){
+ const parent={display:s.context==='block'?'block':s.context,width:s.width+'px',height:s.height+'px',gap:s.gap+'px','justify-content':s.justifyContent,'align-content':s.alignContent,'justify-items':s.justifyItems,'align-items':s.alignItems};
+ if(s.context==='flex'){parent['flex-direction']=s.flexDirection;parent['flex-wrap']=s.wrap;}
+ if(s.context==='grid'){parent['grid-template-columns']=`repeat(3, ${s.trackWidth}px)`;parent['grid-template-rows']=s.trackHeight+'px';}
+ let declarations=[rule('#fixture',parent)];
+ const content=s.presentation==='abstract'?['A','B','C']:['Northwind renewal','Negotiation','View deal'];
+ const items=s.items.map((item,i)=>{const props={width:item.widthMode==='auto'?'auto':item.width+'px',height:item.heightMode==='auto'?'auto':item.height+'px','flex-shrink':'1'};declarations.push(rule(`#item-${i}`,props));return `<div class="item" data-entity="${i}" id="item-${i}" tabindex="0"><strong>${content[i]}</strong>${s.presentation==='realistic'?'<span class="sub">'+['Annual contract · €48,000','Owner: Alex Morgan','Open details →'][i]+'</span>':''}</div>`;}).join('');
+ const selected={'align-self':s.alignSelf,'justify-self':s.justifySelf};if(s.autoMargin==='all')selected.margin='auto';else if(s.autoMargin!=='none')selected['margin-'+s.autoMargin]='auto';
+ declarations.push(rule('#item-'+s.selected,selected));
+ if(s.shorthand!=='longhands'){const kind=s.shorthand.split('-')[1],a=kind==='content'?s.alignContent:kind==='items'?s.alignItems:s.alignSelf,j=kind==='content'?s.justifyContent:kind==='items'?s.justifyItems:s.justifySelf;declarations.push(`/* ${s.shorthand} expands to align-${kind}: ${a}; justify-${kind}: ${j}; */\n`+rule(kind==='self'?'#item-'+s.selected:'#fixture',{[s.shorthand]:a+' '+j}));}
+ const marker=s.context==='grid'?gridProbes(3,s.selected):'';
+ return {html:`<div id="fixture" class="fixture">${items}${marker}</div>`,rules:declarations.join('\n\n'),selected:'#item-'+s.selected,container:'#fixture',context:s.context};
+}
+function actionGroup(count,side,long){return Array.from({length:count},(_,i)=>`<button type="button" class="world-button">${long?(side==='left'?['All opportunities','Account overview','Pipeline board','Team workspace'][i]:['Assign account owner','Export deal summary','Schedule follow-up','More deal actions','Share with team','Archive opportunity'][i]):(side==='left'?['Deals','Accounts','Board','Team'][i]:['Save','Share','More','Assign','Export','Archive'][i])}</button>`).join('');}
+function resolveB(s){
+ const narrow=s.width<600,long=s.labels==='long'&&!(s.responsive==='short-labels'&&narrow),stack=s.responsive==='stack'&&narrow,wrap=s.responsive==='wrap'&&narrow;
+ const parent={width:s.width+'px',display:stack||wrap?'flex':s.context==='inline'?'block':s.context,'align-items':'center',gap:s.gap+'px','justify-content':s.justifyContent};
+ if(stack)parent['flex-direction']='column';if(wrap)parent['flex-wrap']='wrap';
+ if(s.context==='grid'&&!stack&&!wrap){parent['grid-template-columns']=s.gridMode==='symmetric'?'minmax(0, 1fr) auto minmax(0, 1fr)':'auto auto auto';}
+ const central={'min-width':s.centerMin+'px','max-width':s.centerMax+'px'};
+ if(s.context==='flex'||stack||wrap){central.flex=`${s.grow} 1 auto`;central['min-width']=s.centerMin+'px';}
+ const right={};if(s.context==='grid'&&!stack&&!wrap)right['justify-self']='end';if(s.autoMargin&&(s.context==='flex'||stack||wrap))right['margin-inline-start']='auto';
+ let rules=[rule('#fixture',parent),rule('#item-1',central),rule('#item-2',right)];
+ if(stack||wrap)rules.push(rule('#fixture .action-group',{'flex-wrap':'wrap','max-width':'100%','white-space':'normal'}));
+ if(s.context==='inline'&&!stack&&!wrap)rules.push(rule('#fixture > [data-entity]',{display:'inline-block','vertical-align':'middle','margin-inline-end':s.gap+'px'}));
+ rules.push(rule('#panel-host',{width:s.width+'px',display:s.blockCenter==='flex-parent'?'flex':'block',...s.blockCenter==='flex-parent'?{'justify-content':'center'}:{}}),rule('#standalone',{width:`min(100%, ${s.blockWidth}px)`,...s.blockCenter==='auto-margins'?{'margin-inline':'auto'}:{}}));
+ if(s.context==='grid'&&!stack&&!wrap)rules.push(rule('#item-1',{'justify-self':'center'}));
+ const html=`<div id="fixture" class="fixture toolbar-fixture"><div class="action-group" id="item-0" data-entity="0" tabindex="0">${actionGroup(s.leftCount,'left',long)}</div> <div class="central" id="item-1" data-entity="1" tabindex="0">${s.centerContent==='search'?'<input aria-label="Deal search" placeholder="Search deals">':'Northwind renewal'}</div> <div class="action-group" id="item-2" data-entity="2" tabindex="0">${actionGroup(s.rightCount,'right',long)}</div>${s.context==='grid'&&!stack&&!wrap?gridProbes(3,s.selected):''}</div><div id="panel-host" class="panel-host"><div class="standalone" id="standalone">Constrained standalone panel<br><small>Independent centering requirement</small></div></div>`;
+ return {html,rules:rules.join('\n\n'),selected:'#item-'+s.selected,container:'#fixture',context:stack||wrap?'flex':s.context};
+}
+function textProbe(text,multiline=false){return `<span class="text-probe"><i class="baseline-marker first" aria-hidden="true"></i>${text}${multiline?'<br>Annual contract':''}<i class="baseline-marker last" aria-hidden="true"></i></span>`;}
+function resolveC(s){
+ const multiline=s.labelLength==='multiline',long=s.labelLength==='long',label=s.presentation==='abstract'?'48,250':long?'Estimated annual contract value':multiline?'Contract value':'Deal value';
+ const parent={display:s.context==='flex'?'flex':'block',width:s.width+'px',height:s.height+'px','align-items':s.alignItems,gap:'12px','flex-wrap':'nowrap','font-size':'18px','line-height':s.lineHeight};
+ const rules=[rule('#fixture',parent),rule('#item-0',{'font-size':s.fontSize+'px','line-height':s.lineHeight,width:multiline||long?'190px':'auto','white-space':s.wrapping?'normal':'nowrap'}),rule('#item-1',{'font-size':'18px','line-height':s.lineHeight,height:s.controlHeightMode==='fixed'?s.controlHeight+'px':'auto'}),rule('#item-2',{'font-size':'22px','line-height':s.lineHeight,width:'38px',height:s.controlHeightMode==='fixed'?s.controlHeight+'px':'auto'}),rule('#item-3',{'font-size':'14px','line-height':s.lineHeight,height:s.controlHeightMode==='fixed'?s.controlHeight+'px':'auto'}),rule('#item-'+s.selected,{'align-self':s.alignSelf,'vertical-align':s.verticalAlign})];
+ const parts=[textProbe(label,multiline)+(s.helper?'<span class="helper">'+textProbe('Required · net amount')+'</span>':''),s.presentation==='abstract'?textProbe('EUR'):'<input aria-label="Contract value" value="48,250">',textProbe('✓'),textProbe('Save')];
+ const html=`<div id="fixture" class="fixture editor-fixture ${s.context==='inline'?'inline-fixture':''}">${parts.map((p,i)=>`<div id="item-${i}" class="typo-item" data-entity="${i}" tabindex="0">${p}</div>`).join(' ')}</div>`;
+ return {html,rules:rules.join('\n\n'),selected:'#item-'+s.selected,container:'#fixture',context:s.context};
+}
+function resolveD(s){
+ const value=(s.safety==='none'?'':s.safety+' ')+s.value;
+ const supported=CSS.supports(s.property,value);
+ const parent={display:s.context,width:s.width+'px',height:s.height+'px',direction:s.direction,'writing-mode':s.writingMode,overflow:s.overflow,'align-items':'start','justify-content':'start'};
+ if(s.context==='flex')parent['flex-direction']=s.flexDirection;else{parent['grid-template-columns']='100%';parent['grid-template-rows']='100%';}
+ const child={width:s.contentWidth+'px',height:s.contentHeight+'px','flex-shrink':'0'};
+ // Content alignment in Grid uses content-sized tracks, item alignment uses a full area.
+ if(s.context==='grid'&&s.property==='justify-content')parent['grid-template-columns']=s.writingMode==='horizontal-tb'?s.contentWidth+'px':s.contentHeight+'px';
+ if(s.context==='grid'&&s.property==='align-content')parent['grid-template-rows']=s.writingMode==='horizontal-tb'?s.contentHeight+'px':s.contentWidth+'px';
+ if(s.property.endsWith('self'))child[s.property]=value;else parent[s.property]=value;
+ const message=s.content==='short'?'3 active filters. Ready to apply.':s.content==='long'?'This view contains active filters shared with the account team. Review all conditions before updating the opportunity list.':'DEAL_NORTHWIND_CONTRACT_2026_RENEWAL_00000000000000000000001';
+ const html=`<div id="fixture" class="fixture"><article id="item-0" class="message-panel" data-entity="0" tabindex="0"><h2>Filter opportunities</h2><p>${message}</p><div class="message-actions"><button class="world-button">Apply filters</button><button class="world-button">Clear</button></div></article>${s.context==='grid'?'<div class="area-probe" id="area-probe" aria-hidden="true" style="grid-column:1 / 2;grid-row:1 / 2"></div>':''}</div>`;
+ return {html,rules:[rule('#fixture',parent),rule('#item-0',child)].join('\n\n'),selected:'#item-0',container:'#fixture',context:s.context,supported,attempted:value};
+}
+function render(){
+ const key=state.active,lab=current(),s=lab.values,st=stages[key][lab.step];
+ syncControls();$('lab-panel').setAttribute('aria-labelledby','tab-'+key);$('lab-name').textContent='6'+key.toUpperCase();$('world-title').textContent=names[key];
+ $('stage-title').textContent=st.title;$('stage-description').textContent=st.description;$('stage-summary').textContent=st.description;
+ $('prediction').textContent=st.question;$('explanation').textContent=st.why;$('decision').textContent=st.decide;
+ $('step-counter').textContent=`${lab.step+1} / ${stages[key].length}`;$('previous').disabled=lab.step===0;$('next').disabled=lab.step===stages[key].length-1;
+ $('status').textContent=`6${key.toUpperCase()} · ${lab.mode==='guided'?'Guided':'Explore'}${lab.modified?' · Modified':''}`;
+ lastModel=({a:resolveA,b:resolveB,c:resolveC,d:resolveD}[key])(s);
+ // Reuse domain DOM when markup is unchanged, preserving focused native controls.
+ if($('world').dataset.markup!==lastModel.html){$('world').innerHTML=lastModel.html;$('world').dataset.markup=lastModel.html;}
+ const base=`/* Lesson base: all dimensions below use border-box. */\n#fixture, #fixture * { box-sizing: border-box; }\n#fixture { position: relative; border: 1px solid #a5b6cd; }\n`;
+ cssText=base+lastModel.rules;$('lesson-rules').textContent=cssText;$('css-output').textContent=cssText;
+ document.querySelectorAll('[data-entity]').forEach(el=>el.dataset.picked=Number(el.dataset.entity)===Number(s.selected));
+ $('clear-remembered').hidden=!lab.reference;$('copy').textContent='Copy CSS';scheduleMeasure();
+}
+// Diagnostic geometry: outer border boxes are measured; content bounds exclude padding/borders.
+const rect=el=>{const r=el.getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height,right:r.right,bottom:r.bottom};};
+const relative=(r,o)=>({x:r.x-o.x,y:r.y-o.y,width:r.width,height:r.height});
+const num=v=>parseFloat(v)||0, rounded=v=>Math.round(v*10)/10;
+function contentRect(el){const r=rect(el),c=getComputedStyle(el),left=num(c.borderLeftWidth)+num(c.paddingLeft),top=num(c.borderTopWidth)+num(c.paddingTop),right=num(c.borderRightWidth)+num(c.paddingRight),bottom=num(c.borderBottomWidth)+num(c.paddingBottom);return {x:r.x+left,y:r.y+top,width:r.width-left-right,height:r.height-top-bottom,right:r.right-right,bottom:r.bottom-bottom};}
+function axesFor(style){const vertical=style.writingMode.startsWith('vertical'),rtl=style.direction==='rtl',inline=vertical?{axis:'y',sign:rtl?-1:1}:{axis:'x',sign:rtl?-1:1},block=vertical?{axis:'x',sign:style.writingMode==='vertical-rl'?-1:1}:{axis:'y',sign:1};const column=style.flexDirection.startsWith('column'),main={...(column?block:inline)},cross={...(column?inline:block)};if(style.flexDirection.endsWith('reverse'))main.sign*=-1;if(style.flexWrap==='wrap-reverse')cross.sign*=-1;return {inline,block,main,cross};}
+function propertyAxis(prop,style,context){const axes=axesFor(style);if(context==='flex')return prop.startsWith('justify')?axes.main:axes.cross;return prop.startsWith('justify')?axes.inline:axes.block;}
+function allBoxes(){return [...document.querySelectorAll('#fixture > [data-entity]')].map(el=>({el,r:rect(el)}));}
+function probeCounterfactual(prop,container,selected,context){
+ const target=prop.endsWith('self')||prop==='vertical-align'||prop==='flex-grow'?selected:prop==='margin-inline-start'?document.querySelector('#item-2'):container;
+ if(!target)return {effect:0,baseline:'n/a'};
+ const restore=target.getAttribute('style'),before=allBoxes().map(x=>x.r);
+ let baseline=prop==='align-self'||prop==='justify-self'?'auto':prop==='flex-grow'?'0':prop==='margin-inline-start'?'0px':prop==='vertical-align'?'baseline':'start';
+ target.style.setProperty(prop,baseline,'important');
+ const after=allBoxes().map(x=>x.r);let effect=0;before.forEach((r,i)=>{if(after[i])for(const k of ['x','y','width','height'])effect=Math.max(effect,Math.abs(r[k]-after[i][k]));});
+ if(restore===null)target.removeAttribute('style');else target.setAttribute('style',restore);
+ return {effect,baseline};
+}
+function applicability(prop,model,style,selectedStyle,counter,space){
+ const s=values(),context=model.context;
+ if(state.active==='d'&&!model.supported)return `Unsupported declaration: ${prop}: ${model.attempted}. Browser fallback is shown; no substitute rule is applied.`;
+ if(prop==='flex-grow'&&context!=='flex')return 'Inapplicable: flex-grow participates in Flex item sizing, not this formatting context.';
+ if(context==='flex'&&['justify-self','justify-items','vertical-align'].includes(prop))return 'Inapplicable to normal Flex items: this property does not control the selected alignment relationship.';
+ if(context==='grid'&&prop==='vertical-align')return 'Inapplicable to Grid items: vertical-align belongs to other formatting contexts.';
+ if(context==='inline'&&prop!=='vertical-align')return 'Inapplicable to these inline-block children. Investigate vertical-align for this fixture.';
+ if(context==='block'&&prop!=='align-content')return 'Inapplicable to this ordinary block-flow fixture. Changing the formatting context changes the alignment model.';
+ if(context==='flex'&&prop==='align-content'&&style.flexWrap==='nowrap')return 'Inapplicable to a single-line (nowrap) Flex container; there are no flex lines to distribute.';
+ if(context==='flex'&&state.active==='a'&&s.autoMargin!=='none'){
+  const crossMargin=s.autoMargin==='all'||(style.flexDirection.startsWith('row')?s.autoMargin==='block-start':s.autoMargin==='inline-start');
+  if(prop==='align-self'&&crossMargin)return 'Overridden by cross-axis auto margins on the selected Flex item.';
+  if(prop==='justify-content'&&(s.autoMargin==='all'||(style.flexDirection.startsWith('row')?s.autoMargin==='inline-start':s.autoMargin==='block-start')))return 'Positive main-axis space is absorbed by the selected auto margin before justify-content.';
+ }
+ if(state.active==='b'&&s.autoMargin&&context==='flex'&&prop==='justify-content')return 'Positive space is absorbed by the trailing auto margin before parent justification.';
+ if(counter.effect>.5)return `Applies: changing this property to ${counter.baseline} changes measured geometry by up to ${rounded(counter.effect)} px.`;
+ if(space!==null&&space<=.5)return `Applies, but there is no positive residual space in this axis (${rounded(space)} px). Sizing, margins and gap account for the available area.`;
+ const val=selectedStyle.getPropertyValue(prop)||style.getPropertyValue(prop);
+ if((prop==='align-items'||prop==='align-self')&&(val==='stretch'||style.alignItems==='stretch'))return 'No geometry change against start: explicit sizes, self overrides, margins or intrinsic constraints can prevent stretch.';
+ return `No visible change against ${counter.baseline} in this state. Inspect available space, the chosen value, dimensions and individual overrides.`;
+}
+function scheduleMeasure(){cancelAnimationFrame(pendingMeasure);pendingMeasure=requestAnimationFrame(measure);}
+function measure(){
+ const model=lastModel;if(!model)return;const container=document.querySelector(model.container),selected=document.querySelector(model.selected);if(!container||!selected)return;
+ const surface=$('surface'),origin=rect(surface),parent=rect(container),area=contentRect(container),r=rect(selected),cs=getComputedStyle(container),ss=getComputedStyle(selected),prop=values().inspect;
+ const counter=probeCounterfactual(prop,container,selected,model.context),boxes=allBoxes();
+ const dx=r.x+r.width/2-(area.x+area.width/2),dy=r.y+r.height/2-(area.y+area.height/2);
+ const overflow={left:Math.max(0,area.x-Math.min(...boxes.map(b=>b.r.x))),right:Math.max(0,Math.max(...boxes.map(b=>b.r.right))-area.right),top:Math.max(0,area.y-Math.min(...boxes.map(b=>b.r.y))),bottom:Math.max(0,Math.max(...boxes.map(b=>b.r.bottom))-area.bottom)};
+ lastGeometry={parent,area,selected:r,selectedRelative:relative(r,parent),deltaX:dx,deltaY:dy,overflow,counter};
+ const residual=residualSpace(prop,model,cs,ss,area,r,boxes);
+ const status=applicability(prop,model,cs,ss,counter,residual);$('inspect-status').textContent=status;$('applicability').textContent=prop+' · '+status;
+ const target=prop.endsWith('self')||prop==='vertical-align'||prop==='flex-grow'?ss:prop==='margin-inline-start'?getComputedStyle($('item-2')):cs;
+ const rows=[['Context',model.context],['Property',prop],['Computed',target.getPropertyValue(prop)||'—'],['Container',`${rounded(area.width)} × ${rounded(area.height)} px content box`],['Selected',`${rounded(r.width)} × ${rounded(r.height)} px border box`],['Position',`${rounded(r.x-area.x)}, ${rounded(r.y-area.y)} px from content top-left`],['Center Δ',`${rounded(dx)}, ${rounded(dy)} px`],['Edge spaces',`L ${rounded(r.x-area.x)} · R ${rounded(area.right-r.right)} · T ${rounded(r.y-area.y)} · B ${rounded(area.bottom-r.bottom)} px`],['Overflow',Object.entries(overflow).map(([k,v])=>k+' '+rounded(v)).join(' · ')+' px'],['Rule test',`${counter.baseline} → max geometry difference ${rounded(counter.effect)} px`]];
+ if(residual!==null)rows.push(['Residual space',rounded(residual)+' px after resolved sizes, margins & fixed gap']);
+ if($('area-probe')){const gridArea=rect($('area-probe'));rows.push(['Grid area',`${rounded(gridArea.width)} × ${rounded(gridArea.height)} px · measured absolute Grid probe`]);}
+ $('geometry').innerHTML=rows.map(([k,v])=>`<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join('');
+ $('inspect-note').textContent=state.active==='c'?'Text guides are measured zero-size inline probes at marked text lines. Native input internal baselines and complete browser line boxes are not exposed.':'Edge spaces are geometric distances, not CSS algorithm intermediate values. The rule test temporarily compares a neutral declaration and restores it before paint.';
+ const readouts=[`Container ${rounded(area.width)} × ${rounded(area.height)}`,`Item ${rounded(r.width)} × ${rounded(r.height)}`,`Position ${rounded(r.x-area.x)}, ${rounded(r.y-area.y)}`];
+ if(state.active==='b'){const title=rect($('item-1'));readouts.push(`Title center Δ ${rounded(title.x+title.width/2-(area.x+area.width/2))} px`);const left=rect($('item-0')),right=rect($('item-2'));if(intersects(left,title)||intersects(right,title))readouts.push('Group collision');if(cs.flexDirection==='row'||cs.display==='grid')readouts.push(`Group spaces ${rounded(title.x-left.right)} / ${rounded(right.x-title.right)} px · declared gap ${values().gap} px`);}
+ const extent=Math.max(...Object.values(overflow));readouts.push(extent>.5?'Box overflow '+rounded(extent)+' px':'Boxes fit');
+ if(container.scrollWidth>container.clientWidth||container.scrollHeight>container.clientHeight)readouts.push(`Scroll extent ${container.scrollWidth} × ${container.scrollHeight}`);
+ $('readouts').innerHTML=readouts.map(x=>'<span>'+esc(x)+'</span>').join('');
+ AlignmentOverlay.render({origin,parent,area,r,cs,ss,boxes,overflow,model,reference:current().reference});
+}
+function intersects(a,b){return Math.min(a.right,b.right)-Math.max(a.x,b.x)>.5&&Math.min(a.bottom,b.bottom)-Math.max(a.y,b.y)>.5;}
+function residualSpace(prop,model,cs,ss,area,r,boxes){
+ const axis=propertyAxis(prop,cs,model.context).axis,horizontal=axis==='x',size=horizontal?'width':'height';
+ if(model.context==='flex'&&cs.flexWrap==='nowrap'&&prop==='justify-content')return area[size]-boxes.reduce((total,b)=>{const c=getComputedStyle(b.el);return total+b.r[size]+(horizontal?num(c.marginLeft)+num(c.marginRight):num(c.marginTop)+num(c.marginBottom));},0)-(boxes.length-1)*num(horizontal?cs.columnGap:cs.rowGap);
+ if(model.context==='grid'&&(prop==='justify-content'||prop==='align-content')){const tracks=(prop==='justify-content'?cs.gridTemplateColumns:cs.gridTemplateRows).match(/-?[\d.]+px/g);if(tracks)return area[size]-tracks.reduce((sum,x)=>sum+num(x),0)-(tracks.length-1)*num(prop==='justify-content'?cs.columnGap:cs.rowGap);}
+ if(model.context==='grid'&&(prop.endsWith('items')||prop.endsWith('self'))&&$('area-probe'))return rect($('area-probe'))[size]-r[size]-(horizontal?num(ss.marginLeft)+num(ss.marginRight):num(ss.marginTop)+num(ss.marginBottom));
+ return null;
+}
+// Shared inspector overlay. Absolute children live in #overlay, outside the measured fixture.
+const AlignmentOverlay={
+ render(g){
+  const out=[],o=g.origin,s=values(),d=state.diagnostics;
+  const box=(r,label,kind='')=>out.push(`<div class="guide-box ${kind}" style="left:${r.x-o.x}px;top:${r.y-o.y}px;width:${r.width}px;height:${r.height}px"><span>${esc(label)}</span></div>`);
+  const line=(x,y,length,vertical,label,kind='')=>out.push(`<div class="guide-line ${vertical?'vertical':'horizontal'} ${kind}" style="left:${x-o.x}px;top:${y-o.y}px;${vertical?'height':'width'}:${length}px"><span style="${vertical?'left:3px;top:3px':'left:3px;top:-14px'}">${esc(label)}</span></div>`);
+  if(d.bounds){box(g.parent,'Container');box(g.r,'');}
+  if(g.reference){const r=g.reference;box({x:g.parent.x+r.x,y:g.parent.y+r.y,width:r.width,height:r.height},'Remembered position','area');}
+  if(d.axes){const axes=axesFor(g.cs),draw=(axis,label,offset)=>{const vertical=axis.axis==='y';if(vertical)line(g.parent.x-18-offset,g.parent.y,g.parent.height,true,`${label} ${axis.sign>0?'↓':'↑'}`,'axis');else line(g.parent.x,g.parent.y-16-offset,g.parent.width,false,`${label} ${axis.sign>0?'→':'←'}`,'axis');};draw(axes.inline,'Inline',0);draw(axes.block,'Block',0);if(g.model.context==='flex'){draw(axes.main,'Main',15);draw(axes.cross,'Cross',15);}}
+  if(d.tracks){for(const probe of document.querySelectorAll('[data-track-probe]'))box(rect(probe),'','area');const probe=$('area-probe');if(probe&&!probe.hasAttribute('data-track-probe'))box(rect(probe),'','area');if(g.model.context==='grid'){const tracks=g.cs.gridTemplateColumns;out.push(`<div style="position:absolute;left:${g.parent.x-o.x}px;top:${g.parent.bottom-o.y+12}px;color:#8864ae;background:white">Columns (computed): ${esc(tracks)}</div>`);}if(g.model.context==='flex'&&g.cs.flexWrap!=='nowrap'){const cross=axesFor(g.cs).cross.axis,groups=[];for(const b of g.boxes){const start=cross==='x'?b.r.x:b.r.y,end=cross==='x'?b.r.right:b.r.bottom;let group=groups.find(x=>start<x.end-.5&&end>x.start+.5);if(group){group.start=Math.min(group.start,start);group.end=Math.max(group.end,end);}else groups.push({start,end});}for(const [i,group] of groups.entries()){if(cross==='y')line(g.area.x,group.start,g.area.width,false,'Inferred line '+(i+1),'track');else line(group.start,g.area.y,g.area.height,true,'Inferred line '+(i+1),'track');}}}
+  if(d.free){const left=Math.max(g.area.x,Math.min(...g.boxes.map(b=>b.r.x))),right=Math.min(g.area.right,Math.max(...g.boxes.map(b=>b.r.right))),top=Math.max(g.area.y,Math.min(...g.boxes.map(b=>b.r.y))),bottom=Math.min(g.area.bottom,Math.max(...g.boxes.map(b=>b.r.bottom)));const shade=(x,y,width,height)=>{if(width>.5&&height>.5)out.push(`<div class="free-region" style="left:${x-o.x}px;top:${y-o.y}px;width:${width}px;height:${height}px"></div>`);};shade(g.area.x,g.area.y,left-g.area.x,g.area.height);shade(right,g.area.y,g.area.right-right,g.area.height);shade(left,g.area.y,right-left,top-g.area.y);shade(left,bottom,right-left,g.area.bottom-bottom);if(g.model.context==='flex'&&g.cs.flexWrap==='nowrap'){const horizontal=axesFor(g.cs).main.axis==='x',ordered=g.boxes.map(b=>b.r).sort((a,b)=>horizontal?a.x-b.x:a.y-b.y);for(let i=1;i<ordered.length;i++){const a=ordered[i-1],b=ordered[i];if(horizontal)shade(a.right,g.area.y,b.x-a.right,g.area.height);else shade(g.area.x,a.bottom,g.area.width,b.y-a.bottom);}}}
+  if(state.active==='b'&&s.centerGuide)line(g.area.x+g.area.width/2,g.parent.y-10,g.parent.height+20,true,'Toolbar center','center');
+  if(state.active==='b'&&s.elementCenters)for(const b of g.boxes)line(b.r.x+b.r.width/2,b.r.y,b.r.height,true,'Group '+b.el.dataset.entity,'center');
+  if(state.active==='c'&&s.centers)for(const b of g.boxes)line(b.r.x,b.r.y+b.r.height/2,b.r.width,false,Number(b.el.dataset.entity)===Number(s.selected)?'Box center':'','center');
+  if(state.active==='c'&&s.baselines){for(const b of g.boxes){const first=b.el.querySelector('.baseline-marker.first'),lasts=b.el.querySelectorAll('.baseline-marker.last'),last=lasts[lasts.length-1];if(first){const f=rect(first),l=last?rect(last):f,picked=Number(b.el.dataset.entity)===Number(s.selected);line(b.r.x,f.y,b.r.width,false,picked?'First text probe':'','baseline');if(Math.abs(l.y-f.y)>.5)line(b.r.x,l.y,b.r.width,false,picked?'Last text probe':'','baseline');}}}
+  if(d.overflow&&Math.max(...Object.values(g.overflow))>.5){const bounds={x:Math.min(g.area.x,...g.boxes.map(b=>b.r.x)),y:Math.min(g.area.y,...g.boxes.map(b=>b.r.y)),right:Math.max(g.area.right,...g.boxes.map(b=>b.r.right)),bottom:Math.max(g.area.bottom,...g.boxes.map(b=>b.r.bottom))};box({...bounds,width:bounds.right-bounds.x,height:bounds.bottom-bounds.y},'Unclipped box extent');}
+  $('overlay').innerHTML=out.join('');
+ }
+};
+// Event routing preserves control DOM; ranges update on input, discrete controls on change.
+$('demo-shell').addEventListener('input',event=>{const node=event.target;if(!node.dataset.control||node.type!=='range')return;dispatch({type:'control',key:node.dataset.control,value:Number(node.value)});});
+$('demo-shell').addEventListener('change',event=>{const node=event.target;if(node.dataset.control){const def=controls[state.active].find(c=>c.key===node.dataset.control);if(def.type==='range')return;let value=def.type==='checkbox'?node.checked:node.value;if(def.key==='selected')value=Number(value);dispatch({type:'control',key:def.key,value});}else if(node.dataset.diagnostic)dispatch({type:'diagnostic',key:node.dataset.diagnostic,value:node.checked});else if(node.id==='stage-select')dispatch({type:'stage',index:Number(node.value)});else if(node.id==='inspect-property')dispatch({type:'inspect',value:node.value});});
+$('demo-shell').addEventListener('click',event=>{const node=event.target.closest('button,[data-entity]');if(!node)return;if(node.dataset.tab)dispatch({type:'tab',key:node.dataset.tab});else if(node.dataset.mode)dispatch({type:'mode',value:node.dataset.mode});else if(node.dataset.case)dispatch({type:'case',index:Number(node.dataset.case)});else if(node.dataset.entity)dispatch({type:'selected',index:Number(node.dataset.entity)});else if(node.id==='previous')dispatch({type:'stage',index:current().step-1});else if(node.id==='next')dispatch({type:'stage',index:current().step+1});else if(node.id==='reset')dispatch({type:'reset'});else if(node.id==='remember')dispatch({type:'remember'});else if(node.id==='clear-remembered')dispatch({type:'clear-reference'});else if(node.id==='copy')copyCSS();});
+document.querySelector('.lab-tabs').addEventListener('keydown',event=>{const keys=['a','b','c','d'],i=keys.indexOf(state.active);let next;if(event.key==='ArrowRight')next=keys[(i+1)%4];if(event.key==='ArrowLeft')next=keys[(i+3)%4];if(event.key==='Home')next='a';if(event.key==='End')next='d';if(next){event.preventDefault();dispatch({type:'tab',key:next});$('tab-'+next).focus();}});
+$('world').addEventListener('keydown',event=>{const node=event.target.closest('[data-entity]');if(node&&event.target===node&&(event.key==='Enter'||event.key===' ')){event.preventDefault();dispatch({type:'selected',index:Number(node.dataset.entity)});}});
+async function copyCSS(){let copied=false;try{await navigator.clipboard.writeText(cssText);copied=true;}catch{const active=document.activeElement,area=document.createElement('textarea');area.value=cssText;area.style.cssText='position:fixed;left:-10000px;top:0';document.body.append(area);area.select();copied=document.execCommand('copy');area.remove();active?.focus();}$('copy').textContent=copied?'Copied':'Select CSS to copy';}
+addEventListener('resize',scheduleMeasure);$('world-scroll').addEventListener('scroll',scheduleMeasure,{passive:true});
+new ResizeObserver(scheduleMeasure).observe($('world'));document.fonts.ready.then(scheduleMeasure);
+buildControls();render();
+</script>
+</body>
+</html>

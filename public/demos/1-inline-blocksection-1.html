@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>CSS Layout & Sizing — Section 1</title>
+  <style>
+    #demo-shell{--shell-bg:#FFFFFF;--shell-side:#F7F9FC;--shell-work:#EEF2F8;--shell-ink:#25344B;--shell-muted:#64758D;--shell-subtle:#8897AA;--shell-border:#D8E0E9;--shell-accent:#315FA8;--shell-accent-soft:#E8F0FD;--shell-warning:#98631B;--shell-warning-bg:#FFF2DB;--shell-danger:#A54747;--shell-success:#287963;--shell-code:#152338;--shell-radius-xs:4px;--shell-radius-sm:6px;--shell-radius-md:9px;--shell-radius-lg:12px;--shell-gap-1:4px;--shell-gap-2:8px;--shell-gap-3:12px;--shell-gap-4:16px;--shell-gap-5:24px;--shell-font:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font:13px/1.5 var(--shell-font);color:var(--shell-ink);background:var(--shell-bg);border:1px solid var(--shell-border);border-radius:var(--shell-radius-lg);max-width:1420px;margin:16px auto;overflow:hidden;box-shadow:0 5px 24px #24344a0a}
+    #demo-shell *,#demo-shell *::before,#demo-shell *::after{box-sizing:border-box}#demo-shell button,#demo-shell select,#demo-shell input{font:inherit}#demo-shell button{cursor:pointer}#demo-shell button:focus-visible,#demo-shell input:focus-visible,#demo-shell select:focus-visible{outline:2px solid var(--shell-accent);outline-offset:2px}#demo-shell button:disabled{opacity:.48;cursor:default}
+    #demo-shell .ds-header{min-height:64px;background:#17263D;color:#F6F9FF;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 18px}#demo-shell h1{font-size:16px;line-height:1.15;letter-spacing:-.3px;margin:0;font-weight:700}#demo-shell .ds-kicker{font-size:11px;color:#A8B8D0;margin-top:4px}#demo-shell .ds-status{border:1px solid #5F7390;border-radius:6px;color:#ECF4FF;font-size:11px;white-space:nowrap;padding:5px 9px}
+    #demo-shell .ds-columns{display:grid;grid-template-columns:304px minmax(0,1fr);min-height:690px}#demo-shell .ds-sidebar{background:var(--shell-side);padding:14px;border-right:1px solid var(--shell-border);display:flex;flex-direction:column;gap:13px;max-height:820px;overflow:auto}#demo-shell .ds-section{border-bottom:1px solid var(--shell-border);padding-bottom:13px;min-width:0}#demo-shell .ds-section:last-child{border-bottom:0;padding-bottom:0}#demo-shell .ds-section-title{display:flex;align-items:baseline;justify-content:space-between;gap:8px;font-size:12px;font-weight:700;margin:0 0 9px}#demo-shell .ds-meta{font-size:11px;color:var(--shell-muted);font-weight:400}#demo-shell .ds-label{font-size:11px;color:var(--shell-muted);display:block}#demo-shell .ds-hint{font-size:11px;color:var(--shell-muted);margin:7px 0 0}
+    #demo-shell .ds-seg{display:flex;background:#FFF;border:1px solid var(--shell-border);border-radius:6px;overflow:hidden;min-width:0}#demo-shell .ds-seg button{flex:1;border:0;border-right:1px solid var(--shell-border);color:#52647C;background:transparent;min-height:32px;font-size:11px;padding:5px 6px}#demo-shell .ds-seg button:last-child{border:0}#demo-shell .ds-seg button[aria-pressed="true"]{background:var(--shell-accent);color:#FFF;font-weight:650}#demo-shell .ds-mini-actions{display:flex;align-items:center;gap:7px;margin:9px 0 5px}#demo-shell .ds-btn{min-height:32px;border-radius:6px;border:1px solid var(--shell-border);color:#435771;background:white;padding:6px 10px;font-size:11px;font-weight:600}.ds-btn[aria-pressed="true"]{background:var(--shell-accent-soft)!important;border-color:#a9c3ec!important;color:#264d89!important}.ds-btn-block{width:100%}#demo-shell .ds-step{flex:1;text-align:center;font-size:11px;color:var(--shell-muted)}
+    #demo-shell .ds-field{margin:10px 0}#demo-shell .ds-fieldrow{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:4px}#demo-shell output{font-size:11px;color:var(--shell-accent);font-variant-numeric:tabular-nums}#demo-shell input[type="range"]{width:100%;accent-color:var(--shell-accent);cursor:pointer;display:block;margin:3px 0;height:18px}#demo-shell select{width:100%;height:32px;border:1px solid var(--shell-border);border-radius:6px;color:var(--shell-ink);background:white;padding:0 7px;font-size:11px}.ds-field[hidden]{display:none!important}
+    #demo-shell .ds-inspector{border:1px solid var(--shell-border);border-radius:9px;background:white;padding:10px;margin-top:9px}.ds-inspector[hidden]{display:none}.ds-inspect-title{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:12px;font-weight:700}.ds-pill{display:inline-block;border-radius:6px;background:var(--shell-warning-bg);color:var(--shell-warning);font-size:10px;padding:3px 6px;font-weight:600}.ds-chain{display:grid;grid-template-columns:94px minmax(0,1fr);gap:5px 9px;margin:10px 0;font-size:11px}.ds-chain dt{color:var(--shell-subtle)}.ds-chain dd{margin:0;min-width:0;overflow-wrap:anywhere;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:10px}.ds-measures{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:9px 0}.ds-value{background:#F2F5F9;border-radius:6px;padding:8px;min-width:0}.ds-value label{display:block;color:var(--shell-muted);font-size:10px}.ds-value b{font-size:12px;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}.ds-explain{font-size:11px;color:#586B84;margin:9px 0}
+    #demo-shell .ds-workspace{background:var(--shell-work);min-width:0;display:flex;flex-direction:column}.ds-toolbar{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;padding:11px 15px;border-bottom:1px solid var(--shell-border)}.ds-toolbar strong{font-size:12px}.ds-toolbar-group{display:flex;align-items:center;gap:8px}.ds-toolbar-group select{width:auto}.ds-stage{border-radius:6px;padding:7px 15px;font-size:11px;color:#546780;border-bottom:1px solid var(--shell-border);background:#F7F9FD}.ds-world-wrap{padding:16px;min-width:0;overflow:auto}.ds-world{background:#FFF;border:1px solid var(--shell-border);border-radius:9px;max-width:100%;width:100%;padding:16px;min-height:410px;margin:0 auto}.ds-world-heading{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;flex-wrap:wrap;margin-bottom:14px}.ds-world h2{font-size:17px;margin:0;line-height:1.25}.ds-world-heading p{font-size:11px;color:var(--shell-muted);margin:4px 0 0}.ds-world-badge{background:#EDF4FF;color:#2F5F9D;padding:4px 9px;border-radius:6px;font-weight:650;font-size:10px}.ds-question{border-left:3px solid var(--shell-accent);background:#F1F5FB;padding:9px 12px;margin-top:14px;border-radius:0 6px 6px 0}.ds-question strong{font-size:11px}.ds-question p{font-size:11px;color:var(--shell-ink);margin:5px 0}.ds-predictions{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}.ds-prediction{min-height:30px;border:1px solid var(--shell-border);border-radius:6px;background:#fff;color:#435771;padding:5px 8px;font-size:10px}.ds-prediction[aria-pressed="true"]{background:var(--shell-accent);border-color:var(--shell-accent);color:#fff}.ds-reveal{margin-top:8px;font-size:11px;color:#435771}.ds-bottom{background:#FFF;border-top:1px solid var(--shell-border);padding:13px 16px}.ds-bottom-title{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:12px;font-weight:700;margin-bottom:9px}.ds-code{white-space:pre-wrap;word-break:break-word;max-height:220px;overflow:auto;background:var(--shell-code);color:#E6ECF7;padding:13px;border-radius:6px;font:11px/1.55 ui-monospace,Consolas,monospace;margin:9px 0 0}
+    .crm-app{border:1px solid #e1e8f1;border-radius:8px;background:#fbfcfe;padding:14px}.crm-topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;color:#4d6079;font-size:11px}.crm-topbar b{color:#25344B}.activity-feed{border:1px solid #dfe7f1;background:#fff;border-radius:7px;padding:13px;overflow:visible}.activity-title{font-size:11px;color:#64758D;margin:0 0 11px}.activity-item{border-top:1px solid #edf1f6;padding:11px 0;line-height:1.55;font-size:13px;color:#34465f}.activity-item:first-of-type{border-top:0;padding-top:0}.activity-item strong{color:#20334b}.activity-time{color:#7a899c;font-size:11px;white-space:nowrap}.inline-probe{color:#2e5c96;background:transparent;border:0 solid transparent;padding:0;line-height:inherit}.inline-probe.is-marked{background:#e8f0fd;border-color:#8eb0e4}.inline-probe.mode-inline-block{vertical-align:baseline}.inline-probe.mode-block{display:block}.inline-probe.mode-fit{display:block;width:fit-content}.inline-probe.overflowing{outline:2px solid #c37b1d;outline-offset:2px}.inline-help{margin:12px 0 0;color:#64758D;font-size:11px}.mini-key{display:inline-flex;align-items:center;border:1px solid #d8e0e9;border-radius:4px;padding:1px 5px;background:#fff;font:10px ui-monospace,Consolas,monospace;color:#435771}
+    .deal-parent{border:2px dashed #cbd7e5;background:#f5f8fc;padding:16px;min-height:258px}.deal-parent-label{font-size:10px;color:#64758D;margin-bottom:9px;display:flex;justify-content:space-between}.deal-card{background:#fff;border-style:solid;border-color:#315FA8;color:#25344B}.deal-head{padding-bottom:10px;border-bottom:1px solid #e6edf5}.deal-head h3{margin:0;font-size:14px}.deal-head p{margin:4px 0 0;font-size:11px;color:#64758D}.deal-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:11px 0}.deal-field{padding:7px;border:1px solid #e3eaf3;border-radius:5px}.deal-field span{display:block;color:#77879a;font-size:10px}.deal-field b{font-size:12px}.deal-note{margin:10px 0 0;font-size:11px;line-height:1.5;color:#4c5f76}.deal-card.overflowing{outline:2px solid #c37b1d;outline-offset:2px}.sizing-readout{margin:12px 0 0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.sizing-readout div{background:#f3f6fa;border-radius:6px;padding:8px}.sizing-readout span{display:block;color:#64758D;font-size:10px}.sizing-readout b{font-size:11px;color:#334a66;font-variant-numeric:tabular-nums}.two-value{margin-top:12px;border-top:1px solid #e3eaf3;padding-top:11px;font-size:11px;color:#50637c}.two-value b{color:#25344B}
+    @media(max-width:800px){#demo-shell .ds-columns{grid-template-columns:minmax(0,1fr)}#demo-shell .ds-sidebar{max-height:none;border-right:0;border-bottom:1px solid var(--shell-border)}.ds-world-wrap{padding:10px}}@media(max-width:430px){#demo-shell{margin:0}.ds-world{padding:10px}.ds-header{padding:10px}.sizing-readout{grid-template-columns:1fr}}@media(prefers-reduced-motion:reduce){#demo-shell *,#demo-shell *::before,#demo-shell *::after{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+  </style>
+</head>
+<body>
+<div id="demo-shell">
+  <header class="ds-header"><div><h1>CSS Layout &amp; Sizing — Section 1</h1><div class="ds-kicker" id="subtitle">Inline Formatting &amp; Atomic Boxes</div></div><span class="ds-status" id="status">Explore · Stage 1</span></header>
+  <div class="ds-columns">
+    <aside class="ds-sidebar" aria-label="Learning controls">
+      <section class="ds-section">
+        <h3 class="ds-section-title">Demo <span class="ds-meta">CSS foundations</span></h3>
+        <div class="ds-seg" role="group" aria-label="Choose demo"><button data-demo="inline" aria-pressed="true">1A · Inline</button><button data-demo="block" aria-pressed="false">1B · Block flow</button></div>
+      </section>
+      <section class="ds-section">
+        <h3 class="ds-section-title">Scenario <span class="ds-meta">Progression</span></h3>
+        <div class="ds-seg" role="group" aria-label="Mode"><button data-mode="explore" aria-pressed="true">Explore</button><button data-mode="guided" aria-pressed="false">Guided</button></div>
+        <div class="ds-mini-actions"><button class="ds-btn" id="step-prev" aria-label="Previous stage">←</button><span class="ds-step" id="step-counter">Stage 1 of 5</span><button class="ds-btn" id="step-next" aria-label="Next stage">→</button></div>
+        <p class="ds-hint" id="stage-hint"></p>
+      </section>
+      <section class="ds-section" id="controls-section">
+        <h3 class="ds-section-title">Controls <span class="ds-meta">Live</span></h3>
+        <div class="ds-field demo-inline" data-show-stage="0"><div class="ds-fieldrow"><label class="ds-label" for="inline-width">Available width</label><output id="val-inline-width"></output></div><input id="inline-width" type="range" min="220" max="660" step="10"></div>
+        <div class="ds-field demo-inline" data-show-stage="0"><label class="ds-label" for="inline-sample">Activity content</label><select id="inline-sample"><option value="normal">Standard update</option><option value="long">Long status label</option><option value="id">Unbreakable deal ID</option></select></div>
+        <div class="ds-field demo-inline" data-show-stage="1"><div class="ds-fieldrow"><label class="ds-label" for="inline-padding">Status padding</label><output id="val-inline-padding"></output></div><input id="inline-padding" type="range" min="0" max="16" step="2"></div>
+        <div class="ds-field demo-inline" data-show-stage="1"><div class="ds-fieldrow"><label class="ds-label" for="inline-border">Status border</label><output id="val-inline-border"></output></div><input id="inline-border" type="range" min="0" max="4" step="1"></div>
+        <div class="ds-field demo-inline" data-show-stage="2"><label class="ds-label" for="inline-white-space">White-space</label><select id="inline-white-space"><option value="normal">normal</option><option value="nowrap">nowrap</option></select></div>
+        <div class="ds-field demo-inline" data-show-stage="2"><label class="ds-label" for="inline-break">Wrapping rule</label><select id="inline-break"><option value="normal">normal</option><option value="anywhere">overflow-wrap: anywhere</option><option value="break-all">word-break: break-all</option></select></div>
+        <div class="ds-field demo-inline" data-show-stage="3"><label class="ds-label" for="inline-display">Display participation</label><select id="inline-display"><option value="inline">inline</option><option value="inline-block">inline-block</option><option value="block">block</option><option value="block-fit">block + width: fit-content</option></select></div>
+        <div class="ds-field demo-block" data-show-stage="0"><div class="ds-fieldrow"><label class="ds-label" for="parent-width">Parent width</label><output id="val-parent-width"></output></div><input id="parent-width" type="range" min="280" max="650" step="10"></div>
+        <div class="ds-field demo-block" data-show-stage="2"><label class="ds-label" for="deal-content">Deal content</label><select id="deal-content"><option value="short">Short</option><option value="medium">Typical</option><option value="long">Long update</option></select></div>
+        <div class="ds-field demo-block" data-show-stage="3"><label class="ds-label" for="deal-width">Width</label><select id="deal-width"><option value="auto">auto</option><option value="full">100%</option><option value="fixed">360px</option></select></div>
+        <div class="ds-field demo-block" data-show-stage="4"><div class="ds-fieldrow"><label class="ds-label" for="deal-padding">Padding</label><output id="val-deal-padding"></output></div><input id="deal-padding" type="range" min="0" max="32" step="4"></div>
+        <div class="ds-field demo-block" data-show-stage="4"><div class="ds-fieldrow"><label class="ds-label" for="deal-border">Border</label><output id="val-deal-border"></output></div><input id="deal-border" type="range" min="0" max="8" step="1"></div>
+        <div class="ds-field demo-block" data-show-stage="4"><div class="ds-fieldrow"><label class="ds-label" for="deal-margin">Inline margin</label><output id="val-deal-margin"></output></div><input id="deal-margin" type="range" min="0" max="32" step="4"></div>
+        <div class="ds-field demo-block" data-show-stage="5"><label class="ds-label" for="deal-box-sizing">Box sizing</label><select id="deal-box-sizing"><option value="content-box">content-box</option><option value="border-box">border-box</option></select></div>
+        <div class="ds-field demo-block" data-show-stage="6"><label class="ds-label" for="deal-height">Height</label><select id="deal-height"><option value="auto">auto</option><option value="fixed">120px</option></select></div>
+        <div class="ds-field demo-block" data-show-stage="6"><label class="ds-label" for="deal-overflow">Overflow</label><select id="deal-overflow"><option value="visible">visible</option><option value="hidden">hidden</option><option value="auto">auto</option></select></div>
+      </section>
+      <section class="ds-section">
+        <h3 class="ds-section-title">Inspector <span class="ds-meta">Actual values</span></h3>
+        <button class="ds-btn ds-btn-block" id="inspector-toggle" aria-expanded="false">Open inspector</button>
+        <div class="ds-inspector" id="inspector" hidden>
+          <div class="ds-inspect-title"><span id="inspector-title"></span><span class="ds-pill" id="inspector-pill">Measured</span></div>
+          <dl class="ds-chain" id="inspector-chain"></dl>
+          <div class="ds-measures"><div class="ds-value"><label id="measure-a-label"></label><b id="measure-a"></b></div><div class="ds-value"><label id="measure-b-label"></label><b id="measure-b"></b></div></div>
+          <p class="ds-explain" id="inspector-explain"></p>
+        </div>
+      </section>
+      <section class="ds-section"><button class="ds-btn ds-btn-block" id="reset">Reset this demo</button></section>
+    </aside>
+    <main class="ds-workspace">
+      <div class="ds-toolbar"><strong id="world-title">CRM activity feed</strong><div class="ds-toolbar-group"><button class="ds-btn" id="reveal" aria-pressed="false">Reveal explanation</button><select id="preview-width" aria-label="Preview width"><option value="auto">Auto width</option><option value="640">640px</option><option value="420">420px</option><option value="320">320px</option></select></div></div>
+      <div class="ds-stage" id="stage-caption"></div>
+      <div class="ds-world-wrap"><div class="ds-world" id="world"></div></div>
+      <div class="ds-bottom"><div class="ds-bottom-title"><span>Applied CSS</span><span class="ds-meta" id="css-target"></span></div><pre class="ds-code" id="css-code"></pre></div>
+    </main>
+  </div>
+</div>
+<script>
+(() => {
+  'use strict';
+  const root = document.querySelector('#demo-shell');
+  const $ = (id) => root.querySelector('#' + id);
+  const $$ = (selector) => [...root.querySelectorAll(selector)];
+  const INLINE_STAGES = [
+    {label:'1. Plain text and inline elements',hint:'Resize the feed. Predict where the status fragment ends.',question:'When available width becomes smaller, does the status span become a new box or continue in the line?',choices:['It stays part of inline formatting','It becomes a block'],answer:'It stays part of inline formatting.',why:'An inline span participates inside line boxes. Its text can continue on the next line; it does not establish a block boundary.'},
+    {label:'2. Inline decoration',hint:'Add decoration while the label crosses a line.',question:'Does padding or a border make the label atomic?',choices:['No — it can still fragment','Yes — decoration prevents splitting'],answer:'No — it can still fragment.',why:'Inline decoration paints around each inline fragment. Vertical padding and borders affect the visual line area, but do not change outer display participation.'},
+    {label:'3. Wrapping constraints',hint:'Use the long label or ID, then compare rules.',question:'Which rule protects a multiword label as one unit but risks overflow?',choices:['white-space: nowrap','overflow-wrap: anywhere','word-break: break-all'],answer:'white-space: nowrap.',why:'nowrap prevents regular wrap opportunities. anywhere creates extra opportunities only when needed; break-all can split ordinary words at arbitrary positions.'},
+    {label:'4. Atomic elements',hint:'Compare inline with inline-block at a narrow width.',question:'What changes when a status becomes inline-block?',choices:['It wraps as one atomic box','It still fragments by line'],answer:'It wraps as one atomic box.',why:'inline-block has an inline outer display, so it sits in a line, and a flow-root-like internal formatting context. Its own box cannot split between lines; if it is wider than the line, it overflows.'},
+    {label:'5. Display participation',hint:'Compare outer participation with width behavior.',question:'Which choice keeps the element block-level but lets its width follow its content?',choices:['block + width: fit-content','inline','inline-block'],answer:'block + width: fit-content.',why:'Display answers how the box participates outside; width answers how a block is sized. The two-value idea names both dimensions: inline flow and block flow are outer participation, while flow describes internal formatting.'}
+  ];
+  const BLOCK_STAGES = [
+    {label:'1. width:auto; height:auto',hint:'Start with the ordinary block formatting contract.',question:'For an ordinary in-flow block with width:auto, what determines its used inline size?',choices:['Available parent space','Only its text width'],answer:'Available parent space.',why:'In normal block flow, an auto width is resolved from the containing block and surrounding box-model values. It is not a content-sized pill.'},
+    {label:'2. Parent width changes',hint:'Change the containing block, not the card declaration.',question:'When the parent narrows, which dimension changes first?',choices:['The card’s available width','Its intrinsic content'],answer:'The card’s available width.',why:'The containing block supplies available inline space. The card’s auto width follows that space; text reflows afterwards.'},
+    {label:'3. Content-driven height',hint:'Add activity details without fixing height.',question:'With height:auto, what makes the panel taller?',choices:['Its laid-out content','The parent width alone'],answer:'Its laid-out content.',why:'The block’s height is content-driven in this setup. A narrower parent may indirectly add lines, but the used block height comes from the laid-out contents.'},
+    {label:'4. Width contracts',hint:'Compare auto, 100%, and a fixed width.',question:'Which mode names a fixed content-box width before box-sizing changes it?',choices:['360px','auto','100%'],answer:'360px.',why:'A fixed length is a stronger contract than auto or percentage. A percentage resolves from the containing block, while auto follows the block formatting algorithm.'},
+    {label:'5. Occupied space',hint:'Add padding, border, and margin.',question:'Which measurement includes the margins outside the border?',choices:['Occupied width','Border-box width'],answer:'Occupied width.',why:'Content, padding, border, and margins are separate regions. The browser exposes the element border box directly; occupied space adds the used margins.'},
+    {label:'6. First sizing conflict',hint:'Use 100% with padding and compare box-sizing.',question:'Why can content-box + width:100% exceed the parent?',choices:['Padding and border are added outside declared width','100% includes all boxes'],answer:'Padding and border are added outside declared width.',why:'With content-box, width controls only the content box. border-box moves padding and border inside the declared width, which is often the first reason this property matters.'},
+    {label:'7. Fixed height and overflow',hint:'Set 120px and add long content.',question:'What decision remains after content no longer fits?',choices:['How overflow is handled','Whether auto width is used'],answer:'How overflow is handled.',why:'A fixed height creates a conflict with content. visible, hidden, and auto describe different consequences; none makes the content disappear from the layout model.'},
+    {label:'8. Next question',hint:'Keep the dimensions fixed and inspect the regions.',question:'Which next topic explains why these regions have different visual and layout effects?',choices:['The box model','Flexbox alignment'],answer:'The box model.',why:'Section 2 can inspect the content, padding, border, and margin regions in more detail. This demo only establishes why their distinction matters.'}
+  ];
+  const DEFAULTS = {inline:{mode:'explore',stage:0,width:360,sample:'normal',padding:0,border:0,whiteSpace:'normal',breaking:'normal',display:'inline',previewWidth:'auto',inspector:false,reveal:false,prediction:null},block:{mode:'explore',stage:0,parentWidth:500,content:'medium',width:'auto',padding:16,border:1,margin:0,boxSizing:'content-box',height:'auto',overflow:'visible',previewWidth:'auto',inspector:false,reveal:false,prediction:null}};
+  let state = {demo:'inline', inline:structuredClone(DEFAULTS.inline), block:structuredClone(DEFAULTS.block)};
+  const inlineSamples = {normal:{pre:'Maya Patel moved ',status:'Contract review',post:' to Legal after the discovery call with Northwind Ventures.',secondary:'Nora left a note: “Keep the executive summary short.”'},long:{pre:'Maya Patel changed the next step to ',status:'Needs executive alignment before procurement',post:' after the account review with Northwind Ventures.',secondary:'The label is plausible when a CRM workflow carries a detailed state.'},id:{pre:'Maya Patel linked ',status:'DEAL20261018WESTERNENTERPRISEUPGRADE',post:' to the expansion opportunity after the call.',secondary:'This identifier intentionally has no ordinary wrap opportunity.'}};
+  const dealNotes = {short:'Legal confirmed the new contract schedule.',medium:'Legal confirmed the updated contract schedule. The account team will review the procurement timeline with the customer on Thursday.',long:'Legal confirmed the updated contract schedule. The account team will review the procurement timeline with the customer on Thursday. Finance still needs the revised payment milestones, and the sponsor asked for a concise risk summary before the steering meeting.'};
+  const current = () => state[state.demo];
+  const stageList = () => state.demo === 'inline' ? INLINE_STAGES : BLOCK_STAGES;
+  const px = (value) => `${Math.round(value)}px`;
+  const clamp = (value,min,max) => Math.max(min,Math.min(max,value));
+  function dispatch(action){
+    const s = current();
+    if(action.type === 'demo'){state.demo=action.value;}
+    else if(action.type === 'mode'){s.mode=action.value;}
+    else if(action.type === 'stage'){s.stage=clamp(action.value,0,stageList().length-1);s.prediction=null;s.reveal=false;applyStageDefaults(s);}
+    else if(action.type === 'set'){s[action.key]=action.value;}
+    else if(action.type === 'toggle'){s[action.key]=!s[action.key];}
+    else if(action.type === 'predict'){s.prediction=action.value;}
+    else if(action.type === 'reset'){state[state.demo]=structuredClone(DEFAULTS[state.demo]);}
+    render();
+  }
+  function applyStageDefaults(s){
+    if(state.demo==='inline'){
+      if(s.stage===0){Object.assign(s,{width:360,sample:'normal',padding:0,border:0,whiteSpace:'normal',breaking:'normal',display:'inline'});}
+      if(s.stage===1){Object.assign(s,{width:300,sample:'long',padding:8,border:1,whiteSpace:'normal',breaking:'normal',display:'inline'});}
+      if(s.stage===2){Object.assign(s,{width:280,sample:'id',whiteSpace:'normal',breaking:'normal',display:'inline'});}
+      if(s.stage===3){Object.assign(s,{width:300,sample:'long',padding:8,border:1,whiteSpace:'normal',breaking:'normal',display:'inline-block'});}
+      if(s.stage===4){Object.assign(s,{width:360,sample:'normal',display:'block-fit'});}
+    } else {
+      if(s.stage===0){Object.assign(s,{parentWidth:500,content:'medium',width:'auto',padding:16,border:1,margin:0,boxSizing:'content-box',height:'auto',overflow:'visible'});}
+      if(s.stage===1){Object.assign(s,{parentWidth:360,content:'medium',width:'auto'});}
+      if(s.stage===2){Object.assign(s,{parentWidth:430,content:'long',height:'auto'});}
+      if(s.stage===3){Object.assign(s,{parentWidth:430,content:'medium',width:'full'});}
+      if(s.stage===4){Object.assign(s,{parentWidth:430,width:'full',padding:24,border:4,margin:16,boxSizing:'content-box'});}
+      if(s.stage===5){Object.assign(s,{parentWidth:430,width:'full',padding:24,border:4,margin:0,boxSizing:'content-box'});}
+      if(s.stage===6){Object.assign(s,{parentWidth:430,content:'long',width:'auto',padding:16,border:1,height:'fixed',overflow:'visible'});}
+      if(s.stage===7){Object.assign(s,{parentWidth:430,content:'long',width:'full',padding:24,border:4,margin:16,boxSizing:'border-box',height:'fixed',overflow:'auto'});}
+    }
+  }
+  function mountInline(s){
+    const copy=inlineSamples[s.sample];
+    const displayClass=s.display==='inline-block'?'mode-inline-block':s.display==='block'?'mode-block':s.display==='block-fit'?'mode-fit':'';
+    const cssDisplay=s.display==='inline-block'?'inline-block':s.display==='block'||s.display==='block-fit'?'block':'inline';
+    const fit=s.display==='block-fit'?'width:fit-content;':'';
+    const wrap=s.breaking==='anywhere'?'overflow-wrap:anywhere;word-break:normal;':s.breaking==='break-all'?'overflow-wrap:normal;word-break:break-all;':'overflow-wrap:normal;word-break:normal;';
+    $('world').innerHTML=`<div class="crm-app"><div class="crm-topbar"><b>Northwind Ventures</b><span>Activity · Today</span></div><div class="activity-feed" id="inline-feed" style="width:${s.width}px"><p class="activity-title">Latest activity</p><div class="activity-item"><span class="activity-time">10:42</span> <strong>Maya Patel</strong> ${copy.pre}<span id="inline-probe" class="inline-probe ${displayClass} ${s.padding||s.border?'is-marked':''}" style="display:${cssDisplay};${fit}padding-inline:${s.padding}px;border-width:${s.border}px;white-space:${s.whiteSpace};${wrap}">${copy.status}</span>${s.display==='block'||s.display==='block-fit'?'': ' '}${copy.post}</div><div class="activity-item"><span class="activity-time">10:18</span> ${copy.secondary}</div></div><p class="inline-help">Status target: <span class="mini-key">#inline-probe</span></p></div>`;
+    const probe=$('inline-probe'), feed=$('inline-feed');
+    requestAnimationFrame(()=>{const m=measureInline(probe,feed);probe.classList.toggle('overflowing',m.overflow);renderInspector(m);});
+    return {target:'#inline-probe',code:`#inline-probe {\n  display: ${cssDisplay};\n  white-space: ${s.whiteSpace};\n  ${s.breaking==='anywhere'?'overflow-wrap: anywhere;':s.breaking==='break-all'?'word-break: break-all;':'overflow-wrap: normal;'}\n  padding-inline: ${s.padding}px;\n  border: ${s.border}px solid #8eb0e4;${s.display==='block-fit'?'\n  width: fit-content;':''}\n}`};
+  }
+  function mountBlock(s){
+    const widthValue=s.width==='auto'?'auto':s.width==='full'?'100%':'360px';
+    const heightValue=s.height==='fixed'?'120px':'auto';
+    const note=dealNotes[s.content];
+    $('world').innerHTML=`<div class="crm-app"><div class="crm-topbar"><b>Deal summary</b><span>Qualified · $180,000</span></div><div class="deal-parent" id="deal-parent" style="width:${s.parentWidth}px"><div class="deal-parent-label"><span>Containing block</span><span>${s.parentWidth}px declared</span></div><article class="deal-card" id="deal-card" style="width:${widthValue};height:${heightValue};padding:${s.padding}px;border-width:${s.border}px;margin-inline:${s.margin}px;box-sizing:${s.boxSizing};overflow:${s.overflow}"><header class="deal-head"><h3>Northwind expansion</h3><p>Owner: Maya Patel · Closing this quarter</p></header><div class="deal-grid"><div class="deal-field"><span>Stage</span><b>Negotiation</b></div><div class="deal-field"><span>Forecast</span><b>Upside</b></div></div><p class="deal-note">${note}</p></article></div><div class="sizing-readout"><div><span>Declared width</span><b>${widthValue}</b></div><div><span>Declared height</span><b>${heightValue}</b></div><div><span>Box sizing</span><b>${s.boxSizing}</b></div></div><p class="two-value"><b>Next:</b> Which box-model region changes visible size, available content space, or outer occupied space?</p></div>`;
+    const card=$('deal-card'),parent=$('deal-parent');
+    requestAnimationFrame(()=>{const m=measureBlock(card,parent);card.classList.toggle('overflowing',m.overflowX||m.overflowY);renderInspector(m);});
+    return {target:'#deal-card',code:`#deal-card {\n  display: block;\n  width: ${widthValue};\n  height: ${heightValue};\n  padding: ${s.padding}px;\n  border: ${s.border}px solid #315FA8;\n  margin-inline: ${s.margin}px;\n  box-sizing: ${s.boxSizing};\n  overflow: ${s.overflow};\n}`};
+  }
+  function measureInline(node,parent){
+    const cs=getComputedStyle(node),parentCs=getComputedStyle(parent),rect=node.getBoundingClientRect(),fragments=[...node.getClientRects()];
+    const available=Math.max(0,parent.clientWidth-parseFloat(parentCs.paddingLeft)-parseFloat(parentCs.paddingRight));
+    const contentRight=parent.getBoundingClientRect().right-parseFloat(parentCs.borderRightWidth)-parseFloat(parentCs.paddingRight);
+    const overflow=fragments.some(fragment=>fragment.right>contentRight+1);
+    return {kind:'inline',display:cs.display,fragments:fragments.length,borderW:rect.width,contentW:Math.max(0,rect.width-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight)-parseFloat(cs.borderLeftWidth)-parseFloat(cs.borderRightWidth)),available,overflow,whiteSpace:cs.whiteSpace,overflowWrap:cs.overflowWrap,wordBreak:cs.wordBreak};
+  }
+  function measureBlock(node,parent){
+    const cs=getComputedStyle(node),parentCs=getComputedStyle(parent),rect=node.getBoundingClientRect();
+    const marginL=parseFloat(cs.marginLeft),marginR=parseFloat(cs.marginRight),padX=parseFloat(cs.paddingLeft)+parseFloat(cs.paddingRight),borderX=parseFloat(cs.borderLeftWidth)+parseFloat(cs.borderRightWidth),padY=parseFloat(cs.paddingTop)+parseFloat(cs.paddingBottom),borderY=parseFloat(cs.borderTopWidth)+parseFloat(cs.borderBottomWidth);
+    const available=Math.max(0,parent.clientWidth-parseFloat(parentCs.paddingLeft)-parseFloat(parentCs.paddingRight));
+    const occupied=rect.width+marginL+marginR;
+    return {kind:'block',display:cs.display,declared:cs.width,borderW:rect.width,contentW:Math.max(0,rect.width-padX-borderX),borderH:rect.height,contentH:Math.max(0,rect.height-padY-borderY),occupied,available,boxSizing:cs.boxSizing,overflowX:node.scrollWidth>node.clientWidth||occupied>available+1,overflowY:node.scrollHeight>node.clientHeight,overflow:cs.overflow};
+  }
+  function renderInspector(m){
+    const open=current().inspector;if(!open)return;
+    $('inspector-title').textContent=m.kind==='inline'?'Inline status':'Deal summary panel';
+    $('inspector-pill').textContent=m.kind==='inline'?(m.overflow?'Overflow':'Measured'):(m.overflowX||m.overflowY?'Overflow':'Measured');
+    const chain=m.kind==='inline'?[['computed display',m.display],['available parent space',px(m.available)],['white-space',m.whiteSpace],['overflow-wrap',m.overflowWrap],['word-break',m.wordBreak]]:[['computed display',m.display],['available parent space',px(m.available)],['box-sizing',m.boxSizing],['computed width',m.declared],['overflow',m.overflow]];
+    $('inspector-chain').replaceChildren();chain.forEach(([name,value])=>{const dt=document.createElement('dt'),dd=document.createElement('dd');dt.textContent=name;dd.textContent=value;$('inspector-chain').append(dt,dd);});
+    if(m.kind==='inline'){ $('measure-a-label').textContent='Inline fragments';$('measure-a').textContent=m.fragments;$('measure-b-label').textContent='Border-box width';$('measure-b').textContent=px(m.borderW);$('inspector-explain').textContent=`Content box ${px(m.contentW)} · available parent space ${px(m.available)}.`; }
+    else { $('measure-a-label').textContent='Border-box width';$('measure-a').textContent=px(m.borderW);$('measure-b-label').textContent='Occupied width';$('measure-b').textContent=px(m.occupied);$('inspector-explain').textContent=`Content box ${px(m.contentW)} × ${px(m.contentH)} · border box ${px(m.borderW)} × ${px(m.borderH)}.`; }
+  }
+  function updateControls(s){
+    const maxStage=s.mode==='explore'?Infinity:s.stage;
+    $$('.demo-inline').forEach(el=>el.hidden=state.demo!=='inline'||Number(el.dataset.showStage)>maxStage);
+    $$('.demo-block').forEach(el=>el.hidden=state.demo!=='block'||Number(el.dataset.showStage)>maxStage);
+    const bindings={
+      'inline-width':['width','val-inline-width',v=>px(v)],'inline-sample':['sample'], 'inline-padding':['padding','val-inline-padding',v=>px(v)],'inline-border':['border','val-inline-border',v=>px(v)],'inline-white-space':['whiteSpace'],'inline-break':['breaking'],'inline-display':['display'],
+      'parent-width':['parentWidth','val-parent-width',v=>px(v)],'deal-content':['content'],'deal-width':['width'],'deal-padding':['padding','val-deal-padding',v=>px(v)],'deal-border':['border','val-deal-border',v=>px(v)],'deal-margin':['margin','val-deal-margin',v=>px(v)],'deal-box-sizing':['boxSizing'],'deal-height':['height'],'deal-overflow':['overflow']};
+    Object.entries(bindings).forEach(([id,[key,output,format]])=>{const el=$(id);if(!el)return;el.value=s[key];if(output)$(output).textContent=format(s[key]);});
+    $('preview-width').value=s.previewWidth;$('inspector').hidden=!s.inspector;$('inspector-toggle').setAttribute('aria-expanded',String(s.inspector));$('inspector-toggle').textContent=s.inspector?'Close inspector':'Open inspector';
+  }
+  function render(){
+    const s=current(),stages=stageList(),stage=stages[s.stage];
+    $$('[data-demo]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.demo===state.demo)));$$('[data-mode]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.mode===s.mode)));
+    $('subtitle').textContent=state.demo==='inline'?'Inline Formatting & Atomic Boxes':'Block Flow & Default Sizing';$('status').textContent=(s.mode==='guided'?'Guided':'Explore')+' · '+stage.label;$('step-counter').textContent=`Stage ${s.stage+1} of ${stages.length}`;$('step-prev').disabled=s.stage===0;$('step-next').disabled=s.stage===stages.length-1;$('stage-hint').textContent=stage.hint;$('world-title').textContent=state.demo==='inline'?'CRM activity feed':'CRM deal summary';$('stage-caption').textContent=stage.label;
+    updateControls(s);
+    $('world').style.width=s.previewWidth==='auto'?'100%':s.previewWidth+'px';
+    const result=state.demo==='inline'?mountInline(s):mountBlock(s);$('css-target').textContent=result.target;$('css-code').textContent=result.code;
+    $('reveal').setAttribute('aria-pressed',String(s.reveal));$('reveal').textContent=s.reveal?'Hide explanation':'Reveal explanation';
+    const choices=stage.choices.map(choice=>`<button class="ds-prediction" data-predict="${choice}" aria-pressed="${String(s.prediction===choice)}">${choice}</button>`).join('');
+    const explanation=s.reveal?`<p class="ds-reveal"><b>${stage.answer}</b> ${stage.why}</p>`:'';
+    $('world').insertAdjacentHTML('beforeend',`<div class="ds-question"><strong>Predict</strong><p>${stage.question}</p><div class="ds-predictions">${choices}</div>${explanation}</div>`);
+  }
+  const inputMap={
+    'inline-width':'width','inline-sample':'sample','inline-padding':'padding','inline-border':'border','inline-white-space':'whiteSpace','inline-break':'breaking','inline-display':'display',
+    'parent-width':'parentWidth','deal-content':'content','deal-width':'width','deal-padding':'padding','deal-border':'border','deal-margin':'margin','deal-box-sizing':'boxSizing','deal-height':'height','deal-overflow':'overflow'};
+  root.addEventListener('input',(event)=>{const key=inputMap[event.target.id];if(key)dispatch({type:'set',key,value:event.target.type==='range'?Number(event.target.value):event.target.value});});
+  root.addEventListener('change',(event)=>{const key=inputMap[event.target.id];if(key&&event.target.type!=='range')dispatch({type:'set',key,value:event.target.value});if(event.target.id==='preview-width')dispatch({type:'set',key:'previewWidth',value:event.target.value});});
+  root.addEventListener('click',(event)=>{const button=event.target.closest('button');if(!button)return;if(button.dataset.demo)dispatch({type:'demo',value:button.dataset.demo});else if(button.dataset.mode)dispatch({type:'mode',value:button.dataset.mode});else if(button.dataset.predict)dispatch({type:'predict',value:button.dataset.predict});else if(button.id==='step-prev')dispatch({type:'stage',value:current().stage-1});else if(button.id==='step-next')dispatch({type:'stage',value:current().stage+1});else if(button.id==='inspector-toggle')dispatch({type:'toggle',key:'inspector'});else if(button.id==='reveal')dispatch({type:'toggle',key:'reveal'});else if(button.id==='reset')dispatch({type:'reset'});});
+  render();
+})();
+</script>
+</body>
+</html>

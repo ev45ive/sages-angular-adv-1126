@@ -1,0 +1,745 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CSS Layout & Sizing · Section 2</title>
+<style id="shell-style">
+
+/* DEMOSHELL 1.0 — Keep shell chrome and tokens consistent across all demos.
+   Customize only the lesson/world content in .ds-world and the registries in JS. */
+#demo-shell {
+  --shell-bg:#FFFFFF;--shell-side:#F7F9FC;--shell-work:#EEF2F8;
+  --shell-ink:#25344B;--shell-muted:#64758D;--shell-subtle:#8897AA;
+  --shell-border:#D8E0E9;--shell-accent:#315FA8;--shell-accent-soft:#E8F0FD;
+  --shell-warning:#98631B;--shell-warning-bg:#FFF2DB;
+  --shell-danger:#A54747;--shell-success:#287963;--shell-code:#152338;
+  --shell-radius-xs:4px;--shell-radius-sm:6px;--shell-radius-md:9px;--shell-radius-lg:12px;
+  --shell-gap-1:4px;--shell-gap-2:8px;--shell-gap-3:12px;--shell-gap-4:16px;--shell-gap-5:24px;
+  --shell-font:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font:13px/1.5 var(--shell-font); color:var(--shell-ink);background:var(--shell-bg);
+  border:1px solid var(--shell-border);border-radius:var(--shell-radius-lg);
+  max-width:1420px;margin:16px auto;overflow:hidden; box-shadow:0 5px 24px #24344a0a;
+}
+#demo-shell *,#demo-shell *::before,#demo-shell *::after{box-sizing:border-box}
+#demo-shell button,#demo-shell select,#demo-shell input{font:inherit}
+#demo-shell button{cursor:pointer}
+#demo-shell button:focus-visible,#demo-shell input:focus-visible,#demo-shell select:focus-visible{outline:2px solid var(--shell-accent);outline-offset:2px}
+#demo-shell button:disabled{opacity:.5;cursor:default}
+#demo-shell .ds-header{min-height:64px;background:#17263D;color:#F6F9FF;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 18px}
+#demo-shell h1{font-size:16px;line-height:1.15;letter-spacing:-.3px;margin:0;font-weight:700}
+#demo-shell .ds-kicker{font-size:11px;color:#A8B8D0;margin-top:4px}
+#demo-shell .ds-status{border:1px solid #5F7390;border-radius:6px;color:#ECF4FF;font-size:11px;white-space:nowrap;padding:5px 9px}
+#demo-shell .ds-columns{display:grid;grid-template-columns:304px minmax(0,1fr);min-height:690px}
+#demo-shell .ds-sidebar{background:var(--shell-side);padding:14px;border-right:1px solid var(--shell-border);display:flex;flex-direction:column;gap:13px;max-height:820px;overflow:auto}
+#demo-shell .ds-section{border-bottom:1px solid var(--shell-border);padding-bottom:13px;min-width:0}
+#demo-shell .ds-section:last-child{border-bottom:0;padding-bottom:0}
+#demo-shell .ds-section-title{display:flex;align-items:baseline;justify-content:space-between;gap:8px;font-size:12px;font-weight:700;margin:0 0 9px}
+#demo-shell .ds-meta{font-size:11px;color:var(--shell-muted);font-weight:400}
+#demo-shell .ds-label{font-size:11px;color:var(--shell-muted);display:block}
+#demo-shell .ds-hint{font-size:11px;color:var(--shell-muted);margin:7px 0 0}
+#demo-shell .ds-seg{display:flex;background:#FFF;border:1px solid var(--shell-border);border-radius:6px;overflow:hidden;min-width:0}
+#demo-shell .ds-seg button{flex:1;border:0;border-right:1px solid var(--shell-border);color:#52647C;background:transparent;min-height:32px;font-size:11px;padding:5px 6px}
+#demo-shell .ds-seg button:last-child{border:0}
+#demo-shell .ds-seg button[aria-pressed="true"]{background:var(--shell-accent);color:#FFF;font-weight:650}
+#demo-shell .ds-mini-actions{display:flex;align-items:center;gap:7px;margin:9px 0 5px}
+#demo-shell .ds-btn{min-height:32px;border-radius:6px;border:1px solid var(--shell-border);color:#435771;background:white;padding:6px 10px;font-size:11px;font-weight:600}
+#demo-shell .ds-btn-primary{background:var(--shell-accent);color:white;border-color:var(--shell-accent)}
+#demo-shell .ds-btn-block{width:100%}
+#demo-shell .ds-step{flex:1;text-align:center;font-size:11px;color:var(--shell-muted)}
+#demo-shell .ds-field{margin:10px 0}
+#demo-shell .ds-fieldrow{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:4px}
+#demo-shell output{font-size:11px;color:var(--shell-accent);font-variant-numeric:tabular-nums}
+#demo-shell input[type="range"]{width:100%;accent-color:var(--shell-accent);cursor:pointer;display:block;margin:3px 0;height:18px}
+#demo-shell input[type="checkbox"]{width:15px;height:15px;accent-color:var(--shell-accent);cursor:pointer;margin:0}
+#demo-shell .ds-all{display:flex;align-items:center;gap:9px;font-weight:700;font-size:11px;padding:5px 0 9px}
+#demo-shell .ds-problem{display:grid;grid-template-columns:20px minmax(0,1fr) 22px;gap:7px;align-items:center;border-radius:6px;border:1px solid transparent;padding:5px;margin:0 -5px}
+#demo-shell .ds-problem[data-selected="true"]{background:var(--shell-accent-soft);border-color:#BED1F3}
+#demo-shell .ds-problem button{border:0;background:none;color:var(--shell-ink);text-align:left;font-size:11px;min-height:28px;padding:0}
+#demo-shell .ds-issue-icon{font-size:11px;color:var(--shell-warning);text-align:center}
+#demo-shell .ds-inspector{border:1px solid var(--shell-border);border-radius:9px;background:white;padding:10px}
+#demo-shell .ds-inspect-title{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:12px;font-weight:700}
+#demo-shell .ds-pill{display:inline-block;border-radius:6px;background:var(--shell-warning-bg);color:var(--shell-warning);font-size:10px;padding:3px 6px;font-weight:600}
+#demo-shell .ds-pill.ok{color:var(--shell-success);background:#E6F4ED}
+#demo-shell .ds-chain{display:grid;grid-template-columns:85px minmax(0,1fr);gap:5px 9px;margin:10px 0;font-size:11px}
+#demo-shell .ds-chain dt{color:var(--shell-subtle)}
+#demo-shell .ds-chain dd{margin:0;min-width:0;overflow-wrap:anywhere;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:10px}
+#demo-shell .ds-compare-values{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:9px 0}
+#demo-shell .ds-value{background:#F2F5F9;border-radius:6px;padding:8px;min-width:0}
+#demo-shell .ds-value label{display:block;color:var(--shell-muted);font-size:10px}
+#demo-shell .ds-value b{font-size:12px;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+#demo-shell .ds-explain{font-size:11px;color:#586B84;margin:9px 0}
+#demo-shell .ds-workspace{background:var(--shell-work);min-width:0;display:flex;flex-direction:column}
+#demo-shell .ds-toolbar{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;padding:11px 15px;border-bottom:1px solid var(--shell-border)}
+#demo-shell .ds-toolbar strong{font-size:12px}
+#demo-shell .ds-toolbar-group{display:flex;align-items:center;gap:8px}
+#demo-shell select{height:32px;border:1px solid var(--shell-border);border-radius:6px;color:var(--shell-ink);background:white;padding:0 7px;font-size:11px;max-width:100%}
+#demo-shell .ds-stage{border-radius:6px;padding:7px 15px;font-size:11px;color:#546780;border-bottom:1px solid var(--shell-border);background:#F7F9FD}
+#demo-shell .ds-world-wrap{padding:16px;min-width:0;overflow:auto}
+#demo-shell .ds-world{background:#FFF;border:1px solid var(--shell-border);border-radius:9px;max-width:100%;width:100%;padding:16px;min-height:410px;margin:0 auto;transition:background .12s}
+#demo-shell .ds-world-heading{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;flex-wrap:wrap;margin-bottom:14px}
+#demo-shell .ds-world h2{font-size:17px;margin:0;line-height:1.25}
+#demo-shell .ds-world p{font-size:11px;color:var(--shell-muted);margin:4px 0 0}
+#demo-shell .ds-world-badge{background:#EDF4FF;color:#2F5F9D;padding:4px 9px;border-radius:6px;font-weight:650;font-size:10px}
+#demo-shell .ds-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+#demo-shell .ds-metric{border:1px solid var(--shell-border);border-radius:9px;background:white;padding:11px;min-width:0;text-align:left;cursor:pointer;color:var(--shell-ink)}
+#demo-shell .ds-metric span{color:var(--shell-muted);display:block;font-size:11px}
+#demo-shell .ds-metric strong{font-size:22px;display:block;font-variant-numeric:tabular-nums;white-space:nowrap}
+#demo-shell .ds-metric small{color:var(--shell-muted);font-size:10px}
+#demo-shell [data-entity].selected{outline:2px solid var(--shell-accent);outline-offset:2px}
+#demo-shell .ds-chart{border:1px solid var(--shell-border);border-radius:9px;padding:13px;margin-top:12px}
+#demo-shell .ds-chart-label{display:flex;justify-content:space-between;font-size:11px;font-weight:650;gap:10px;margin-bottom:7px}
+#demo-shell .ds-bars{display:flex;align-items:end;gap:4px;height:120px;background:linear-gradient(to top,#E6ECF5 1px,transparent 1px) 0 0/100% 30px}
+#demo-shell .ds-bars div{flex:1;min-width:3px;min-height:0;border-radius:3px 3px 0 0;background:#6E9BD6;transition:height .12s}
+#demo-shell .ds-bars div:last-child{background:var(--shell-accent)}
+#demo-shell .ds-axis{display:flex;justify-content:space-between;color:var(--shell-subtle);font-size:10px;margin-top:6px}
+#demo-shell .ds-question{border-left:3px solid var(--shell-accent);background:#F1F5FB;padding:9px 12px;margin-top:12px;border-radius:0 6px 6px 0}
+#demo-shell .ds-question strong{font-size:11px}
+#demo-shell .ds-question p{font-size:11px;color:var(--shell-ink)}
+#demo-shell .ds-compare-panel{border:1px solid #C6D9F6;border-radius:9px;background:#F2F7FF;padding:10px 12px;margin-top:10px;font-size:11px}
+#demo-shell .ds-compare-panel strong{display:block;font-size:12px;margin-bottom:3px}
+#demo-shell .ds-bottom{background:#FFF;border-top:1px solid var(--shell-border);padding:13px 16px}
+#demo-shell .ds-bottom-title{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:12px;font-weight:700;margin-bottom:9px}
+#demo-shell .ds-code{white-space:pre-wrap;word-break:break-word;max-height:220px;overflow:auto;background:var(--shell-code);color:#E6ECF7;padding:13px;border-radius:6px;font:11px/1.55 ui-monospace,Consolas,monospace;margin:9px 0 0}
+#demo-shell .ds-footer-note{font-size:11px;color:var(--shell-muted);padding:9px 16px;background:#FAFCFE;border-top:1px solid var(--shell-border)}
+@media(max-width:800px){#demo-shell .ds-columns{grid-template-columns:minmax(0,1fr)}#demo-shell .ds-sidebar{max-height:none;border-right:0;border-bottom:1px solid var(--shell-border)}#demo-shell .ds-world-wrap{padding:10px}}
+@media(max-width:430px){#demo-shell{margin:0}#demo-shell .ds-metrics{grid-template-columns:1fr}#demo-shell .ds-world{padding:10px}#demo-shell .ds-header{padding:10px}#demo-shell .ds-metric strong{font-size:19px}}
+@media(prefers-reduced-motion:reduce){#demo-shell *,#demo-shell *::before,#demo-shell *::after{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+
+</style>
+<style id="fixture-style">
+/* Shell additions stay outside the experimental geometry. */
+html { background:#e9eef5; }
+body { margin:0; }
+[hidden] { display:none !important; }
+#demo-shell .ds-header { flex-wrap:wrap; }
+#demo-shell .ds-sidebar { max-height:calc(100vh - 100px); }
+#demo-shell .ds-section select { width:100%; }
+#demo-shell .lab-nav { border-bottom:1px solid var(--shell-border); padding:12px 16px; }
+#demo-shell .lab-nav .ds-seg { max-width:720px; }
+#demo-shell .control-pair { display:grid;grid-template-columns:1fr 1fr;gap:10px; }
+#demo-shell .control-check { display:flex;align-items:center;gap:8px;min-height:30px;font-size:11px; }
+#demo-shell .control-check input { flex-shrink:0; }
+#demo-shell .ds-world-wrap { padding:16px; }
+#demo-shell .scene-scroll { overflow:auto;min-width:0; }
+#demo-shell .scene-canvas { position:relative;min-height:300px; }
+#demo-shell .lab-frame { background:white;border:1px solid var(--shell-border);border-radius:9px;overflow:hidden; }
+#demo-shell .crm-bar { display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;padding:12px 16px;background:white;border-bottom:1px solid var(--shell-border);font-size:11px;color:var(--shell-muted); }
+#demo-shell .crm-bar strong { color:var(--shell-ink); }
+#demo-shell .lab-padding { padding:24px; }
+#demo-shell .measure-strip { display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:12px; }
+#demo-shell .measure-cell { padding:9px;background:#f7f9fc;border:1px solid var(--shell-border);border-radius:6px;min-width:0; }
+#demo-shell .measure-cell span { display:block;font-size:10px;color:var(--shell-muted); }
+#demo-shell .measure-cell strong { font:11px/1.5 ui-monospace,Consolas,monospace;overflow-wrap:anywhere; }
+#demo-shell .lesson { margin-top:14px;border-left:3px solid var(--shell-accent);padding:9px 12px;background:#f7f9fc;border-radius:0 6px 6px 0; }
+#demo-shell .lesson p { margin:3px 0 8px;font-size:12px; }
+#demo-shell .lesson .answer { font-size:11px;color:#52647c;margin-bottom:0; }
+#demo-shell .diagnostics { background:white;border-top:1px solid var(--shell-border);padding:12px 16px; }
+#demo-shell details > summary { cursor:pointer;font-size:12px;font-weight:650;min-height:30px;line-height:30px; }
+#demo-shell summary:focus-visible { outline:2px solid var(--shell-accent);outline-offset:2px; }
+#demo-shell .ds-code { max-height:300px;white-space:pre;word-break:normal; }
+#demo-shell .css-tools { display:flex;align-items:center;gap:8px;justify-content:space-between;flex-wrap:wrap; }
+#demo-shell .inspect-table { width:100%;border-collapse:collapse;font-size:11px;margin-top:8px; }
+#demo-shell .inspect-table th,#demo-shell .inspect-table td { text-align:left;vertical-align:top;border-bottom:1px solid #e7edf5;padding:7px 8px;overflow-wrap:anywhere; }
+#demo-shell .inspect-table td { font-family:ui-monospace,Consolas,monospace; }
+#demo-shell .inspect-table th { width:40%;color:var(--shell-muted);font-weight:400; }
+#demo-shell .table-wrap { overflow:auto; }
+#demo-shell .overlay-layer { position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:15; }
+#demo-shell .geometry-mark { position:absolute;border:1px solid #a86e22;background:#f3bd5120;box-sizing:border-box; }
+#demo-shell .geometry-mark.content { border-color:#287963;background:#36ac7720; }
+#demo-shell .geometry-mark.reference { border:1px dashed #315fa8;background:#315fa80b; }
+#demo-shell .geometry-mark.neighbor { border-color:#9c4c92;background:#b15ea90d; }
+#demo-shell .overlay-key { font-size:10px;color:var(--shell-muted);margin-top:8px; }
+#reference-bin { position:absolute;left:-20000px;top:0;visibility:hidden;pointer-events:none;width:1000px; }
+@media(max-width:800px) { #demo-shell .ds-sidebar { max-height:none; } }
+@media(max-width:430px) { #demo-shell .ds-world-wrap { padding:10px; } #demo-shell .measure-strip { grid-template-columns:1fr; } #demo-shell .lab-nav { padding:10px; } }
+
+/* CRM fixtures. Explicitly opt out of the shell's border-box normalization. */
+#demo-shell .scene, #demo-shell .scene *, #demo-shell .scene *::before, #demo-shell .scene *::after { box-sizing:content-box; }
+#demo-shell .scene { color:#25344b;font:14px/1.5 system-ui,-apple-system,'Segoe UI',sans-serif; }
+#demo-shell .scene h2 { font-size:19px;line-height:1.3;margin:0 0 4px; }
+#demo-shell .scene h3 { font-size:14px;line-height:1.4;margin:0 0 6px; }
+#demo-shell .scene p { margin:0; }
+#demo-shell .scene button { cursor:pointer; }
+#demo-shell .scene .subtle { color:#65758a;font-size:12px; }
+#demo-shell .scene .crm-button { font:600 12px/1.5 system-ui,sans-serif;color:white;background:#315fa8;border:1px solid #315fa8;border-radius:6px;padding:8px 12px; }
+#demo-shell .scene .crm-button.quiet { background:white;color:#315fa8;border-color:#cbd7e6; }
+#demo-shell .scene .tag { display:inline-block;background:#e8effa;color:#315581;border-radius:4px;padding:3px 7px;font:11px/1.4 system-ui,sans-serif; }
+#demo-shell .scene [data-probe] { cursor:pointer; }
+#demo-shell .scene [data-probe].selected-probe { outline:1px dashed #a86e22;outline-offset:4px; }
+#demo-shell .scene.boundaries { outline:1px dashed #769dcc;outline-offset:4px; }
+#demo-shell .scene.boundaries [data-collection], #demo-shell .scene.boundaries .search-row { outline:1px dashed #769dcc;outline-offset:2px; }
+#demo-shell .scene.boundaries .task-card { outline:1px solid #5f9b83;outline-offset:0; }
+#demo-shell .scene.boundaries .column-slot { outline:1px dashed #769dcc;outline-offset:0; }
+#demo-shell .scene.boundaries .collection { outline:2px dashed #315fa8;outline-offset:0; }
+
+/* 2A: native form controls, with geometry owned by the generated rules. */
+#demo-shell .a-fixture { padding:18px;border:1px solid #cbd7e6;background:#f7f9fc; }
+#demo-shell .a-fixture .editor-header { margin-bottom:20px; }
+#demo-shell .a-fixture .form-field { display:block;margin-bottom:18px; }
+#demo-shell .a-fixture .field-label { display:block;font-size:12px;margin-bottom:6px; }
+#demo-shell .a-fixture input { color:#25344b;background:white;border:1px solid #b8c8dd;border-radius:5px;font:14px/1.5 system-ui,sans-serif; }
+#demo-shell .a-fixture button { color:#315581;background:#e8effa;border:1px solid #b8c8dd;border-radius:5px;font:14px/1.5 system-ui,sans-serif; }
+#demo-shell .a-fixture .editor-actions { margin-top:20px; }
+#demo-shell .a-fixture .form-feedback { font-size:11px;margin-top:12px;color:#287963; }
+
+/* 2B: the item content never owns the layout mechanism. */
+#demo-shell .b-fixture { min-height:120px; }
+#demo-shell .collection-host { display:flow-root;border:1px solid #cfdaea;padding:16px;background:#f4f7fb;margin-bottom:18px; }
+#demo-shell .context-title { font:600 11px/1.5 system-ui,sans-serif;color:#64758d;margin:0 0 8px; }
+#demo-shell .collection { position:relative;background:#e9eff7;padding:0;border:0; }
+#demo-shell .edge-marker { height:2px;background:#a9bedc; }
+#demo-shell .collection-footer { clear:both;font:11px/1.5 system-ui,sans-serif;color:#64758d;margin-top:12px; }
+#demo-shell .task-card { border:1px solid #cbd7e6;background:white;border-radius:6px;color:#25344b;box-shadow:0 3px 7px #25344b12; }
+#demo-shell .task-card h3 { margin:0 0 7px;font-size:13px; }
+#demo-shell .task-card p { font-size:12px;line-height:1.5;margin:0 0 12px; }
+#demo-shell .task-card .card-meta { display:flex;justify-content:space-between;gap:8px;font-size:10px;color:#64758d; }
+
+/* 2C: each scenario is an actual layout, independent of the annotations. */
+#demo-shell .c-scene { padding:24px;border:1px solid #cbd7e6;background:#f7f9fc;min-height:200px;position:relative; }
+#demo-shell .avatar-line { display:flex;align-items:center;flex-wrap:wrap;gap:12px; }
+#demo-shell .avatar-group { display:inline-flex;width:max-content;align-items:center; }
+#demo-shell .avatar { display:flex;align-items:center;justify-content:center;flex:none;width:40px;height:40px;border:2px solid white;border-radius:50%;background:#d3e2f8;color:#234c83;font-weight:700;font-size:12px; }
+#demo-shell .avatar:nth-child(2n) { background:#e4d8f2;color:#614086; }
+#demo-shell .avatar:nth-child(3n) { background:#d2e9dd;color:#286b50; }
+#demo-shell .avatar-line .following { font-size:12px; }
+#demo-shell .deal-titleline { display:flex;align-items:flex-start;flex-wrap:wrap;gap:12px; }
+#demo-shell .deal-titleline .priority { background:#fff0d8;color:#80520e;padding:4px 8px;border:1px solid #e5c99c;border-radius:5px;white-space:nowrap;font-size:11px; }
+#demo-shell .deal-titleline .following { font-size:11px;color:#64758d; }
+#demo-shell .press-actions { display:flex;align-items:baseline;flex-wrap:wrap;gap:12px; }
+#demo-shell .c-scene .menu-wrap { position:relative;display:inline-block; }
+#demo-shell .c-scene .popup { position:absolute;inset-inline-start:0;inset-block-start:calc(100% + 8px);width:158px;background:white;border:1px solid #cbd7e6;border-radius:6px;padding:5px;z-index:4;box-shadow:0 5px 16px #25344b20; }
+#demo-shell .c-scene .menu-group { padding-top:10px; }
+#demo-shell .c-scene .menu-item { position:relative; }
+#demo-shell .c-scene .popup button { width:100%;padding:8px 10px;text-align:left;border:0;background:white;color:#25344b;font-size:12px;box-sizing:border-box; }
+#demo-shell .c-scene .popup button:hover,#demo-shell .c-scene .popup button:focus-visible { background:#e8effa; }
+#demo-shell .c-scene .submenu-anchor { position:absolute;inset-inline-start:100%;inset-block-start:0;width:158px; }
+#demo-shell .c-scene .submenu { width:148px;border:1px solid #cbd7e6;background:white;border-radius:6px;padding:5px;box-shadow:0 5px 16px #25344b20; }
+#demo-shell .c-scene .menu-feedback { margin-top:160px;font-size:12px;color:#64758d; }
+#demo-shell .swipe-stack { display:grid;gap:12px; }
+#demo-shell .swipe-wrap { position:relative;background:#a64949;border:1px solid #d1dce9;border-radius:6px;overflow:hidden; }
+#demo-shell .swipe-row { width:100%;padding:16px;background:white;position:relative;z-index:1;box-sizing:border-box; }
+#demo-shell .swipe-row strong { display:block;font-size:13px; }
+#demo-shell .swipe-row span { font-size:11px;color:#64758d; }
+#demo-shell .reveal-action { position:absolute;inset-inline-end:0;inset-block:0;width:80px;background:#a64949;color:white;border:0;font-size:12px; }
+#demo-shell .timeline-list { display:flex;flex-direction:column;gap:12px; }
+#demo-shell .timeline-card { padding:16px;border:1px solid #cfdaea;border-radius:6px;background:white;font-size:12px; }
+#demo-shell .timeline-card.highlight { background:#eaf1fc;border-color:#8faed9;z-index:1; }
+@media(prefers-reduced-motion:reduce) { #demo-shell .scene .mover { animation:none !important;transition:none !important; } }
+</style>
+<style id="experiment-style"></style>
+</head>
+<body>
+<div id="demo-shell">
+  <header class="ds-header"><div><h1>CSS Layout & Sizing · Section 2</h1><div class="ds-kicker">Geometry, arrangement and visual movement</div></div><span class="ds-status" id="status">2A · Form Geometry</span></header>
+  <nav class="lab-nav" aria-label="Labs"><div class="ds-seg"><button data-lab="a" aria-pressed="true">2A · Form Geometry</button><button data-lab="b" aria-pressed="false">2B · Layout Spacing</button><button data-lab="c" aria-pressed="false">2C · Visual Offsets</button></div></nav>
+  <div class="ds-columns">
+    <aside class="ds-sidebar" aria-label="Experiment controls">
+      <section class="ds-section"><h2 class="ds-section-title">Learning stage <span class="ds-meta" id="stage-count"></span></h2><div class="ds-seg" aria-label="Exploration mode"><button data-mode="explore" aria-pressed="true">Explore</button><button data-mode="guided" aria-pressed="false">Guided</button></div><div class="ds-field"><label class="ds-label" for="stage-select">Experiment</label><select id="stage-select"></select></div><div class="ds-mini-actions"><button class="ds-btn" id="stage-prev" aria-label="Previous stage">←</button><span class="ds-step" id="stage-label"></span><button class="ds-btn" id="stage-next" aria-label="Next stage">→</button></div></section>
+      <div id="a-controls" class="lab-controls"></div>
+      <div id="b-controls" class="lab-controls" hidden></div>
+      <div id="c-controls" class="lab-controls" hidden></div>
+      <section class="ds-section"><h2 class="ds-section-title">Observation</h2><label class="control-check"><input type="checkbox" id="show-bounds" checked> Show boundaries</label><label class="control-check"><input type="checkbox" id="show-reference" checked> Show zero-offset reference</label><label class="control-check"><input type="checkbox" id="show-visual" checked> Show visual bounds</label><label class="control-check"><input type="checkbox" id="show-neighbor" checked> Show neighbor movement</label></section>
+      <section class="ds-section"><button class="ds-btn ds-btn-block" id="reset">Reset this experiment</button></section>
+    </aside>
+    <main class="ds-workspace">
+      <div class="ds-toolbar"><strong id="preview-title">CRM Deal Editor</strong><span class="ds-meta" id="viewport-size"></span></div>
+      <div class="ds-stage" id="stage-caption"></div>
+      <div class="ds-world-wrap">
+        <div class="lab-frame"><div class="crm-bar"><strong>Northstar CRM</strong><span id="crm-context">Deals / Northwind expansion</span></div>
+          <div class="scene-scroll" id="scene-scroll"><div class="lab-padding"><div class="scene-canvas" id="scene-canvas">
+            <div class="scene a-fixture" id="a-fixture">
+              <div class="editor-header"><h2>Deal editor</h2><p class="subtle">Northwind expansion · Negotiation</p></div>
+              <form id="deal-form"><label class="form-field"><span class="field-label">Deal name</span><input data-geom="deal" data-probe="deal" value="Northwind expansion" aria-label="Deal name"></label><label class="form-field"><span class="field-label">Expected revenue</span><input data-geom="revenue" data-probe="revenue" type="number" value="48000" aria-label="Expected revenue"></label><div class="form-field"><label class="field-label" for="contact-input">Contact search</label><div class="search-row"><input id="contact-input" data-geom="contact" data-probe="contact" placeholder="Find a contact"><button type="button" data-geom="search" data-probe="search" data-form-action="search">Search</button></div></div><div class="editor-actions"><button type="submit" data-geom="save" data-probe="save">Save deal</button> <button type="button" data-geom="cancel" data-probe="cancel" data-form-action="cancel">Cancel</button></div><p class="form-feedback" role="status" hidden></p></form>
+            </div>
+            <div class="scene b-fixture" id="b-fixture" hidden></div>
+            <div id="c-fixtures" hidden>
+              <div class="scene c-scene" data-scenario="avatars" hidden><h2>Deal participants</h2><p class="subtle" style="margin-bottom:24px">Northwind expansion</p><div class="avatar-line"><div class="avatar-group" data-collection><span class="avatar" data-probe="avatar-0">MP</span><span class="avatar mover" data-probe="avatar-1" style="--index:1">JL</span><span class="avatar mover" data-probe="avatar-2" style="--index:2">NK</span><span class="avatar mover" data-probe="avatar-3" style="--index:3">AS</span><span class="avatar mover" data-probe="avatar-4" style="--index:4">RW</span></div><span class="following" data-neighbor>5 participants</span></div></div>
+              <div class="scene c-scene" data-scenario="badge" hidden><h2>Deal summary</h2><p class="subtle" style="margin-bottom:24px">Pipeline / Enterprise</p><div class="deal-titleline" data-collection><strong>Northwind expansion</strong><span class="priority mover" data-probe="priority">High priority</span><span class="following" data-neighbor>Due Thursday</span></div></div>
+              <div class="scene c-scene" data-scenario="press" hidden><h2>Deal actions</h2><p class="subtle" style="margin-bottom:24px">Press Save deal to compare feedback.</p><div class="press-actions" data-collection><button class="crm-button mover" data-probe="press" data-press aria-pressed="true">Save deal</button><button class="crm-button quiet" data-neighbor data-example="Draft retained">Save draft</button><button class="crm-button quiet" data-example="Changes cancelled">Cancel</button></div><p class="subtle example-feedback" role="status" style="margin-top:24px"></p></div>
+              <div class="scene c-scene" data-scenario="dropdown" hidden><h2>Deal toolbar</h2><p class="subtle" style="margin-bottom:20px">Northwind expansion</p><div class="menu-wrap" data-collection><button class="crm-button" data-popup-toggle aria-expanded="false">Actions ▾</button><div class="popup" hidden><button data-menu-action="Assigned to Maya">Assign to Maya</button><div class="menu-group"><div class="menu-item"><button data-submenu-toggle aria-expanded="false">Move to <span aria-hidden="true">›</span></button><div class="submenu-anchor" hidden><div class="submenu mover" data-probe="submenu"><button data-menu-action="Moved to Qualified">Qualified</button><button data-menu-action="Moved to Negotiation">Negotiation</button><button data-menu-action="Moved to Closed">Closed</button></div></div></div></div><button data-menu-action="Deal link copied">Copy deal link</button></div></div> <button class="crm-button quiet" data-neighbor data-example="Deal details ready">View deal</button><p class="menu-feedback" role="status">Choose an action.</p></div>
+              <div class="scene c-scene" data-scenario="swipe" hidden><h2>Tasks</h2><p class="subtle" style="margin-bottom:20px">Reveal an action without disturbing the list.</p><div class="swipe-stack" data-collection><div class="swipe-wrap"><button class="reveal-action" data-archive>Archive</button><div class="swipe-row mover" data-probe="swipe"><strong>Send revised proposal</strong><span>Northwind · Today</span></div></div><div class="swipe-wrap" data-neighbor><div class="swipe-row"><strong>Confirm procurement timeline</strong><span>Northwind · Thursday</span></div></div><div class="swipe-wrap"><div class="swipe-row"><strong>Prepare account review</strong><span>Enterprise · Friday</span></div></div></div><p class="subtle example-feedback" role="status" style="margin-top:16px"></p></div>
+              <div class="scene c-scene" data-scenario="timeline" hidden><h2>Activity timeline</h2><p class="subtle" style="margin-bottom:20px">A highlight with a changing flow relationship.</p><div class="timeline-list" data-collection><article class="timeline-card"><strong>Discovery completed</strong><p>Customer goals and constraints recorded.</p></article><article class="timeline-card highlight mover" data-probe="highlight"><strong>Proposal approved</strong><p>Ready for legal and procurement review.</p></article><article class="timeline-card" data-neighbor><strong>Contract review</strong><p>Next milestone · Thursday</p></article></div></div>
+            </div>
+            <div class="overlay-layer" id="overlays" aria-hidden="true"></div>
+          </div></div></div>
+        </div>
+        <div class="overlay-key" id="overlay-key"></div>
+        <div class="measure-strip" id="measure-strip" aria-live="off"></div>
+        <div class="lesson"><p id="question"></p><button class="ds-btn" id="reveal" aria-expanded="false">Reveal mechanism</button><p class="answer" id="answer" hidden></p></div>
+      </div>
+      <details class="diagnostics" id="css-panel" open><summary>Active CSS</summary><div class="css-tools"><span class="ds-meta" id="css-caption"></span><button class="ds-btn" id="copy-css">Copy CSS</button></div><pre class="ds-code" id="active-css"></pre></details>
+      <details class="diagnostics" id="inspector"><summary>Geometry Inspector</summary><label class="ds-label" for="inspect-target">Selected element</label><select id="inspect-target"></select><div class="table-wrap"><table class="inspect-table"><tbody id="inspect-values"></tbody></table></div></details>
+    </main>
+  </div>
+</div>
+<div id="reference-bin" aria-hidden="true" inert></div>
+<script>
+(() => {
+  'use strict';
+  // 1. Reference vocabulary and deterministic content.
+  const $ = id => document.getElementById(id);
+  const query = (selector,root=document) => root.querySelector(selector);
+  const all = (selector,root=document) => [...root.querySelectorAll(selector)];
+  $('demo-shell').append($('reference-bin'));
+  const clamp = (value,min,max) => Math.min(max,Math.max(min,value));
+  const px = value => `${value}px`;
+  const round = value => Math.round(value*10)/10;
+  const num = value => Number.parseFloat(value)||0;
+  const geometryKeys = ['widthMode','width','heightMode','height','pi','pb','border','box'];
+  const targets = {deal:'Deal name',revenue:'Expected revenue',contact:'Contact input',search:'Search button',save:'Save button',cancel:'Cancel button'};
+  const tasks = [
+    ['Send revised proposal','Prepare the commercial summary.','Today','Maya'],
+    ['Review contract scope','Confirm included services and handover responsibilities with the customer team.','Thursday','Jonas'],
+    ['Confirm sponsor','Record the executive sponsor.','Today','Nora'],
+    ['Update opportunity','Finance needs the revised milestones and payment schedule before the next steering meeting. Include dependencies from procurement.','Friday','Alex'],
+    ['Schedule account review','Invite the account team.','Monday','Ravi'],
+    ['Check security review','Gather the open security questions, identify owners and confirm the expected review timeline with IT.','Thursday','Maya'],
+    ['Prepare next steps','Summarize the next decision.','Friday','Nora'],
+    ['Validate delivery dates','Check that onboarding, technical validation and support handover fit the proposed schedule.','Monday','Jonas'],
+    ['Share meeting notes','Publish the account notes.','Tuesday','Alex'],
+    ['Review success criteria','Confirm how the customer will evaluate the first delivery and who signs off the acceptance criteria.','Wednesday','Ravi'],
+    ['Confirm purchase order','Check the PO reference.','Friday','Maya'],
+    ['Plan the kickoff','Align stakeholders, working agreements, communication channels and expected outputs for the first two weeks.','Monday','Nora']
+  ];
+  const scenarioNames = {avatars:'Overlapping avatars',badge:'Badge alignment',press:'Button press',dropdown:'Two-level dropdown',swipe:'Swipeable task',timeline:'Timeline overlap'};
+  const baseGeometry = () => ({widthMode:'auto',width:240,heightMode:'auto',height:44,pi:0,pb:0,border:1,box:'content-box'});
+  const baseA = () => ({mode:'explore',stage:0,width:640,target:'all',geometry:Object.fromEntries(Object.keys(targets).map(id=>[id,baseGeometry()])),emphasis:'normal',effect:'border',search:'individual',clip:false,selected:'deal',bounds:true,reference:true,visual:true,neighbor:true,reveal:false});
+  const baseB = () => ({mode:'explore',stage:0,width:640,scenario:'stack',mechanism:'float',strategy:'calculated',cols:3,gapX:16,gapY:16,ownership:'child',contain:'none',count:8,long:false,widthMode:'auto',itemWidth:240,heightMode:'full',itemHeight:120,pi:12,pb:12,mi:0,mb:0,box:'border-box',contexts:'single',selected:'context-0-card-0',bounds:true,reference:true,visual:true,neighbor:true,reveal:false});
+  const cScenario = scenario => ({mechanism:'margin',x:({avatars:-12,badge:-6,press:0,dropdown:0,swipe:-80,timeline:0})[scenario],y:({avatars:0,badge:-3,press:2,dropdown:0,swipe:0,timeline:-24})[scenario],clip:scenario==='swipe',pressed:true,open:false,subopen:false,anchor:'item',ancestor:false,playing:false,selected:({avatars:'avatar-1',badge:'priority',press:'press',dropdown:'submenu',swipe:'swipe',timeline:'highlight'})[scenario]});
+  const baseC = () => ({mode:'explore',stage:0,scenario:'avatars',scenarios:Object.fromEntries(Object.keys(scenarioNames).map(id=>[id,cScenario(id)])),bounds:true,reference:true,visual:true,neighbor:true,reveal:false});
+  let state = {lab:'a',a:baseA(),b:baseB(),c:baseC()};
+  const current = () => state[state.lab];
+  const cCurrent = () => state.c.scenarios[state.c.scenario];
+
+  // 2. Progressions express changing constraints, not decorative "bad" states.
+  const stages = {
+    a:[
+      ['A1 · Declared versus occupied','Predict the outer sizes of the inputs and buttons. What changes when width is auto?','Auto sizing follows the element and its formatting context. An input has intrinsic sizing behavior; a button also depends on its content. Declared width is not a border-box measurement.',{}],
+      ['A2 · Padding','Set padding to 20px. Does a 240px content width remain a 240px outer box?','With content-box, padding and borders are outside the declared content width. With border-box they fit inside the declared width.',{geometry:{widthMode:'fixed',width:240,pi:20,pb:12}}],
+      ['A3 · Borders and state','Toggle normal and invalid. Which boxes or neighbors move?','The emphasis border adds four pixels on each side. In content-box that increases the outer size; border-box keeps a definite outer width but reduces content space.',{geometry:{widthMode:'fixed',width:240,pi:12,pb:8},emphasis:'invalid',effect:'border'}],
+      ['A4 · Box sizing','At 100% width, compare content-box and border-box. What does 100% include?','Border-box includes padding and border in the declared size. Margins remain outside. A narrow container can still make the remaining content area too small.',{geometry:{widthMode:'percent',width:100,pi:16,pb:10,box:'border-box'},width:360}],
+      ['A5 · Geometry versus paint','Compare border, outline and shadow in the focused state. Then enable clipping.','An outline or shadow paints outside the border box without changing that box. Clipping can hide the paint; the browser does not report the painted shadow as an enlarged layout rectangle.',{geometry:{widthMode:'fixed',width:240,pi:12,pb:8},emphasis:'focused',effect:'outline'}],
+      ['A6 · Allocate the search row','At 320px, compare individual widths, input 100%, and parent allocation. Who should share the space?','A 100% input consumes the row width before the search button is considered. A parent flex row can allocate the remaining space to the input while retaining the button. This is one controlled use of Flexbox, not its full sizing algorithm.',{geometry:{pi:8,pb:8,box:'border-box'},width:320,search:'full'}]
+    ],
+    b:[
+      ['B1 · Internal geometry','Increase padding, then set a fixed height. What stays inside the card?','Padding belongs to the card. It changes its outer size or available content space according to box-sizing. Fixed heights may leave content overflowing.',{}],
+      ['B2 · Child margins','Increase item margins. Which spaces lie outside the card background?','Margins participate in the surrounding layout. They can couple a reusable card to collection spacing, including the first and last item boundaries.',{mi:12,mb:16}],
+      ['B3 · Margin collapse','With 24px top and bottom margins, is the distance between adjacent cards 24px or 48px? Compare the first card with the collection top.','In ordinary block flow, adjoining positive vertical margins can collapse to the larger margin. With no separating border, padding or formatting-context boundary, a first-child margin can also collapse through its parent. Horizontal margins do not collapse.',{mb:24,contain:'none'}],
+      ['B4 · BFC boundaries','Compare None and flow-root. Does containing the first margin also stop sibling margins collapsing?','A new BFC prevents the parent/child collapse here and contains floats. Sibling block margins can still collapse inside it. Overflow hidden also establishes a BFC, but clips content and paint.',{mb:24,contain:'flow-root'}],
+      ['B5 · A collection changes','Add unequal heights and change item margins. What must the parent coordinate?','Reusable items own their content and internal geometry. Collection policies often belong to the parent; that is a practical ownership heuristic, not a ban on item margins or dimensions.',{scenario:'columns',ownership:'child',long:true,contain:'clearfix'}],
+      ['B6 · Float columns','Compare the two float gutter strategies; change columns and unequal heights. Then remove containment.','Both strategies are workable historical layouts. Float containment, explicit gutter calculations, last-column selectors and uneven row boundaries are separate requirements. Padding gutters use an allocation wrapper so item geometry remains independent.',{scenario:'columns',ownership:'parent',mechanism:'float',contain:'clearfix',long:true}],
+      ['B7 · Wrapping Flexbox','Keep the same cards and gutters. Switch Float to Flex. What coordination disappears?','Flex wrapping removes float clearing. Equal columns still need a deliberate basis calculation. A card with an explicit width may overflow its allocated column; it is not silently resized.',{scenario:'columns',ownership:'parent',mechanism:'flex',contain:'none',long:true}],
+      ['B8 · Grid tracks','Change columns, gaps and explicit card width. Does a track force every descendant to fit?','Grid distributes parent-owned tracks and gaps. Auto-width cards normally fit their allocation, while explicit widths, content-box padding and margins can still conflict with it.',{scenario:'columns',ownership:'parent',mechanism:'grid',contain:'none',long:true}],
+      ['B9 · Same cards, three parents','Inspect the compact, two-column and three-column collections. Change only the layout mechanism.','The same data and card geometry are reused. Only the parent width and column policy differ. The active CSS shows the rules each mechanism needs.',{scenario:'columns',ownership:'parent',mechanism:'grid',contexts:'reuse',long:true}]
+    ],
+    c:[
+      ['C1 · Compact the avatar group','Switch between margin, relative and transform. Where does the following text begin?','Negative inline margins compact the allocated group. Relative and transform offsets can produce the same overlap while retaining the original group width.',{scenario:'avatars'}],
+      ['C2 · Nudge a badge','Align the badge without moving the next label. Which mechanism matches that requirement?','Relative positioning and transform are plausible visual nudges. Margins participate in the surrounding flex layout, so compare both the badge and its neighbor.',{scenario:'badge'}],
+      ['C3 · Press feedback','Press and release Save deal. Which approach leaves the action row stable?','Relative and transform offsets retain allocation. Margin changes can affect the row and nearby controls. A transform is not a promise of GPU acceleration.',{scenario:'press',mechanism:'transform'}],
+      ['C4 · Anchor a submenu','Open Actions, then Move to. Change the anchor, then transform the menu ancestor. What establishes the containing block?','The submenu anchor is absolute. Position relative on the menu item establishes its intended reference. A transformed ancestor can also establish a containing block and stacking context, but on a different ancestor; offsetting the content does not replace a deliberate anchoring relationship.',{scenario:'dropdown',open:true,subopen:true,mechanism:'relative'}],
+      ['C5 · Swipe an action into view','Play the loop or set the manual offset. Does every margin change necessarily move the following task?','These rows have fixed available width. Even a horizontal margin can leave vertical neighbors stable here. Compare the margin contribution, visual bounds and vertical offsets instead of assuming every margin must cause a layout shift.',{scenario:'swipe',mechanism:'transform'}],
+      ['C6 · Close the gap or retain it','Pull the highlighted card upward. Should the following card move too?','A negative block-start margin changes the flow relationship. Relative top and translateY retain the original allocation, so a larger gap remains after the shifted card.',{scenario:'timeline'}]
+    ]
+  };
+  const labels = {a:'Form Geometry',b:'Layout Spacing',c:'Visual Offsets'};
+
+  // 3. Single-owner state transitions. Scenario-local settings never leak.
+  function stageState(lab,index) {
+    const base=lab==='a'?baseA():lab==='b'?baseB():baseC();
+    const settings=stages[lab][index][3];
+    if(lab==='a') { const {geometry,...rest}=settings;Object.assign(base,rest);if(geometry)Object.values(base.geometry).forEach(g=>Object.assign(g,geometry)); }
+    else if(lab==='b')Object.assign(base,settings);
+    else { base.scenario=settings.scenario;Object.assign(base.scenarios[base.scenario],settings);delete base.scenarios[base.scenario].scenario; }
+    return {...base,stage:index,mode:'guided'};
+  }
+  function reduce(previous,action) {
+    const next=structuredClone(previous),lab=next.lab,s=next[lab];
+    if(action.type==='lab') { next.lab=action.value;return next; }
+    if(action.type==='stage') { next[lab]=stageState(lab,clamp(action.value,0,stages[lab].length-1));return next; }
+    if(action.type==='mode') { s.mode=action.value;return next; }
+    if(action.type==='common') { s[action.key]=action.value;return next; }
+    if(action.type==='a-geometry') { (s.target==='all'?Object.keys(targets):[s.target]).forEach(id=>s.geometry[id][action.key]=action.value);return next; }
+    if(action.type==='field') {
+      if(lab==='c'&&action.key!=='scenario')s.scenarios[s.scenario][action.key]=action.value;
+      else {s[action.key]=action.value;if(lab==='c'&&action.key==='scenario'){s.stage=Object.keys(scenarioNames).indexOf(action.value);s.reveal=false;}}
+      return next;
+    }
+    if(action.type==='reset') {
+      if(s.mode==='guided')next[lab]=stageState(lab,s.stage);
+      else if(lab==='a')next.a=baseA();
+      else if(lab==='b')next.b={...baseB(),scenario:s.scenario,mechanism:s.mechanism,strategy:s.strategy,contain:s.scenario==='columns'&&s.mechanism==='float'?'clearfix':'none'};
+      else s.scenarios[s.scenario]=cScenario(s.scenario);
+      return next;
+    }
+    return next;
+  }
+  function dispatch(action) { state=reduce(state,action);render(); }
+  const field=(key,value)=>dispatch({type:'field',key,value});
+
+  // 4. One-time control construction. Sliders stay mounted while dragging.
+  const option=(value,label)=>`<option value="${value}">${label}</option>`;
+  const select=(lab,key,label,options)=>`<div class="ds-field" data-field="${lab}-${key}"><label class="ds-label" for="${lab}-${key}">${label}</label><select id="${lab}-${key}" data-control="${lab}:${key}">${options.map(o=>option(...o)).join('')}</select></div>`;
+  const range=(lab,key,label,min,max,step=1)=>`<div class="ds-field" data-field="${lab}-${key}"><div class="ds-fieldrow"><label class="ds-label" for="${lab}-${key}">${label}</label><output id="val-${lab}-${key}" for="${lab}-${key}"></output></div><input type="range" id="${lab}-${key}" data-control="${lab}:${key}" min="${min}" max="${max}" step="${step}"></div>`;
+  const check=(lab,key,label)=>`<label class="control-check" data-field="${lab}-${key}"><input type="checkbox" id="${lab}-${key}" data-control="${lab}:${key}">${label}</label>`;
+  const section=(name,content)=>`<section class="ds-section"><h2 class="ds-section-title">${name}</h2>${content}</section>`;
+  const widthModes=[['auto','Auto'],['fixed','Fixed px'],['percent','Percentage']];
+  const heightModes=[['auto','Auto'],['fixed','Fixed px']];
+  const itemHeightModes=[...heightModes,['full','100%']];
+  const boxes=[['content-box','content-box'],['border-box','border-box']];
+  $('a-controls').innerHTML=section('Container',range('a','width','Parent width',280,880,10)+select('a','target','Apply geometry to',[['all','All controls'],...Object.entries(targets)]))+section('Control geometry',select('a','widthMode','Width mode',widthModes)+range('a','dimension','Width value',40,520)+select('a','heightMode','Height mode',heightModes)+range('a','height','Height',20,120)+range('a','pi','Padding inline',0,40)+range('a','pb','Padding block',0,24)+range('a','border','Border width',0,12)+select('a','box','Box sizing',boxes))+section('State & composition',select('a','emphasis','Control state',[['normal','Normal'],['focused','Focused'],['invalid','Invalid']])+select('a','effect','Emphasis effect · border adds 4px',[['border','Border'],['outline','Outline · 3px, offset 2px'],['shadow','Shadow · 4px ring']])+select('a','search','Search row allocation',[['individual','Individual widths'],['full','Input width: 100%'],['flex','Parent-controlled Flexbox']])+check('a','clip','Clip the parent boundary'));
+  $('b-controls').innerHTML=section('Collection',select('b','scenario','Scenario',[['stack','Stack'],['columns','Columns']])+select('b','mechanism','Column layout',[['float','Float'],['flex','Flex'],['grid','Grid']])+select('b','strategy','Float gutter strategy',[['calculated','Calculated widths + margins'],['padding','Padding gutters + negative row margins']])+select('b','contexts','Layout context',[['single','One collection'],['reuse','Same cards · three parents']])+range('b','width','Container width',240,960,10)+range('b','cols','Columns',1,4)+range('b','count','Number of cards',6,12)+check('b','long','Heterogeneous content lengths'))+section('Spacing ownership',select('b','ownership','Arrangement spacing',[['child','Child-owned margins'],['parent','Parent-owned spacing']])+range('b','gapX','Desired horizontal gap',0,48)+range('b','gapY','Desired vertical gap',0,48)+select('b','contain','Formatting context / containment',[['none','None'],['clearfix','Clearfix'],['flow-root','flow-root'],['hidden','overflow: hidden']]))+section('Shared card geometry',select('b','widthMode','Item width',widthModes)+range('b','itemWidth','Width value',80,600)+select('b','heightMode','Item height',itemHeightModes)+range('b','itemHeight','Height',40,320)+range('b','pi','Padding inline',0,40)+range('b','pb','Padding block',0,40)+range('b','mi','Margin inline',0,40)+range('b','mb','Margin block',-24,48)+select('b','box','Box sizing',boxes));
+  $('c-controls').innerHTML=section('Scenario',select('c','scenario','CRM interaction',Object.entries(scenarioNames))+select('c','mechanism','Offset mechanism',[['margin','Signed margin'],['relative','Relative offsets'],['transform','Transform translate']]))+section('Displacement',range('c','x','Horizontal offset',-120,120)+range('c','y','Vertical offset',-120,120)+check('c','pressed','Pressed feedback')+check('c','clip','Clip boundary'))+section('Popup relationship',select('c','anchor','Submenu anchor',[['item','Menu item · position: relative'],['popup','Incorrect · popup ancestor']])+check('c','ancestor','Transform the menu-group ancestor'))+section('Animation',`<div class="ds-mini-actions"><button class="ds-btn" id="play">Play loop</button><button class="ds-btn" id="restart">Restart</button></div>`);
+  // Mixed is an explicit readout for target-specific form configurations.
+  all('#a-controls select').filter(el=>geometryKeys.includes(el.id.slice(2))).forEach(el=>el.insertAdjacentHTML('beforeend',option('mixed','Mixed')));
+  all('[data-probe]',$('c-fixtures')).filter(el=>!el.matches('button,.submenu')).forEach(el=>{el.tabIndex=0;el.setAttribute('role','button');el.setAttribute('aria-label','Inspect '+el.dataset.probe.replaceAll('-',' '));});
+
+  // 5. Rule generation is shared by rendering and the learner's CSS view.
+  const rule=(selector,declarations)=>`#demo-shell ${selector} {\n${Object.entries(declarations).map(([k,v])=>`  ${k}: ${v};`).join('\n')}\n}`;
+  const dimension=(mode,value)=>mode==='auto'?'auto':mode==='percent'?value+'%':px(value);
+  function rulesA(s) {
+    const rules=[rule('.a-fixture',{'width':px(s.width),'padding':'18px','border':'1px solid #cbd7e6','box-sizing':'border-box','overflow':s.clip?'hidden':'visible'})];
+    Object.entries(s.geometry).forEach(([id,g])=>{
+      rules.push(rule(`.a-fixture [data-geom="${id}"]`,{width:dimension(g.widthMode,g.width),height:dimension(g.heightMode,g.height),'padding-inline':px(g.pi),'padding-block':px(g.pb),'border-width':px(g.border),'box-sizing':g.box}));
+      const selected=s.target==='all'||s.target===id;
+      if(s.emphasis!=='normal'&&selected)rules.push(rule(`.a-fixture:not(.reference) [data-geom="${id}"]`,s.effect==='border'?{'border-width':px(g.border+4),'border-color':s.emphasis==='invalid'?'#a64949':'#315fa8'}:s.effect==='outline'?{'outline':`3px solid ${s.emphasis==='invalid'?'#a64949':'#315fa8'}`,'outline-offset':'2px'}:{'box-shadow':`0 0 0 4px ${s.emphasis==='invalid'?'#a6494960':'#315fa860'}`}));
+    });
+    rules.push(rule('.a-fixture .search-row',s.search==='flex'?{display:'flex',gap:'0'}:{display:'block','white-space':'nowrap'}));
+    if(s.search==='full')rules.push(rule('.a-fixture [data-geom="contact"]',{width:'100%'}));
+    if(s.search==='flex')rules.push(rule('.a-fixture [data-geom="contact"]',{flex:'1 1 0','min-width':'0'}),rule('.a-fixture [data-geom="search"]',{flex:'0 0 auto'}));
+    return rules;
+  }
+  const contextsB=s=>s.contexts==='reuse'?[{label:'Compact sidebar',width:240,cols:1},{label:'Two-column page',width:480,cols:2},{label:'Three-column dashboard',width:720,cols:3}]:[{label:'Activity / task collection',width:s.width,cols:s.cols}];
+  function rulesB(s) {
+    const parent=s.ownership==='parent',gx=parent?s.gapX:0,gy=parent?s.gapY:0;
+    const rules=[rule('.b-fixture .task-card',{'width':dimension(s.widthMode,s.itemWidth),'height':s.heightMode==='full'?'100%':dimension(s.heightMode,s.itemHeight),'padding-inline':px(s.pi),'padding-block':px(s.pb),'margin-inline':px(s.mi),'margin-block':px(s.mb),'box-sizing':s.box})];
+    contextsB(s).forEach((context,index)=>{
+      const sel=`.b-fixture [data-context="${index}"]`,list=sel+' .collection',slot=list+' > .column-slot';
+      rules.push(rule(sel,{width:px(context.width),'box-sizing':'border-box'}));
+      const root={display:'block',margin:'0',padding:'0',border:'0'};
+      if(s.scenario==='columns'&&s.mechanism==='float'&&s.strategy==='padding')root['margin-inline']=`calc(${gx}px / -2)`;
+      if(s.contain==='flow-root'&&!(s.scenario==='columns'&&['flex','grid'].includes(s.mechanism)))root.display='flow-root';
+      if(s.contain==='hidden')root.overflow='hidden';
+      if(s.scenario==='columns'&&s.mechanism==='flex')Object.assign(root,{display:'flex','flex-wrap':'wrap','column-gap':px(gx),'row-gap':px(gy),'align-items':'stretch'});
+      if(s.scenario==='columns'&&s.mechanism==='grid')Object.assign(root,{display:'grid','grid-template-columns':`repeat(${context.cols}, minmax(0, 1fr))`,'column-gap':px(gx),'row-gap':px(gy)});
+      rules.push(rule(list,root));
+      if(s.contain==='clearfix')rules.push(rule(list+'::after',{content:'""',display:'block',clear:'both',...(s.scenario==='columns'&&['flex','grid'].includes(s.mechanism)?{display:'none'}:{})}));
+      if(s.scenario==='stack'&&parent)rules.push(rule(list+' > .task-card + .task-card',{'margin-block-start':`calc(${s.mb}px + ${gy}px)`}));
+      if(s.scenario==='columns') {
+        rules.push(rule(slot,{'min-width':'0'}));
+        if(s.mechanism==='float') {
+          rules.push(rule(slot,s.strategy==='calculated'?{float:'left',width:`calc((100% - (${context.cols} - 1) * ${gx}px) / ${context.cols})`,'margin-inline-end':px(gx),'margin-block-end':px(gy)}:{float:'left',width:`calc(100% / ${context.cols})`,'padding-inline':`calc(${gx}px / 2)`,'margin-block-end':px(gy),'box-sizing':'border-box'}));
+          if(s.strategy==='calculated')rules.push(rule(slot+`:nth-child(${context.cols}n)`,{'margin-inline-end':'0'}));
+        } else if(s.mechanism==='flex')rules.push(rule(slot,{flex:`0 0 calc((100% - (${context.cols} - 1) * ${gx}px) / ${context.cols})`}));
+        else rules.push(rule(slot,{width:'auto'}));
+      }
+    });
+    return rules;
+  }
+  function rulesC(s) {
+    const c=s.scenarios[s.scenario],sel=`.c-scene[data-scenario="${s.scenario}"]`,moving=sel+':not(.reference) .mover';
+    let x=c.x,y=c.y;
+    if(s.scenario==='press'&&!c.pressed)x=y=0;
+    const variables={'--dx':px(x),'--dy':px(y)};
+    const ruleSet=[rule(sel,{...variables,'overflow':c.clip?'hidden':'visible'})];
+    const avatar=s.scenario==='avatars';
+    const offsetX=avatar?'calc(var(--index) * var(--dx))':'var(--dx)';
+    const offsetY=avatar?'calc(var(--index) * var(--dy))':'var(--dy)';
+    ruleSet.push(rule(moving,c.mechanism==='margin'?{'margin-inline-start':'var(--dx)','margin-block-start':offsetY}:c.mechanism==='relative'?{position:'relative',left:offsetX,top:offsetY}:{transform:`translate(${offsetX}, ${offsetY})`}));
+    if(s.scenario==='dropdown') {
+      ruleSet.unshift(rule(sel+' .menu-item',{position:c.anchor==='item'?'relative':'static'}),rule(sel+' .menu-group',{transform:c.ancestor?'translateX(8px)':'none'}),rule(sel+' .submenu-anchor',{position:'absolute','inset-inline-start':'100%','inset-block-start':'0',width:'158px'}));
+    }
+    if(s.scenario==='swipe') {
+      ruleSet.unshift(rule(sel+' .swipe-wrap',{overflow:c.clip?'hidden':'visible'}),rule(sel+' .swipe-row',{'width':'100%','box-sizing':'border-box'}));
+      const keyframes=c.mechanism==='margin'?`0%, 100% { margin-inline-start:0px; } 40%, 65% { margin-inline-start:var(--dx); }`:c.mechanism==='relative'?`0%, 100% { left:0px; } 40%, 65% { left:var(--dx); }`:`0%, 100% { transform:translate(0px, var(--dy)); } 40%, 65% { transform:translate(var(--dx), var(--dy)); }`;
+      ruleSet.push(`@keyframes swipe-loop { ${keyframes} }`);
+      if(c.playing)ruleSet.push(rule(moving,{animation:'swipe-loop 2.8s ease-in-out infinite'}));
+      ruleSet.push('@media (prefers-reduced-motion: reduce) {\n  '+moving+' { animation: none; }\n}');
+    }
+    return ruleSet;
+  }
+  function resolveRules() { return [...rulesA(state.a),...rulesB(state.b),...rulesC(state.c)]; }
+  function baselineRules(lab) {
+    return [...$('fixture-style').sheet.cssRules].filter(item=>{
+      const selector=item.selectorText||'';
+      if(lab==='a')return selector.includes('.a-fixture');
+      if(lab==='b')return /\.collection|\.task-card|\.context-title/.test(selector)&&!selector.includes('.boundaries');
+      const scenario=state.c.scenario;
+      if(selector==='#demo-shell .c-scene')return true;
+      if(scenario==='dropdown')return selector.includes('.c-scene .');
+      const families={avatars:/\.avatar/,badge:/\.deal-titleline/,press:/\.press-actions/,swipe:/\.swipe|\.reveal-action/,timeline:/\.timeline/};
+      return families[scenario].test(selector);
+    }).map(item=>item.cssText);
+  }
+
+  // 6. Stable fixture rendering. Collection topology changes only when necessary.
+  let topologyB='',reference=null,frame=0;
+  function makeCard(index,contextIndex) {
+    const article=document.createElement('article');article.className='task-card';article.dataset.probe=`context-${contextIndex}-card-${index}`;article.tabIndex=0;
+    const h=document.createElement('h3'),p=document.createElement('p'),meta=document.createElement('div');meta.className='card-meta';
+    h.textContent=tasks[index][0];p.dataset.description=String(index);meta.innerHTML='<span></span><span></span>';meta.children[0].textContent=tasks[index][2];meta.children[1].textContent=tasks[index][3];
+    article.append(h,p,meta);return article;
+  }
+  function renderCollection(s) {
+    const topology=JSON.stringify([s.scenario,s.count,s.contexts]);
+    if(topology!==topologyB) {
+      const fixture=$('b-fixture');fixture.replaceChildren();
+      contextsB(s).forEach((context,index)=>{
+        const title=document.createElement('p');title.className='context-title';title.textContent=context.label;
+        const host=document.createElement('div');host.className='collection-host';host.dataset.context=index;
+        const edge=document.createElement('div');edge.className='edge-marker';
+        const list=document.createElement('div');list.className='collection';list.dataset.probe=`context-${index}-collection`;
+        for(let i=0;i<s.count;i++) {
+          const card=makeCard(i,index);
+          if(s.scenario==='stack')list.append(card);
+          else {const slot=document.createElement('div');slot.className='column-slot';slot.dataset.probe=`context-${index}-slot-${i}`;slot.append(card);list.append(slot);}
+        }
+        host.append(edge,list);fixture.append(title,host);
+      });topologyB=topology;
+    }
+    all('[data-description]',$('b-fixture')).forEach(p=>{const index=Number(p.dataset.description);p.textContent=s.long?tasks[index][1]:'Next step ready for review.';});
+  }
+  const currentRoot=()=>state.lab==='a'?$('a-fixture'):state.lab==='b'?$('b-fixture'):query(`[data-scenario="${state.c.scenario}"]`,$('c-fixtures'));
+  function renderScenes() {
+    $('a-fixture').hidden=state.lab!=='a';$('b-fixture').hidden=state.lab!=='b';$('c-fixtures').hidden=state.lab!=='c';
+    renderCollection(state.b);
+    all('.c-scene',$('c-fixtures')).forEach(scene=>scene.hidden=scene.dataset.scenario!==state.c.scenario);
+    const c=cCurrent(),popup=query('[data-scenario="dropdown"]',$('c-fixtures'));
+    query('.popup',popup).hidden=!c.open||state.c.scenario!=='dropdown';query('.submenu-anchor',popup).hidden=!c.subopen||!c.open||state.c.scenario!=='dropdown';
+    query('[data-popup-toggle]',popup).setAttribute('aria-expanded',String(c.open&&state.c.scenario==='dropdown'));
+    query('[data-submenu-toggle]',popup).setAttribute('aria-expanded',String(c.subopen&&c.open&&state.c.scenario==='dropdown'));
+    query('[data-press]',$('c-fixtures')).setAttribute('aria-pressed',String(state.c.scenarios.press.pressed));
+    const swipe=state.c.scenarios.swipe;
+    query('[data-archive]',$('c-fixtures')).disabled=swipe.x>=0&&!swipe.playing;
+    const s=current(),selected=state.lab==='c'?c.selected:s.selected;
+    all('.scene',document).filter(el=>!el.classList.contains('reference')).forEach(scene=>scene.classList.toggle('boundaries',s.bounds));
+    all('[data-probe]',currentRoot()).forEach(el=>el.classList.toggle('selected-probe',el.dataset.probe===selected));
+    if(reference)reference.remove();reference=null;
+    if(state.lab!=='b') {
+      reference=currentRoot().cloneNode(true);reference.id='';reference.classList.add('reference');reference.hidden=false;reference.style.width=getComputedStyle(currentRoot()).width;
+      all('[id]',reference).forEach(el=>el.removeAttribute('id'));all('[for]',reference).forEach(el=>el.removeAttribute('for'));all('[data-probe]',reference).forEach(el=>el.classList.remove('selected-probe'));
+      $('reference-bin').append(reference);
+    }
+  }
+
+  // 7. Synchronize control state without replacing the active inputs.
+  function setValue(id,value,unit='px') {
+    const input=$(id);if(!input)return;
+    if(input.type==='checkbox')input.checked=Boolean(value);else input.value=value;
+    const output=$('val-'+id);if(output)output.textContent=value==='mixed'?'Mixed':value+(unit?' '+unit:'');
+  }
+  const show=(id,visible)=>{const el=query(`[data-field="${id}"]`);if(el)el.hidden=!visible;};
+  function geometryValue(key) { const s=state.a,values=(s.target==='all'?Object.values(s.geometry):[s.geometry[s.target]]).map(g=>g[key]);return values.every(v=>v===values[0])?values[0]:'mixed'; }
+  function renderControls() {
+    const lab=state.lab,s=current();
+    ['a','b','c'].forEach(id=>{$(id+'-controls').hidden=id!==lab;});
+    all('[data-lab]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.lab===lab));
+    all('[data-mode]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.mode===s.mode));
+    const options=stages[lab].map((stage,index)=>option(index,stage[0])).join('');if($('stage-select').dataset.stagesFor!==lab){$('stage-select').innerHTML=options;$('stage-select').dataset.stagesFor=lab;}
+    $('stage-select').value=s.stage;$('stage-prev').disabled=s.stage===0;$('stage-next').disabled=s.stage===stages[lab].length-1;
+    $('stage-label').textContent=`${s.stage+1} / ${stages[lab].length}`;$('stage-count').textContent=s.mode==='guided'?'Guided':'Explore';
+    $('status').textContent=`2${lab.toUpperCase()} · ${labels[lab]}`;
+    $('preview-title').textContent=lab==='a'?'CRM Deal Editor':lab==='b'?'CRM Activity / Tasks':'CRM Interaction';
+    $('crm-context').textContent=lab==='b'?'Activities / Northwind expansion':'Deals / Northwind expansion';
+    $('stage-caption').textContent=stages[lab][s.stage][0];$('question').textContent=stages[lab][s.stage][1];$('answer').textContent=stages[lab][s.stage][2];$('answer').hidden=!s.reveal;$('reveal').setAttribute('aria-expanded',String(s.reveal));
+    ['bounds','reference','visual','neighbor'].forEach(key=>setValue('show-'+(key==='bounds'?'bounds':key),s[key]));
+    $('show-reference').parentElement.hidden=lab==='b';$('show-neighbor').parentElement.hidden=lab==='b';
+    $('show-reference').parentElement.lastChild.textContent=lab==='a'?' Show normal-state reference':' Show zero-offset reference';
+    if(lab==='a') {
+      ['width','target','emphasis','effect','search','clip'].forEach(key=>setValue('a-'+key,s[key]));
+      geometryKeys.filter(key=>key!=='width').forEach(key=>setValue('a-'+key,geometryValue(key)));
+      const mode=geometryValue('widthMode'),value=geometryValue('width');
+      const slider=$('a-dimension');slider.min=mode==='percent'?10:40;slider.max=mode==='percent'?150:520;
+      setValue('a-dimension',value,mode==='percent'?'%':'px');
+      show('a-dimension',mode!=='auto');show('a-height',geometryValue('heightMode')!=='auto');
+    } else if(lab==='b') {
+      Object.keys(s).forEach(key=>setValue('b-'+key,s[key],['cols','count'].includes(key)?'':'px'));
+      const columns=s.scenario==='columns',reuse=s.contexts==='reuse';
+      show('b-mechanism',columns);show('b-strategy',columns&&s.mechanism==='float');show('b-contexts',columns);
+      show('b-width',!reuse);show('b-cols',columns&&!reuse);show('b-gapX',columns&&s.ownership==='parent');show('b-gapY',s.ownership==='parent');
+      show('b-contain',!columns||s.mechanism==='float');show('b-itemWidth',s.widthMode!=='auto');show('b-itemHeight',s.heightMode==='fixed');
+      $('b-itemWidth').min=s.widthMode==='percent'?10:80;$('b-itemWidth').max=s.widthMode==='percent'?150:600;setValue('b-itemWidth',s.itemWidth,s.widthMode==='percent'?'%':'px');
+    } else {
+      const c=cCurrent();setValue('c-scenario',s.scenario);Object.keys(c).forEach(key=>setValue('c-'+key,c[key]));
+      show('c-pressed',s.scenario==='press');show('c-anchor',s.scenario==='dropdown');show('c-ancestor',s.scenario==='dropdown');
+      const popupSection=query('[data-field="c-anchor"]').closest('section');popupSection.hidden=s.scenario!=='dropdown';
+      const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+      $('play').closest('section').hidden=s.scenario!=='swipe';$('play').textContent=reduced?'Manual · reduced motion':c.playing?'Pause loop':'Play loop';$('play').setAttribute('aria-pressed',String(c.playing));$('play').disabled=reduced;$('restart').disabled=reduced;
+    }
+    $('overlay-key').textContent=lab==='b'?'Blue: allocation / container · Green: card border box':lab==='a'?'Amber: border box · Green: content · Dashed blue: normal-state reference':'Amber: current bounds · Dashed blue: zero-offset reference · Purple: neighbor';
+    const rules=lab==='a'?rulesA(s):lab==='b'?rulesB(s):rulesC(s);
+    $('active-css').textContent='/* Fixture baseline */\n'+baselineRules(lab).join('\n\n')+'\n\n/* Active experiment */\n'+rules.join('\n\n');$('css-caption').textContent=lab==='a'?'Container + control geometry + state + composition':lab==='b'?'Container + allocation wrappers + shared card geometry':'Positioning relationship + selected offset mechanism';
+    $('copy-css').textContent='Copy CSS';
+  }
+
+  // 8. Browser measurements. Annotations never provide the layout positions.
+  const rect=element=>element.getBoundingClientRect();
+  const computed=element=>getComputedStyle(element);
+  function boxData(element) {
+    const css=computed(element),bounds=rect(element);
+    const pi=num(css.paddingLeft)+num(css.paddingRight),pb=num(css.paddingTop)+num(css.paddingBottom),bi=num(css.borderLeftWidth)+num(css.borderRightWidth),bb=num(css.borderTopWidth)+num(css.borderBottomWidth);
+    return {css,bounds,contentW:Math.max(0,bounds.width-pi-bi),contentH:Math.max(0,bounds.height-pb-bb),pi,pb,bi,bb};
+  }
+  function selectedElement() {
+    const root=currentRoot(),s=current(),id=state.lab==='c'?cCurrent().selected:s.selected;
+    return query(`[data-probe="${id}"]`,root)||query('[data-probe]',root)||root;
+  }
+  function referenceRect(element) {
+    if(!reference)return null;
+    const twin=query(`[data-probe="${element.dataset.probe}"]`,reference);if(!twin||!twin.getClientRects().length)return null;
+    const a=rect(twin),b=rect(reference),origin=rect(currentRoot());
+    return {left:origin.left+a.left-b.left,top:origin.top+a.top-b.top,width:a.width,height:a.height,right:origin.left+a.right-b.left,bottom:origin.top+a.bottom-b.top};
+  }
+  function mark(bounds,type,label) {
+    if(!bounds||bounds.width===0||bounds.height===0)return;
+    const canvas=rect($('scene-canvas')),el=document.createElement('div');el.className='geometry-mark '+type;
+    Object.assign(el.style,{left:px(bounds.left-canvas.left),top:px(bounds.top-canvas.top),width:px(bounds.width),height:px(bounds.height)});
+    el.dataset.measurement=label||'';$('overlays').append(el);
+  }
+  function measureRows(rows) {
+    $('inspect-values').replaceChildren(...rows.map(([name,value])=>{const tr=document.createElement('tr'),th=document.createElement('th'),td=document.createElement('td');th.scope='row';th.textContent=name;td.textContent=value;tr.append(th,td);return tr;}));
+  }
+  function summary(cells) {
+    $('measure-strip').replaceChildren(...cells.map(([name,value])=>{const d=document.createElement('div'),span=document.createElement('span'),strong=document.createElement('strong');d.className='measure-cell';span.textContent=name;strong.textContent=value;d.append(span,strong);return d;}));
+  }
+  function renderTargetOptions() {
+    const elements=all('[data-probe]',currentRoot());const ids=[...new Set(elements.map(el=>el.dataset.probe))];
+    const probeLabel=id=>{
+      const match=id.match(/^context-(\d+)-(card|slot|collection)(?:-(\d+))?$/);
+      return match?`${contextsB(state.b)[Number(match[1])]?.label||'Collection'} · ${match[2]}${match[3]===undefined?'':' '+(Number(match[3])+1)}`:targets[id]||id.replaceAll('-',' ');
+    };
+    const options=ids.map(id=>option(id,probeLabel(id))).join('');
+    if($('inspect-target').innerHTML!==options)$('inspect-target').innerHTML=options;
+    $('inspect-target').value=selectedElement().dataset.probe;
+  }
+  function measure() {
+    if(frame)cancelAnimationFrame(frame);frame=0;
+    const lab=state.lab,s=current(),root=currentRoot(),el=selectedElement(),b=boxData(el),css=b.css,r=b.bounds;
+    $('viewport-size').textContent=Math.round($('scene-scroll').clientWidth)+' px available';
+    $('overlays').replaceChildren();renderTargetOptions();
+    const rows=[['Selected',el.dataset.probe||'fixture'],['Computed width × height',`${css.width} × ${css.height}`],['Measured border box',`${round(r.width)} × ${round(r.height)} px`],['Box sizing',css.boxSizing],['Derived content box',`${round(b.contentW)} × ${round(b.contentH)} px`],['Padding · top right bottom left',[css.paddingTop,css.paddingRight,css.paddingBottom,css.paddingLeft].join(' ')],['Border · top right bottom left',[css.borderTopWidth,css.borderRightWidth,css.borderBottomWidth,css.borderLeftWidth].join(' ')],['Margin · top right bottom left',[css.marginTop,css.marginRight,css.marginBottom,css.marginLeft].join(' ')],['Scrollable dimensions',`${el.scrollWidth} × ${el.scrollHeight} px; client ${el.clientWidth} × ${el.clientHeight} px`]];
+    if(lab==='a') {
+      const g=s.geometry[el.dataset.geom]||baseGeometry(),parent=el.parentElement,parentBox=boxData(parent),ref=referenceRect(el);
+      rows.unshift(['Authored width / height',`${dimension(g.widthMode,g.width)} / ${dimension(g.heightMode,g.height)}`]);
+      rows.push(['Parent content width',round(parentBox.contentW)+' px'],['Inline margin contribution',round(r.width+num(css.marginLeft)+num(css.marginRight))+' px'],['Outline / shadow',`${css.outlineWidth} ${css.outlineStyle}; ${css.boxShadow}`],['Border-box shift vs normal state',ref?`${round(r.left-ref.left)}, ${round(r.top-ref.top)} px`:'—']);
+      const overflow=Math.max(0,root.scrollWidth-root.clientWidth);
+      summary([['Selected border box',`${round(r.width)} × ${round(r.height)} px`],['Content / outer width',`${round(b.contentW)} / ${round(r.width)} px`],['Horizontal scroll overflow',overflow+' px']]);
+      if(s.visual) {mark(r,'',`${round(r.width)} × ${round(r.height)}`);mark({left:r.left+num(css.borderLeftWidth)+num(css.paddingLeft),top:r.top+num(css.borderTopWidth)+num(css.paddingTop),width:b.contentW,height:b.contentH},'content','');}
+      if(s.reference)mark(ref,'reference','normal state');
+      if(s.neighbor) {const controls=all('[data-geom]',root),index=controls.indexOf(el),following=controls[(index+1)%controls.length];mark(rect(following),'neighbor','Next control');if(s.reference)mark(referenceRect(following),'reference','normal neighbor');}
+    } else if(lab==='b') {
+      const collection=el.closest('.collection')||query('.collection',root),cards=all('.task-card',collection),first=cards[0],firstR=rect(first),collectionR=rect(collection),slot=first.parentElement.classList.contains('column-slot')?first.parentElement:null;
+      const contextIndex=Number(collection.closest('[data-context]').dataset.context),contextLabel=contextsB(s)[contextIndex].label;
+      let horizontal=null,vertical=null;
+      for(let i=0;i<cards.length;i++)for(let j=i+1;j<cards.length;j++) {const a=rect(cards[i]),b=rect(cards[j]);if(Math.abs(a.top-b.top)<2&&b.left>=a.right-1&&horizontal===null)horizontal=b.left-a.right;if(Math.abs(a.left-b.left)<2&&b.top>a.top&&vertical===null)vertical=b.top-a.bottom;}
+      const distances=`X ${horizontal===null?'—':round(horizontal)+'px'} · Y ${vertical===null?'—':round(vertical)+'px'}`;
+      summary([['First card · '+contextLabel,`${round(firstR.width)} × ${round(firstR.height)} px`],['Measured aligned-card distances',distances],['Collection height / scroll height',`${round(collectionR.height)} / ${collection.scrollHeight} px`]]);
+      rows.push(['Layout context',contextLabel],['Layout',s.scenario==='stack'?'ordinary block flow':s.mechanism],['Collection computed display',computed(collection).display],['Collection gap declaration',`${computed(collection).columnGap} / ${computed(collection).rowGap}`],['First child top − collection top',round(firstR.top-collectionR.top)+' px'],['Measured aligned-card distances',distances],['Collection border / scroll width',`${round(collectionR.width)} / ${collection.scrollWidth} px`],['Authored item height',s.heightMode==='full'?'100%':dimension(s.heightMode,s.itemHeight)],['Allocation wrapper border box',slot?`${round(rect(slot).width)} x ${round(rect(slot).height)} px`:'No wrapper in Stack'],['Wrapper float / flex basis',slot?`${computed(slot).cssFloat} / ${computed(slot).flexBasis}`:'—']);
+      if(s.visual)mark(r,'',`${round(r.width)} × ${round(r.height)}`);
+    } else {
+      const c=cCurrent(),referenceBounds=referenceRect(el),neighbor=query('[data-neighbor]',root),refNeighbor=reference&&query('[data-neighbor]',reference),group=query('[data-collection]',root),refGroup=reference&&query('[data-collection]',reference);
+      const neighborR=neighbor&&rect(neighbor),neighborBase=refNeighbor&&rect(refNeighbor),rootR=rect(root),refRoot=reference&&rect(reference);
+      const shift=neighborR&&neighborBase?`${round((neighborR.left-rootR.left)-(neighborBase.left-refRoot.left))}, ${round((neighborR.top-rootR.top)-(neighborBase.top-refRoot.top))} px`:'—';
+      summary([['Visual shift vs zero offset',referenceBounds?`${round(r.left-referenceBounds.left)}, ${round(r.top-referenceBounds.top)} px`:'Open submenu to measure'],['Neighbor displacement',shift],['Collection width · current / zero',group&&refGroup?`${round(rect(group).width)} / ${round(rect(refGroup).width)} px`:'—']]);
+      rows.push(['Mechanism',c.mechanism],['Computed position / left / top',`${css.position} / ${css.left} / ${css.top}`],['Computed transform',css.transform],['Reference border box',referenceBounds?`${round(referenceBounds.width)} × ${round(referenceBounds.height)} px`:'Hidden'],['Neighbor displacement',shift],['Collection width',group?round(rect(group).width)+' px':'—']);
+      if(state.c.scenario==='dropdown')rows.push(['Absolute anchor containing block',c.anchor==='item'?'Menu item · positioned':c.ancestor?'Menu group · transformed':'Actions popup · positioned'],['Popup flow participation','Absolute anchor is out of flow in every offset mode']);
+      if(state.c.scenario==='swipe')rows.push(['Animation',c.playing?'Playing · 2.8s CSS loop':'Paused · manual offsets'],['Foreground row width',css.width]);
+      if(s.visual)mark(r,'',`${round(r.width)} × ${round(r.height)}`);
+      if(s.reference)mark(referenceBounds,'reference','zero offset');
+      if(s.neighbor&&neighborR)mark(neighborR,'neighbor','neighbor');
+    }
+    measureRows(rows);
+  }
+  function scheduleMeasure() { if(!frame)frame=requestAnimationFrame(measure); }
+  function render() {
+    const cssText=resolveRules().join('\n\n');
+    if($('experiment-style').textContent!==cssText)$('experiment-style').textContent=cssText;
+    renderControls();renderScenes();measure();
+    if(state.lab==='c'&&state.c.scenario==='swipe'&&cCurrent().playing)animateMeasurements();
+  }
+
+  // 9. Delegated native controls. Continuous changes use input events.
+  function handleControl(input) {
+    const [lab,rawKey]=input.dataset.control.split(':');if(lab!==state.lab)return;
+    const value=input.type==='checkbox'?input.checked:input.type==='range'?Number(input.value):input.value;
+    if(value==='mixed')return;
+    if(lab==='a'&&(['dimension',...geometryKeys.filter(k=>k!=='width')].includes(rawKey))) {
+      const key=rawKey==='dimension'?'width':rawKey;
+      if(key==='widthMode') {
+        dispatch({type:'a-geometry',key,value});
+        if(value==='percent')dispatch({type:'a-geometry',key:'width',value:100});
+        else if(value==='fixed')dispatch({type:'a-geometry',key:'width',value:240});
+      } else dispatch({type:'a-geometry',key,value});
+    } else {
+      field(rawKey,value);
+      if(lab==='b'&&rawKey==='widthMode')field('itemWidth',value==='percent'?100:240);
+      if(lab==='b'&&rawKey==='contexts'&&value==='reuse'&&state.b.scenario!=='columns')field('scenario','columns');
+      if(lab==='b'&&rawKey==='scenario'&&value==='stack'&&state.b.contexts==='reuse')field('contexts','single');
+    }
+  }
+  $('demo-shell').addEventListener('input',event=>{if(event.target.dataset.control&&event.target.type==='range')handleControl(event.target);});
+  $('demo-shell').addEventListener('change',event=>{
+    const input=event.target;
+    if(input.dataset.control&&input.type!=='range')handleControl(input);
+    else if(input.id==='stage-select')dispatch({type:'stage',value:Number(input.value)});
+    else if(input.id==='inspect-target') {if(state.lab==='c')field('selected',input.value);else dispatch({type:'common',key:'selected',value:input.value});}
+    else if(input.id.startsWith('show-'))dispatch({type:'common',key:input.id.slice(5),value:input.checked});
+  });
+  function popupAction(kind,button) {
+    const c=cCurrent(),scene=currentRoot();
+    if(kind==='open') {field('open',!c.open);if(!c.open)requestAnimationFrame(()=>query('.popup button',scene)?.focus());}
+    else if(kind==='sub') {field('subopen',!c.subopen);if(!c.subopen)requestAnimationFrame(()=>query('.submenu button',scene)?.focus());}
+    else {query('.menu-feedback',scene).textContent=button.dataset.menuAction;field('open',false);field('subopen',false);query('[data-popup-toggle]',scene).focus();}
+  }
+  $('demo-shell').addEventListener('click',event=>{
+    const b=event.target.closest('button'),probe=event.target.closest('[data-probe]');
+    if(b?.dataset.lab)dispatch({type:'lab',value:b.dataset.lab});
+    else if(b?.dataset.mode) {if(b.dataset.mode==='guided')dispatch({type:'stage',value:current().stage});else dispatch({type:'mode',value:b.dataset.mode});}
+    else if(b?.id==='stage-prev')dispatch({type:'stage',value:current().stage-1});
+    else if(b?.id==='stage-next')dispatch({type:'stage',value:current().stage+1});
+    else if(b?.id==='reset') {dispatch({type:'reset'});if(state.lab==='a'){$('deal-form').reset();query('.form-feedback',$('deal-form')).hidden=true;}all('.example-feedback,.menu-feedback',currentRoot()).forEach(el=>el.textContent=el.classList.contains('menu-feedback')?'Choose an action.':'');}
+    else if(b?.id==='reveal')dispatch({type:'common',key:'reveal',value:!current().reveal});
+    else if(b?.id==='play') {field('playing',!cCurrent().playing);if(cCurrent().playing)animateMeasurements();}
+    else if(b?.id==='restart') {const el=query('.mover',currentRoot());el.style.animation='none';void el.offsetWidth;el.style.animation='';field('playing',true);animateMeasurements();}
+    else if(b?.id==='copy-css')copyCSS();
+    else if(b?.hasAttribute('data-popup-toggle'))popupAction('open',b);
+    else if(b?.hasAttribute('data-submenu-toggle'))popupAction('sub',b);
+    else if(b?.dataset.menuAction)popupAction('action',b);
+    else if(b?.hasAttribute('data-press'))field('pressed',!cCurrent().pressed);
+    else if(b?.hasAttribute('data-archive'))query('.example-feedback',currentRoot()).textContent='Task archived in this example.';
+    else if(b?.dataset.example)query('.example-feedback,.menu-feedback',currentRoot()).textContent=b.dataset.example+'.';
+    else if(b?.dataset.formAction) {const feedback=query('.form-feedback',$('deal-form'));feedback.hidden=false;feedback.textContent=b.dataset.formAction==='search'?'Found: Maya Patel · Northwind.':'Form restored.';if(b.dataset.formAction==='cancel')$('deal-form').reset();}
+    if(probe&&currentRoot().contains(probe)) {
+      if(state.lab==='c')field('selected',probe.dataset.probe);
+      else dispatch({type:'common',key:'selected',value:probe.dataset.probe});
+    }
+  });
+  $('deal-form').addEventListener('submit',event=>{event.preventDefault();const feedback=query('.form-feedback',$('deal-form'));feedback.hidden=false;feedback.textContent='Deal saved in this example.';scheduleMeasure();});
+  $('demo-shell').addEventListener('keydown',event=>{
+    if(event.key==='Escape'&&state.lab==='c'&&state.c.scenario==='dropdown') {
+      event.preventDefault();if(cCurrent().subopen){field('subopen',false);query('[data-submenu-toggle]',currentRoot()).focus();}else if(cCurrent().open){field('open',false);query('[data-popup-toggle]',currentRoot()).focus();}
+    }
+    const card=event.target.closest('.task-card');if(card&&(event.key==='Enter'||event.key===' ')){event.preventDefault();dispatch({type:'common',key:'selected',value:card.dataset.probe});}
+    const probe=event.target.closest('[data-probe][role="button"]');if(state.lab==='c'&&probe&&(event.key==='Enter'||event.key===' ')){event.preventDefault();field('selected',probe.dataset.probe);}
+  });
+  $('c-fixtures').addEventListener('focusin',event=>{if(event.target.hasAttribute('data-archive')&&state.lab==='c'&&state.c.scenario==='swipe'&&cCurrent().playing)field('playing',false);});
+  async function copyCSS() {
+    const text=$('active-css').textContent,focus=document.activeElement;
+    try {await navigator.clipboard.writeText(text);$('copy-css').textContent='Copied';}
+    catch {const area=document.createElement('textarea');area.value=text;area.style.position='fixed';area.style.left='-10000px';document.body.append(area);area.select();const success=document.execCommand('copy');area.remove();focus?.focus({preventScroll:true});$('copy-css').textContent=success?'Copied':'Select CSS to copy';}
+  }
+  let measuringAnimation=false;
+  function animateMeasurements() {
+    if(measuringAnimation)return;measuringAnimation=true;
+    function tick(){if(state.lab!=='c'||state.c.scenario!=='swipe'||!cCurrent().playing){measuringAnimation=false;return;}measure();requestAnimationFrame(tick);}requestAnimationFrame(tick);
+  }
+  const observer=new ResizeObserver(()=>{if(reference)reference.style.width=getComputedStyle(currentRoot()).width;scheduleMeasure();});
+  observer.observe($('scene-canvas'));observer.observe($('a-fixture'));observer.observe($('b-fixture'));all('.c-scene',$('c-fixtures')).forEach(el=>observer.observe(el));
+  $('scene-scroll').addEventListener('scroll',scheduleMeasure);
+  window.addEventListener('resize',scheduleMeasure);
+  matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change',event=>{if(event.matches&&state.lab==='c'&&cCurrent().playing)field('playing',false);else renderControls();});
+  render();
+})();
+</script>
+</body>
+</html>

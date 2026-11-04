@@ -1,0 +1,654 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CSS Grid — Section 5</title>
+<style>
+
+/* DEMOSHELL 1.0 — Keep shell chrome and tokens consistent across all demos.
+   Customize only the lesson/world content in .ds-world and the registries in JS. */
+#demo-shell {
+  --shell-bg:#FFFFFF;--shell-side:#F7F9FC;--shell-work:#EEF2F8;
+  --shell-ink:#25344B;--shell-muted:#64758D;--shell-subtle:#8897AA;
+  --shell-border:#D8E0E9;--shell-accent:#315FA8;--shell-accent-soft:#E8F0FD;
+  --shell-warning:#98631B;--shell-warning-bg:#FFF2DB;
+  --shell-danger:#A54747;--shell-success:#287963;--shell-code:#152338;
+  --shell-radius-xs:4px;--shell-radius-sm:6px;--shell-radius-md:9px;--shell-radius-lg:12px;
+  --shell-gap-1:4px;--shell-gap-2:8px;--shell-gap-3:12px;--shell-gap-4:16px;--shell-gap-5:24px;
+  --shell-font:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font:13px/1.5 var(--shell-font); color:var(--shell-ink);background:var(--shell-bg);
+  border:1px solid var(--shell-border);border-radius:var(--shell-radius-lg);
+  max-width:1420px;margin:16px auto;overflow:hidden; box-shadow:0 5px 24px #24344a0a;
+}
+#demo-shell *,#demo-shell *::before,#demo-shell *::after{box-sizing:border-box}
+#demo-shell button,#demo-shell select,#demo-shell input{font:inherit}
+#demo-shell button{cursor:pointer}
+#demo-shell button:focus-visible,#demo-shell input:focus-visible,#demo-shell select:focus-visible{outline:2px solid var(--shell-accent);outline-offset:2px}
+#demo-shell button:disabled{opacity:.5;cursor:default}
+#demo-shell .ds-header{min-height:64px;background:#17263D;color:#F6F9FF;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 18px}
+#demo-shell h1{font-size:16px;line-height:1.15;letter-spacing:-.3px;margin:0;font-weight:700}
+#demo-shell .ds-kicker{font-size:11px;color:#A8B8D0;margin-top:4px}
+#demo-shell .ds-status{border:1px solid #5F7390;border-radius:6px;color:#ECF4FF;font-size:11px;white-space:nowrap;padding:5px 9px}
+#demo-shell .ds-columns{display:grid;grid-template-columns:304px minmax(0,1fr);min-height:690px}
+#demo-shell .ds-sidebar{background:var(--shell-side);padding:14px;border-right:1px solid var(--shell-border);display:flex;flex-direction:column;gap:13px;max-height:820px;overflow:auto}
+#demo-shell .ds-section{border-bottom:1px solid var(--shell-border);padding-bottom:13px;min-width:0}
+#demo-shell .ds-section:last-child{border-bottom:0;padding-bottom:0}
+#demo-shell .ds-section-title{display:flex;align-items:baseline;justify-content:space-between;gap:8px;font-size:12px;font-weight:700;margin:0 0 9px}
+#demo-shell .ds-meta{font-size:11px;color:var(--shell-muted);font-weight:400}
+#demo-shell .ds-label{font-size:11px;color:var(--shell-muted);display:block}
+#demo-shell .ds-hint{font-size:11px;color:var(--shell-muted);margin:7px 0 0}
+#demo-shell .ds-seg{display:flex;background:#FFF;border:1px solid var(--shell-border);border-radius:6px;overflow:hidden;min-width:0}
+#demo-shell .ds-seg button{flex:1;border:0;border-right:1px solid var(--shell-border);color:#52647C;background:transparent;min-height:32px;font-size:11px;padding:5px 6px}
+#demo-shell .ds-seg button:last-child{border:0}
+#demo-shell .ds-seg button[aria-pressed="true"]{background:var(--shell-accent);color:#FFF;font-weight:650}
+#demo-shell .ds-mini-actions{display:flex;align-items:center;gap:7px;margin:9px 0 5px}
+#demo-shell .ds-btn{min-height:32px;border-radius:6px;border:1px solid var(--shell-border);color:#435771;background:white;padding:6px 10px;font-size:11px;font-weight:600}
+#demo-shell .ds-btn-primary{background:var(--shell-accent);color:white;border-color:var(--shell-accent)}
+#demo-shell .ds-btn-block{width:100%}
+#demo-shell .ds-step{flex:1;text-align:center;font-size:11px;color:var(--shell-muted)}
+#demo-shell .ds-field{margin:10px 0}
+#demo-shell .ds-fieldrow{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:4px}
+#demo-shell output{font-size:11px;color:var(--shell-accent);font-variant-numeric:tabular-nums}
+#demo-shell input[type="range"]{width:100%;accent-color:var(--shell-accent);cursor:pointer;display:block;margin:3px 0;height:18px}
+#demo-shell input[type="checkbox"]{width:15px;height:15px;accent-color:var(--shell-accent);cursor:pointer;margin:0}
+#demo-shell .ds-all{display:flex;align-items:center;gap:9px;font-weight:700;font-size:11px;padding:5px 0 9px}
+#demo-shell .ds-problem{display:grid;grid-template-columns:20px minmax(0,1fr) 22px;gap:7px;align-items:center;border-radius:6px;border:1px solid transparent;padding:5px;margin:0 -5px}
+#demo-shell .ds-problem[data-selected="true"]{background:var(--shell-accent-soft);border-color:#BED1F3}
+#demo-shell .ds-problem button{border:0;background:none;color:var(--shell-ink);text-align:left;font-size:11px;min-height:28px;padding:0}
+#demo-shell .ds-issue-icon{font-size:11px;color:var(--shell-warning);text-align:center}
+#demo-shell .ds-inspector{border:1px solid var(--shell-border);border-radius:9px;background:white;padding:10px}
+#demo-shell .ds-inspect-title{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:12px;font-weight:700}
+#demo-shell .ds-pill{display:inline-block;border-radius:6px;background:var(--shell-warning-bg);color:var(--shell-warning);font-size:10px;padding:3px 6px;font-weight:600}
+#demo-shell .ds-pill.ok{color:var(--shell-success);background:#E6F4ED}
+#demo-shell .ds-chain{display:grid;grid-template-columns:85px minmax(0,1fr);gap:5px 9px;margin:10px 0;font-size:11px}
+#demo-shell .ds-chain dt{color:var(--shell-subtle)}
+#demo-shell .ds-chain dd{margin:0;min-width:0;overflow-wrap:anywhere;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:10px}
+#demo-shell .ds-compare-values{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:9px 0}
+#demo-shell .ds-value{background:#F2F5F9;border-radius:6px;padding:8px;min-width:0}
+#demo-shell .ds-value label{display:block;color:var(--shell-muted);font-size:10px}
+#demo-shell .ds-value b{font-size:12px;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+#demo-shell .ds-explain{font-size:11px;color:#586B84;margin:9px 0}
+#demo-shell .ds-workspace{background:var(--shell-work);min-width:0;display:flex;flex-direction:column}
+#demo-shell .ds-toolbar{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;padding:11px 15px;border-bottom:1px solid var(--shell-border)}
+#demo-shell .ds-toolbar strong{font-size:12px}
+#demo-shell .ds-toolbar-group{display:flex;align-items:center;gap:8px}
+#demo-shell select{height:32px;border:1px solid var(--shell-border);border-radius:6px;color:var(--shell-ink);background:white;padding:0 7px;font-size:11px;max-width:100%}
+#demo-shell .ds-stage{border-radius:6px;padding:7px 15px;font-size:11px;color:#546780;border-bottom:1px solid var(--shell-border);background:#F7F9FD}
+#demo-shell .ds-world-wrap{padding:16px;min-width:0;overflow:auto}
+#demo-shell .ds-world{background:#FFF;border:1px solid var(--shell-border);border-radius:9px;max-width:100%;width:100%;padding:16px;min-height:410px;margin:0 auto;transition:background .12s}
+#demo-shell .ds-world-heading{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;flex-wrap:wrap;margin-bottom:14px}
+#demo-shell .ds-world h2{font-size:17px;margin:0;line-height:1.25}
+#demo-shell .ds-world p{font-size:11px;color:var(--shell-muted);margin:4px 0 0}
+#demo-shell .ds-world-badge{background:#EDF4FF;color:#2F5F9D;padding:4px 9px;border-radius:6px;font-weight:650;font-size:10px}
+#demo-shell .ds-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+#demo-shell .ds-metric{border:1px solid var(--shell-border);border-radius:9px;background:white;padding:11px;min-width:0;text-align:left;cursor:pointer;color:var(--shell-ink)}
+#demo-shell .ds-metric span{color:var(--shell-muted);display:block;font-size:11px}
+#demo-shell .ds-metric strong{font-size:22px;display:block;font-variant-numeric:tabular-nums;white-space:nowrap}
+#demo-shell .ds-metric small{color:var(--shell-muted);font-size:10px}
+#demo-shell [data-entity].selected{outline:2px solid var(--shell-accent);outline-offset:2px}
+#demo-shell .ds-chart{border:1px solid var(--shell-border);border-radius:9px;padding:13px;margin-top:12px}
+#demo-shell .ds-chart-label{display:flex;justify-content:space-between;font-size:11px;font-weight:650;gap:10px;margin-bottom:7px}
+#demo-shell .ds-bars{display:flex;align-items:end;gap:4px;height:120px;background:linear-gradient(to top,#E6ECF5 1px,transparent 1px) 0 0/100% 30px}
+#demo-shell .ds-bars div{flex:1;min-width:3px;min-height:0;border-radius:3px 3px 0 0;background:#6E9BD6;transition:height .12s}
+#demo-shell .ds-bars div:last-child{background:var(--shell-accent)}
+#demo-shell .ds-axis{display:flex;justify-content:space-between;color:var(--shell-subtle);font-size:10px;margin-top:6px}
+#demo-shell .ds-question{border-left:3px solid var(--shell-accent);background:#F1F5FB;padding:9px 12px;margin-top:12px;border-radius:0 6px 6px 0}
+#demo-shell .ds-question strong{font-size:11px}
+#demo-shell .ds-question p{font-size:11px;color:var(--shell-ink)}
+#demo-shell .ds-compare-panel{border:1px solid #C6D9F6;border-radius:9px;background:#F2F7FF;padding:10px 12px;margin-top:10px;font-size:11px}
+#demo-shell .ds-compare-panel strong{display:block;font-size:12px;margin-bottom:3px}
+#demo-shell .ds-bottom{background:#FFF;border-top:1px solid var(--shell-border);padding:13px 16px}
+#demo-shell .ds-bottom-title{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:12px;font-weight:700;margin-bottom:9px}
+#demo-shell .ds-code{white-space:pre-wrap;word-break:break-word;max-height:220px;overflow:auto;background:var(--shell-code);color:#E6ECF7;padding:13px;border-radius:6px;font:11px/1.55 ui-monospace,Consolas,monospace;margin:9px 0 0}
+#demo-shell .ds-footer-note{font-size:11px;color:var(--shell-muted);padding:9px 16px;background:#FAFCFE;border-top:1px solid var(--shell-border)}
+@media(max-width:800px){#demo-shell .ds-columns{grid-template-columns:minmax(0,1fr)}#demo-shell .ds-sidebar{max-height:none;border-right:0;border-bottom:1px solid var(--shell-border)}#demo-shell .ds-world-wrap{padding:10px}}
+@media(max-width:430px){#demo-shell{margin:0}#demo-shell .ds-metrics{grid-template-columns:1fr}#demo-shell .ds-world{padding:10px}#demo-shell .ds-header{padding:10px}#demo-shell .ds-metric strong{font-size:19px}}
+@media(prefers-reduced-motion:reduce){#demo-shell *,#demo-shell *::before,#demo-shell *::after{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+
+</style>
+<style>
+body{margin:0;padding:0 12px;background:#eef2f8}
+[hidden]{display:none!important}
+#demo-shell .ds-header{flex-wrap:wrap}
+#demo-shell .lab-nav{display:flex;flex-wrap:wrap;gap:5px;padding:10px 14px;border-bottom:1px solid var(--shell-border)}
+#demo-shell .lab-nav button[aria-pressed=true]{color:var(--shell-accent);background:var(--shell-accent-soft);border-color:#bed1f3}
+#demo-shell .ds-workspace{min-width:0;padding:16px}
+#demo-shell .ds-sidebar{max-height:calc(100vh - 170px);min-height:560px}
+#demo-shell .ds-field select,#demo-shell .ds-field input[type=text],#stage-select{display:block;width:100%;min-width:0;height:32px;border:1px solid var(--shell-border);border-radius:6px;background:white;color:var(--shell-ink);padding:4px 7px}
+#demo-shell input[type=text]{font-family:Consolas,monospace!important;font-size:11px!important}
+#demo-shell label.check{display:flex;align-items:center;gap:8px;min-height:30px;font-size:11px}
+#demo-shell .ds-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+#demo-shell .ds-toolbar-group{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+#demo-shell .question{background:white;border:1px solid var(--shell-border);border-radius:9px;padding:12px;margin-bottom:12px}
+#demo-shell .question h2{font-size:13px;margin:0 0 5px}
+#demo-shell .question p{font-size:12px;margin:0;color:var(--shell-muted)}
+#demo-shell details>summary{cursor:pointer;font-size:12px;font-weight:600;min-height:30px;padding-top:5px}
+#demo-shell details:focus-within>summary{outline-color:var(--shell-accent)}
+#demo-shell #mechanism{font-size:12px;margin:7px 0 0}
+#demo-shell .world-scroll{overflow:auto;background:white;border:1px solid var(--shell-border);border-radius:9px;padding:16px;max-height:680px;min-height:330px}
+#demo-shell .canvas{position:relative;width:max-content;min-width:100%;padding-bottom:10px}
+#demo-shell .world-title{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:12px;max-width:100%}
+#demo-shell .world-title h2{font-size:14px;margin:0}
+#demo-shell .world-title p{font-size:11px;color:var(--shell-muted);margin:2px 0 0}
+#demo-shell #fixture{position:relative;background:#f5f8fc;outline:1px solid #d8e0e9;isolation:isolate}
+#demo-shell .tile{border:1px solid #cdd9e8;border-radius:8px;padding:14px;background:#fff;color:#25344b;position:relative}
+#demo-shell .tile h3{font-size:14px;line-height:1.35;margin:6px 0 8px;font-weight:650}
+#demo-shell .tile p{font-size:12px;line-height:1.5;margin:7px 0}
+#demo-shell .tile .money{font-size:23px;font-weight:700;margin:6px 0}
+#demo-shell .tile small{font-size:11px;color:#64758d}
+#demo-shell .id-badge{display:inline-block;font:600 10px/1.5 Consolas,monospace;padding:2px 6px;border-radius:4px;background:#e8f0fd;color:#315fa8}
+#demo-shell .order-label{position:absolute;right:3px;bottom:2px;z-index:4;background:#fffefa;color:#315fa8;font:9px/1.4 Consolas,monospace;pointer-events:none}
+#demo-shell .tile.selected{outline:2px solid #315fa8;outline-offset:-2px}
+#demo-shell .tile.overflowing{box-shadow:inset 0 0 0 2px #a54747}
+#demo-shell .tile.abstract{border-radius:0;background:#e8f0fd}
+#demo-shell .tile.abstract .money{font-size:30px}
+#demo-shell .tile footer{padding-top:10px}
+#demo-shell .tile button{border:1px solid #cdd9e8;border-radius:5px;background:#f7f9fc;color:#315fa8;padding:5px 9px;font-size:11px;min-height:30px}
+#demo-shell .dashboard-region h3{font-size:13px}
+#demo-shell .card-section{padding:10px 12px;min-width:0}
+#demo-shell .deal-card{padding:0}
+#demo-shell .deal-card h3{font-size:1.08em;margin:5px 0}
+#demo-shell .deal-card p{font-size:.9em;margin:0}
+#demo-shell .deal-card .card-section:nth-child(2){background:#f3f7fc}
+#demo-shell .section-lines .card-section{outline:1px dashed #8ba7c8;outline-offset:-1px}
+#demo-shell .row-highlight .card-section:nth-child(3){background:#fff2db80}
+#demo-shell #overlay{position:absolute;top:0;left:0;pointer-events:none;z-index:3;overflow:visible}
+#demo-shell #overlay text{font:10px Consolas,monospace;fill:#234b85;paint-order:stroke;stroke:white;stroke-width:3px;stroke-linejoin:round}
+#demo-shell .metrics-strip{display:flex;gap:8px 16px;flex-wrap:wrap;font-size:11px;color:var(--shell-muted);padding:10px 1px}
+#demo-shell .metrics-strip b{color:var(--shell-ink);font-variant-numeric:tabular-nums}
+#demo-shell .ds-bottom{border:1px solid var(--shell-border);border-radius:9px;overflow:hidden;margin-top:8px;background:white}
+#demo-shell .code-toolbar{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;gap:8px}
+#demo-shell .ds-code{background:var(--shell-code);color:#dbe8fa;margin:0;padding:14px;max-height:310px;overflow:auto;font:11px/1.55 Consolas,monospace;white-space:pre}
+#demo-shell #preset-diff{border-top:1px solid #35455c}
+#demo-shell #inspect-values{font:10px/1.6 Consolas,monospace;white-space:pre-wrap;overflow-wrap:anywhere;margin:8px 0}
+#demo-shell #geometry-table{border-collapse:collapse;width:100%;font-size:10px;font-variant-numeric:tabular-nums}
+#demo-shell #geometry-table th,#demo-shell #geometry-table td{text-align:left;padding:3px;border-bottom:1px solid #e3eaf2}
+#demo-shell .inspector-note{font-size:10px;color:var(--shell-muted);margin:8px 0}
+#demo-shell .inline-feedback{font-size:11px;color:var(--shell-accent);min-height:17px;margin:6px 0}
+#demo-shell .warning{color:var(--shell-warning)}
+#demo-shell .measure-list{max-height:240px;overflow:auto}
+#demo-shell .detail-row{display:contents}
+#demo-shell .detail-row>span{padding:8px;border-bottom:1px solid #e3eaf2}
+#demo-shell .detail-row>span:first-child{font-weight:650}
+#demo-shell .ds-code:focus-visible,#demo-shell summary:focus-visible{outline:2px solid var(--shell-accent);outline-offset:-2px}
+@media(max-width:799px){body{padding:0 6px}#demo-shell{margin:6px auto}#demo-shell .ds-columns{grid-template-columns:minmax(0,1fr)}#demo-shell .ds-sidebar{max-height:none;min-height:0;border-right:0;border-bottom:1px solid var(--shell-border)}#demo-shell .ds-workspace{padding:10px}#demo-shell .world-scroll{padding:10px}#demo-shell .lab-nav button{flex:1 1 40%}#demo-shell .ds-status{white-space:normal}}
+@media(prefers-reduced-motion:reduce){#demo-shell *,#demo-shell *::before,#demo-shell *::after{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
+</style>
+<style id="layout-rules"></style>
+</head>
+<body>
+<div id="demo-shell">
+ <header class="ds-header"><div><h1>CSS Grid — Layout & Sizing</h1><div class="ds-kicker">Section 5 · Tracks, placement and shared structure</div></div><span id="status" class="ds-status">Explore</span></header>
+ <nav class="lab-nav" aria-label="Grid labs"><button class="ds-btn" data-lab="a" aria-pressed="true">5A · Track Sizing</button><button class="ds-btn" data-lab="b" aria-pressed="false">5B · Auto-Placement</button><button class="ds-btn" data-lab="c" aria-pressed="false">5C · Dashboard</button><button class="ds-btn" data-lab="d" aria-pressed="false">5D · Subgrid</button></nav>
+ <div class="ds-columns">
+  <aside class="ds-sidebar" aria-label="Experiment controls">
+   <section class="ds-section"><h2 class="ds-section-title">Scenario <span id="step-number" class="ds-meta"></span></h2><label for="stage-select" class="ds-label">Learning challenge</label><select id="stage-select"></select><div class="ds-mini-actions"><button id="previous" class="ds-btn" aria-label="Previous step">←</button><span id="step-state" class="ds-step">Starting state</span><button id="next" class="ds-btn" aria-label="Next step">→</button></div></section>
+   <section class="ds-section"><h2 class="ds-section-title">Controls <span class="ds-meta">Live CSS</span></h2><div id="controls"></div></section>
+   <section class="ds-section"><h2 class="ds-section-title">Diagnostics</h2><label class="check"><input id="tracks" type="checkbox" checked> Show tracks & dimensions</label><label class="check"><input id="overflow" type="checkbox" checked> Mark overflowing items</label><label class="check"><input id="order" type="checkbox"> Show DOM / visual / focus order</label><label class="check"><input id="sections" type="checkbox"> Show internal section boundaries</label><label class="check" id="gaps-control"><input id="gaps" type="checkbox"> Highlight placement gaps</label></section>
+   <details id="inspector" class="ds-section"><summary>Geometry Inspector</summary><p class="inspector-note">Select a preview card or region. Coordinates are relative to the grid.</p><div id="inspect-values"></div><div class="measure-list"><table id="geometry-table"><thead><tr><th>Item</th><th>x / y</th><th>w × h</th></tr></thead><tbody></tbody></table></div><p class="inspector-note">Track sizes: computed CSS serialization. Lines: inferred from resolved tracks and gaps. Section positions: measured DOM rectangles.</p><div id="section-values" class="inspector-note"></div></details>
+   <section class="ds-section"><button id="reset" class="ds-btn ds-btn-block">Reset this demo</button></section>
+  </aside>
+  <main class="ds-workspace">
+   <div class="ds-toolbar"><strong id="lab-title">Grid Track Sizing Lab</strong><div class="ds-toolbar-group"><div class="ds-seg"><button id="explore" aria-pressed="true">Explore</button><button id="guided" aria-pressed="false">Guided</button></div></div></div>
+   <div class="question"><h2 id="challenge"></h2><p id="prediction"></p><details id="explanation"><summary>Mechanism & alternatives</summary><p id="mechanism"></p></details></div>
+   <div class="world-scroll" id="world-scroll"><div class="world-title"><div><h2 id="world-title"></h2><p id="world-subtitle"></p></div></div><div class="canvas" id="canvas"><div id="fixture" aria-label="Live Grid fixture"></div><svg id="overlay" aria-hidden="true"></svg></div></div>
+   <div class="metrics-strip" id="metrics" aria-live="off"></div><p id="feedback" class="inline-feedback" role="status"></p>
+   <div class="ds-bottom"><div class="code-toolbar"><strong>Effective CSS</strong><button id="copy-css" class="ds-btn">Copy CSS</button></div><pre class="ds-code" id="active-css" tabindex="0"></pre><details id="diff-panel" hidden><summary style="padding-left:12px">Preset CSS diff · Desktop → active preset</summary><pre id="preset-diff" class="ds-code" tabindex="0"></pre></details></div>
+  </main>
+ </div>
+</div>
+<script>
+(() => {
+'use strict';
+// 1. Reference data. The browser owns all sizing and placement calculations.
+const $ = id => document.getElementById(id);
+const all = (selector, root=document) => [...root.querySelectorAll(selector)];
+const clone = value => JSON.parse(JSON.stringify(value));
+const letters = 'ABCDEFGHIJKL';
+const titles = ['Northstar expansion','Atlas enterprise renewal with additional regional coverage','Meridian launch','Cobalt partnership','Harbor onboarding','Summit analytics','Juniper upgrade','Orbit migration','Lumen support','Pioneer rollout','Evergreen pilot','Vertex renewal'];
+const descriptions = ['Annual workspace agreement.','Security review and procurement are complete. The customer is coordinating the rollout across four regional teams with separate training schedules.','Implementation workshop scheduled for next week.','A multi-year agreement with a phased delivery plan, additional reporting requirements and an extended pilot.'];
+const contents = {
+ short: ['Revenue','$84,320','Current quarter'],
+ translated: ['Umsatzprognose für internationale Unternehmenskunden','$84,320','Forecast across regional business units'],
+ number: ['Revenue','€ 123,456,789.00','Consolidated quarterly revenue'],
+ identifier: ['Account reference','CRM_NORTHSTAR_ENTERPRISE_2026_Q4_UNBREAKABLE_IDENTIFIER_0000000001','External account identifier'],
+ description: ['Revenue','$84,320',descriptions[1]+' '+descriptions[3]]
+};
+const contentOptions = [['short','Short'],['translated','Long translated label'],['number','Large number'],['identifier','Unbreakable identifier'],['description','Multiline description']];
+const kpiRoles = [['Revenue','$84,320','Current quarter'],['Active deals','42','18 qualified opportunities'],['Conversion rate','28%','Across all lead sources']];
+const trackOptions = [['200px','Fixed 200px'],['1fr','1fr'],['2fr','2fr'],['auto','auto'],['min-content','min-content'],['max-content','max-content'],['minmax(160px, 1fr)','minmax(160px, 1fr)'],['minmax(auto, 1fr)','minmax(auto, 1fr)'],['minmax(0, 1fr)','minmax(0, 1fr)'],['fit-content(240px)','fit-content(240px)']];
+const defaults = {
+ a: {width:720,height:360,definite:false,gx:16,gy:16,count:3,columns:3,trackPreset:'fixed',tracks:['200px','200px','200px','1fr'],custom:'',fraction:2,minimum:160,fit:240,selected:0,content:['short','short','short','short','short','short','short','short','short'],span:false,rowMode:'auto',explicitRows:1,autoRows:'auto',presentation:'real',itemMin:'auto',wrap:'normal'},
+ b: {width:720,height:500,definite:false,gx:16,gy:16,count:8,columns:3,columnMode:'fixed',minimum:200,safe:false,flow:'row',dense:false,explicitRows:2,autoRows:'auto',autoColumns:180,selected:0,spans:Array.from({length:12},()=>[1,1]),content:'mixed',itemMin:'auto',wrap:'normal'},
+ c: {width:900,height:600,definite:false,gx:16,gy:16,preset:'desktop',placement:'areas',main:2,aside:1,custom:'',selected:0,visible:[true,true,true,true,true,true],regionSpans:[0,0,0,0,0,0],headerSpan:true,footerSpan:true,empty:false,invalid:false,extra:0,flow:'row',autoRows:'auto',autoColumns:180},
+ d: {width:840,height:520,definite:false,gx:12,gy:12,count:3,columns:3,mode:'flow',axis:'rows',scale:100,selected:0,lengths:['short','long','medium','short','medium','long','short','long','short'],parentRows:'auto',overrideGap:false,subgap:4,highlight:false}
+};
+// Each stage is a documented constraint snapshot in the same state engine as Explore.
+const stage = (label, delta, prediction, mechanism) => ({label,delta,prediction,mechanism});
+const stages = {
+ a: [
+ stage('A1 · Fixed tracks',{},'Shrink the container below 632px. Do the three tracks shrink?','Fixed tracks keep their declared width. Gap is additional space. Choose fixed tracks when a real dimension is required; use flexible tracks when the parent must distribute available room.'),
+ stage('A2 · Fractional tracks',{trackPreset:'fraction'},'Compare equal fractions with a 2:1:1 ratio. What space is being shared?','fr distributes leftover track space, subject to sizing constraints. A bare 1fr has an automatic minimum; it does not guarantee that long content can shrink.'),
+ stage('A3 · Content-sensitive auto',{trackPreset:'auto',content:['translated','short','short']},'Keep the same content and compare auto with 1fr. Are the columns equal?','auto uses intrinsic constraints and can receive extra space through stretch. It is neither a synonym for max-content nor for 1fr.'),
+ stage('A4 · Intrinsic tracks',{trackPreset:'intrinsic',width:580,content:['translated','description','identifier']},'Change the first track between min-content and max-content. Where can its content break?','min-content depends on allowed break opportunities; max-content prefers unwrapped content. An unbreakable identifier can impose a large minimum. Fixed tracks ignore that preferred width but can leave overflowing content.'),
+ stage('A5 · Track minimum vs item overflow',{trackPreset:'zero',width:420,content:['identifier','short','short']},'The track can now shrink. Does the identifier stay inside its card?','minmax(0,1fr) removes the automatic track minimum, but content can still overflow. Compare minmax(auto,1fr), a 160px track minimum, item min-width:0 and overflow-wrap:anywhere as separate interventions.'),
+ stage('A6 · fit-content limit',{trackPreset:'fit',columns:2,count:2,width:620,content:['translated','description']},'Switch the first label to an identifier. Is 240px an unconditional hard cap?','fit-content(240px) is content-sensitive and bounded by its automatic minimum. It can exceed the limit when its minimum demands it. Compare fixed 240px, max-content and a flexible second track.'),
+ stage('A7 · Spanning contributions',{trackPreset:'auto',columns:3,count:3,width:650,span:true,content:['translated','short','short']},'Change the spanning item content. Which tracks respond?','A spanning item contributes constraints across multiple tracks. The browser resolves those contributions through Grid sizing; there is no universal equal-split rule.'),
+ stage('A8 · Explicit row sizing',{trackPreset:'zero',width:650,count:6,explicitRows:2,rowMode:'fraction',definite:true,height:640,content:['description','short','short','short','short','short']},'Compare fractional rows with auto, fixed and bounded rows. Then remove the definite height.','A definite height makes leftover vertical space meaningful. Fractional rows still have automatic minimum constraints. Auto rows respond to content and alignment; fixed rows can overflow; minmax(80px,auto) imposes a minimum without fixing the content height.'),
+ stage('A9 · Implicit rows',{trackPreset:'zero',count:9,explicitRows:1,rowMode:'fixed',autoRows:'100px',definite:false,content:['description','short','short','short','short','short','short','short','short']},'Only one row is explicit. Change grid-auto-rows: which rows change?','Extra items create real implicit rows. grid-template-rows sizes explicit rows; grid-auto-rows sizes implicit rows. A fixed implicit height can overflow long content.')
+ ],
+ b: [
+ stage('B1 · Fixed column count',{},'Narrow the collection. Does the number of columns change?','repeat(3,1fr) fixes the number of columns, not a usable minimum. Flexbox would wrap independent lines; Grid shares column tracks across rows.'),
+ stage('B2 · Minimum usable width',{columnMode:'minimum',width:550},'Can three 200px columns fit in this parent?','A fixed count of minimum-width columns can overflow. A minimum is a constraint rather than a request to silently reduce the number of columns.'),
+ stage('B3 · Automatic column count',{columnMode:'fit'},'Resize from 900px to 420px. Which widths trigger another column?','auto-fit repeats as many minimum-width tracks as fit. Track count depends on available width, the minimum and gaps.'),
+ stage('B4 · auto-fit vs auto-fill',{columnMode:'fit',count:2,width:900},'Only two cards remain. Switch auto-fit to auto-fill without changing width.','auto-fill retains empty repeated tracks. auto-fit collapses empty repeated tracks and adjacent gutters, so occupied tracks can expand. With many items the difference may disappear.'),
+ stage('B5 · Below the minimum',{columnMode:'fit',count:3,width:160,safe:false,content:'identifier'},'Enable the container-bounded minimum. Does that also fix the long identifier?','minmax(min(100%,200px),1fr) allows the track to fit below 200px. Item minimums and unbreakable content are separate constraints; inspect them independently.'),
+ stage('B6 · Featured spans',{columnMode:'fixed',width:720,count:8,spans:[[2,1],[2,1],[1,1],[1,2],[1,1],[1,1],[1,1],[1,1]]},'Cards A and B span two columns. Where is the first hole?','Spanning changes placement constraints. A span larger than the explicit column count can create implicit tracks; the demo keeps that behavior visible.'),
+ stage('B7 · Row vs column flow',{columnMode:'fixed',flow:'column',explicitRows:2,count:8,width:720,spans:[[1,1],[1,1],[1,1],[1,1],[1,1],[1,1],[1,1],[1,1]]},'Two rows are explicit. Where do cards beyond the existing columns go?','Column flow fills along columns and can create implicit columns. Row flow fills along rows and typically creates implicit rows. Explicit cross-axis structure makes the difference visible.'),
+ stage('B8 · Sparse vs dense',{columnMode:'fixed',flow:'row',count:8,width:720,spans:[[2,1],[2,1],[1,1],[1,2],[1,1],[1,1],[1,1],[1,1]],dense:false},'Enable dense. Which later card moves into an earlier hole?','Sparse placement advances its placement cursor; dense can search earlier gaps for a fitting item. Packing changes visual positions without changing source order.'),
+ stage('B9 · DOM and keyboard order',{columnMode:'fixed',count:8,width:720,spans:[[2,1],[2,1],[1,1],[1,2],[1,1],[1,1],[1,1],[1,1]],dense:true},'Use Tab through the card actions. Does focus follow the visual packing?','The document sequence stays A, B, C… even when dense visually backfills C before B. Visual placement does not rewrite semantic or default keyboard order.'),
+ stage('B10 · Shared rows, unequal content',{columnMode:'fit',width:720,count:8,content:'mixed',spans:Array.from({length:12},()=>[1,1]),dense:false},'Compare the short and long cards in the same row. Does dense remove the vertical space?','Ordinary Grid shares row tracks; a tall card can increase the whole row height. dense fills available grid cells, not the free pixels beneath short content. It is not masonry.')
+ ],
+ c: [
+ stage('C1 · Explicit dashboard grid',{placement:'numeric',headerSpan:false,footerSpan:false},'Two columns exist. Which regions should occupy the whole width?','Explicit tracks define the structure; placement assigns regions to areas in that structure. Track sizing and placement are separate relationships.'),
+ stage('C2 · Numeric line endpoints',{placement:'numeric'},'Inspect the header and tasks. Which start/end lines define their bounds?','Numeric grid-column and grid-row declarations select grid lines, including endpoints. They are compact, but line changes can make numeric intent harder to maintain.'),
+ stage('C3 · Spanning regions',{placement:'numeric',headerSpan:true,footerSpan:true},'Toggle header/footer spans. Compare endpoints with span notation in the CSS.','grid-column:1 / span 2 and line endpoints can describe the same occupied columns. The right choice depends on whether the contract is anchored to an endpoint or a span.'),
+ stage('C4 · Named lines',{placement:'lines'},'Compare the CSS with numeric placement. What structural intent becomes explicit?','Named lines describe boundaries such as main-start and aside-end. They improve communication when the underlying responsibilities and topology are stable.'),
+ stage('C5 · Named areas',{placement:'areas'},'Read the area template before looking at the dashboard. Can you predict the arrangement?','Named rectangular areas communicate stable responsibilities. A dynamic collection often needs auto-placement rather than a growing registry of named areas.'),
+ stage('C6 · Intentional empty cells',{placement:'areas',empty:true},'Find the dot in the template. How is that different from a sparse-placement hole?','A dot reserves an intentional unnamed cell in the explicit template. It is different from a gap left by the auto-placement algorithm.'),
+ stage('C7 · Invalid nonrectangular area',{placement:'areas',invalid:true},'The header area is L-shaped. What computed template does the browser accept?','Named areas must form rectangles. The invalid declaration is rejected inside this fixture; its area assignments are removed so the resulting ordinary auto-placement remains understandable.'),
+ stage('C8 · Responsive area presets',{placement:'areas',preset:'tablet',width:650},'Switch desktop, tablet and mobile while following the same region elements.','Presets change CSS structure while reusing the same DOM. Reading and keyboard order follow the source; visual rearrangement does not inherently change them.'),
+ stage('C9 · Dynamic widgets',{placement:'areas',extra:3},'Where do new widgets go after the explicitly placed regions?','Additional auto-placed widgets use available cells and implicit tracks. Explicit application regions and a dynamic collection can coexist.'),
+ stage('C10 · Implicit tracks',{placement:'areas',extra:4,flow:'column',autoRows:'100px',autoColumns:180},'Switch auto-flow row/column and change implicit track sizes. Which axis grows?','grid-auto-rows and grid-auto-columns define the sizes of newly created tracks. Auto-flow determines the placement search direction, not the number of explicit tracks.'),
+ stage('C11 · Stable regions vs collection',{placement:'auto',extra:4,flow:'row'},'Switch automatic collection placement back to named areas. Which content needs a stable address?','Use explicit areas for persistent layout responsibilities. Prefer auto-placement for dynamic widgets unless their product requirements justify explicit placement. Semantically tabular data still belongs in a table.')
+ ],
+ d: [
+ stage('D1 · Independent block flow',{},'The second card has a long title. Which sections fall out of alignment?','Each card owns its own content flow. Equal outer height does not imply equal internal boundaries.'),
+ stage('D2 · Independent nested grids',{mode:'independent'},'Each card now has four rows. Do corresponding metrics start at the same y position?','auto auto 1fr auto gives each card a useful local structure and a bottom action row. Independent nested grids still calculate their rows independently.'),
+ stage('D3 · Fixed internal rows',{mode:'fixed',scale:125},'Increase text scale or lengthen a title. Is apparent alignment still usable?','Fixed title and metrics heights can align short content, but localization and larger text may overflow. Duplicated fixed dimensions introduce a maintenance constraint.'),
+ stage('D4 · Parent-owned rows',{mode:'parent'},'Each card spans four parent rows. Does its nested grid automatically share those rows?','No. grid-row:span 4 makes the card occupy parent tracks, but an independent nested grid still owns its internal rows. Subgrid is the missing relationship when internal boundaries must align.'),
+ stage('D5 · Row subgrid',{mode:'subgrid',axis:'rows'},'Compare the title, metrics and description boundaries across this row.','A row subgrid uses the parent rows covered by its span. Descendant content contributes to those shared tracks while the semantic card wrapper stays intact.'),
+ stage('D6 · Long content contributes',{mode:'subgrid',axis:'rows',lengths:['long','long','short','short','medium','long','short','long','short'],count:6,highlight:true},'Lengthen card A. Which cards move with it? Do cards in the next group share those same tracks?','Content can enlarge a shared parent row and move corresponding sections in sibling cards. Separate groups occupy different parent rows and do not share globally equal heights.'),
+ stage('D7 · Column subgrid',{mode:'subgrid',axis:'columns',count:3},'The label/value pairs now share parent columns. Compare with independent nested grids.','Subgrid can share columns independently of rows. Here each details card spans a label/value pair of parent columns; labels across records influence the same label track.'),
+ stage('D8 · Inherited and overridden gaps',{mode:'subgrid',axis:'rows',gy:20,overrideGap:false},'Override the subgrid row gap. Do shared tracks stop being shared?','The subgrid normally inherits the parent gutter. Overriding its gap changes how spacing is distributed at shared boundaries; the underlying parent track relationship remains.'),
+ stage('D9 · Choose the required relationship',{mode:'flex'},'If only footer actions must align, do you need four shared section rows?','Flex column with margin-top:auto is a legitimate simpler solution for bottom actions. Independent Grid handles local structure; subgrid is justified when multiple nested boundaries must participate in parent sizing.')
+ ]
+};
+const labTitles = {a:'Grid Track Sizing Lab',b:'Deal Cards & Auto-Placement',c:'Dashboard Placement & Areas',d:'Subgrid & Nested Alignment'};
+const worldTitles = {a:'Quarterly overview',b:'Deal pipeline',c:'Sales workspace',d:'Related opportunities'};
+const challenges = {a:'How should the parent size each track?',b:'How many tracks, and where should cards go?',c:'How should stable regions and dynamic widgets coexist?',d:'Which internal boundaries must cards share?'};
+// 2. State and actions. No derived geometry is stored as layout state.
+const initialLab = key => ({...clone(defaults[key]),step:0,learningMode:'explore',modified:false,diag:{tracks:true,overflow:true,order:false,sections:false,gaps:false},inspector:false});
+const store = Object.fromEntries(Object.keys(defaults).map(key=>[key,initialLab(key)]));
+let active='a', state=store.a, structureKey='', controlKey='', measureFrame=0;
+let lastModel=null;
+function applyStage(index){
+ const old=state, next=initialLab(active);
+ Object.assign(next,clone(stages[active][index].delta),{step:index,learningMode:old.learningMode,diag:old.diag,inspector:old.inspector});
+ if(active==='b')next.spans=Array.from({length:12},(_,i)=>next.spans[i]||[1,1]);
+ if(active==='b'&&index===8)next.diag={...next.diag,order:true};
+ if(active==='d')next.diag={...next.diag,sections:true};
+ store[active]=state=next;
+}
+function dispatch(action){
+ let rebuild=false;
+ if(action.type==='lab'){store[active]=state;active=action.value;state=store[active];controlKey='';structureKey='';rebuild=true;}
+ else if(action.type==='stage'){applyStage(Number(action.value));rebuild=true;}
+ else if(action.type==='reset'){store[active]=state=initialLab(active);rebuild=true;}
+ else if(action.type==='mode')state.learningMode=action.value;
+ else if(action.type==='diag')state.diag[action.key]=action.value;
+ else if(action.type==='select'){state.selected=Number(action.value);rebuild=true;}
+ else if(action.type==='control'){
+  const {key,value}=action;
+  if(key==='itemContent')state.content[state.selected]=value;
+  else if(key==='itemLength')state.lengths[state.selected]=value;
+  else if(key==='trackSize'){state.tracks[state.trackIndex||0]=value;state.trackPreset='individual';}
+  else if(key==='spanX'||key==='spanY'){state.spans[state.selected][key==='spanX'?0:1]=Number(value);}
+  else if(key==='visible'){state.visible[state.selected]=value;}
+  else if(key==='regionSpan'){state.regionSpans[state.selected]=Number(value);}
+  else {state[key]=['selected','trackIndex'].includes(key)?Number(value):value;}
+  if(key==='preset')Object.assign(state,{width:{desktop:900,tablet:650,mobile:320}[value],custom:''});
+  if(state.count)state.selected=Math.min(state.selected,state.count-1);
+  if(active==='a')state.trackIndex=Math.min(state.trackIndex||0,state.columns-1);
+  if(active==='d'&&key==='axis'&&value==='columns'&&!['independent','subgrid'].includes(state.mode))state.mode='independent';
+  state.modified=true;
+  rebuild=['selected','trackIndex'].includes(key);
+ }
+ render(rebuild);
+}
+// 3. Control schemas. Each field maps to one owned state value.
+const option = (value,label=value) => [value,label];
+function schema(){
+ const s=state, common=[['width','Container width','range',120,1200,10,'px'],['definite','Definite container height','check'],['height','Container height','range',100,900,10,'px'],['gx','Column gap','range',0,48,1,'px'],['gy','Row gap','range',0,48,1,'px']];
+ if(active==='a')return [
+ ['presentation','Presentation','select',[option('real','CRM KPIs'),option('abstract','Abstract A / B / C')]],...common,
+ ['columns','Explicit column count','range',1,4,1,''],['trackPreset','Track configuration','select',[option('fixed','Fixed lengths'),option('equal','Equal fractions'),option('fraction','Weighted fractions'),option('auto','auto'),option('intrinsic','Intrinsic mix'),option('bounded','minmax(minimum, 1fr)'),option('automatic','minmax(auto, 1fr)'),option('zero','minmax(0, 1fr)'),option('fit','fit-content() + flexible'),option('individual','Individual tracks')]],
+ ['fraction','First track fraction','range',1,5,1,'fr'],['minimum','Track minimum','range',0,360,10,'px'],['fit','fit-content() limit','range',80,500,10,'px'],
+ ['trackIndex','Edit track','select',Array.from({length:s.columns},(_,i)=>option(i,'Track '+(i+1)))],['trackSize','Individual track size','select',trackOptions],['custom','Custom grid-template-columns','text'],
+ ['count','KPI items','range',1,9,1,''],['selected','Selected item','select',Array.from({length:s.count},(_,i)=>option(i,letters[i]))],['itemContent','Selected item content','select',contentOptions],['span','Item A spans two columns','check'],
+ ['rowMode','Explicit row sizing','select',[option('auto'),option('fixed','100px'),option('bounded','minmax(80px, auto)'),option('fraction','1fr')]],['explicitRows','Explicit row count','range',1,4,1,''],['autoRows','Implicit row sizing','select',[option('auto'),option('100px'),option('minmax(80px, auto)')]],
+ ['itemMin','Item min-width','select',[option('auto'),option('zero','0')]],['wrap','Text wrapping','select',[option('normal'),option('anywhere'),option('break-word'),option('nowrap')]]
+ ];
+ if(active==='b')return [...common,
+ ['count','Deal cards','range',1,12,1,''],['columnMode','Column definition','select',[option('fixed','Fixed count · 1fr'),option('minimum','Fixed count · minmax'),option('fit','auto-fit'),option('fill','auto-fill')]],['columns','Fixed column count','range',1,5,1,''],['minimum','Minimum column width','range',100,360,10,'px'],['safe','Bound minimum by container width','check'],
+ ['flow','Auto-placement direction','select',[option('row'),option('column')]],['dense','Dense backfilling','check'],['explicitRows','Explicit row count','range',1,5,1,''],['autoRows','Implicit row sizing','select',[option('auto'),option('100px'),option('minmax(80px, auto)')]],['autoColumns','Implicit column width','range',80,320,10,'px'],
+ ['content','Description preset','select',[option('mixed','Unequal descriptions'),option('short','Short'),option('long','All long'),option('identifier','Unbreakable identifier')]],['selected','Selected card','select',Array.from({length:s.count},(_,i)=>option(i,letters[i]))],['spanX','Selected column span','range',1,4,1,''],['spanY','Selected row span','range',1,3,1,''],['itemMin','Item min-width','select',[option('auto'),option('zero','0')]],['wrap','Text wrapping','select',[option('normal'),option('anywhere'),option('break-word'),option('nowrap')]]
+ ];
+ if(active==='c')return [
+ ['preset','Layout preset','select',[option('desktop','Desktop'),option('tablet','Tablet'),option('mobile','Mobile')]],...common,
+ ['placement','Placement mechanism','select',[option('numeric','Numeric lines'),option('lines','Named lines'),option('areas','Named areas'),option('auto','Auto-placement collection')]],['main','Main column fraction','range',1,4,1,'fr'],['aside','Aside column fraction','range',1,3,1,'fr'],['custom','Custom grid-template-columns','text'],['headerSpan','Header spans all columns','check'],['footerSpan','Footer spans all columns','check'],
+ ['selected','Selected region','select',['Header','Filters','KPIs','Feed','Tasks','Footer'].map((x,i)=>option(i,x))],['visible','Selected region visible','check'],['regionSpan','Selected region column span','select',[option(0,'Use preset placement'),option(1,'span 1'),option(2,'span 2'),option(3,'span 3')]],['empty','Intentional empty cell','check'],['invalid','Invalid L-shaped area experiment','check'],['extra','Additional widgets','range',0,6,1,''],['flow','Auto-flow','select',[option('row'),option('column')]],['autoRows','Implicit row sizing','select',[option('auto'),option('100px'),option('minmax(80px, auto)')]],['autoColumns','Implicit column width','range',80,320,10,'px']
+ ];
+ return [...common,
+ ['count','Deal cards','range',1,9,1,''],['columns','Parent column count','range',1,4,1,''],['mode','Card structure','select',s.axis==='columns'?[option('independent','Independent nested Grid'),option('subgrid','Subgrid')]:[option('flow','Block flow'),option('independent','Independent nested Grid'),option('fixed','Fixed internal rows'),option('parent','Parent rows · independent child'),option('subgrid','Subgrid'),option('flex','Flex column + auto footer')]],['axis','Subgrid axis / detail view','select',[option('rows','Rows · card sections'),option('columns','Columns · label/value records')]],['scale','Text scale','range',80,160,5,'%'],['selected','Selected card','select',Array.from({length:s.count},(_,i)=>option(i,letters[i]))],['itemLength','Selected content length','select',[option('short'),option('medium'),option('long')]],['parentRows','Parent row structure','select',[option('auto'),option('bounded','minmax(40px, auto)'),option('fixed','80px')]],['overrideGap','Override subgrid gap','check'],['subgap','Subgrid gap override','range',0,40,1,'px'],['highlight','Highlight description rows','check']
+ ];
+}
+function fieldValue(key){
+ if(key==='itemContent')return state.content[state.selected]||'short';
+ if(key==='itemLength')return state.lengths[state.selected]||'short';
+ if(key==='trackSize')return state.tracks[state.trackIndex||0];
+ if(key==='spanX'||key==='spanY')return state.spans[state.selected][key==='spanX'?0:1];
+ if(key==='visible')return state.visible[state.selected];
+ if(key==='regionSpan')return state.regionSpans[state.selected];
+ return state[key]??0;
+}
+function escapeHTML(value){return String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function renderControls(force){
+ const fields=schema(), key=active;
+ if(key!==controlKey){
+  $('controls').innerHTML=fields.map(([name,label,type,...args])=>{
+   const id='control-'+name;
+   if(type==='check')return `<label class="check"><input id="${id}" data-control="${name}" type="checkbox">${label}</label>`;
+   const labelHTML=`<div class="ds-fieldrow"><label class="ds-label" for="${id}">${label}</label>${type==='range'?`<output id="value-${name}"></output>`:''}</div>`;
+   const input=type==='range'?`<input id="${id}" data-control="${name}" type="range" min="${args[0]}" max="${args[1]}" step="${args[2]}">`:type==='select'?`<select id="${id}" data-control="${name}">${args[0].map(([value,text])=>`<option value="${escapeHTML(value)}">${escapeHTML(text)}</option>`).join('')}</select>`:`<input id="${id}" data-control="${name}" type="text" spellcheck="false" placeholder="Use configuration above">`;
+   return `<div class="ds-field">${labelHTML}${input}</div>`;
+  }).join('');
+  controlKey=key;
+ }
+ const automatic=active==='b'&&['fit','fill'].includes(state.columnMode);
+ fields.forEach(([name,label,type,...args])=>{
+  const el=$('control-'+name),value=fieldValue(name);
+  if(type==='select'){
+   const expected=args[0].map(([v,label])=>String(v)+'|'+label).join('\n');
+   if([...el.options].map(o=>o.value+'|'+o.textContent).join('\n')!==expected)el.innerHTML=args[0].map(([v,label])=>`<option value="${escapeHTML(v)}">${escapeHTML(label)}</option>`).join('');
+  }
+  if(type==='check')el.checked=Boolean(value);else if(document.activeElement!==el||type!=='text')el.value=String(value);
+  if(type==='range')$('value-'+name).textContent=value+(args[3]||'');
+  let disabled=(name==='height'&&!state.definite);
+  if(active==='a')disabled||=(name==='fraction'&&state.trackPreset!=='fraction')||(name==='minimum'&&state.trackPreset!=='bounded')||(name==='fit'&&state.trackPreset!=='fit');
+  if(active==='b')disabled||=(name==='columns'&&automatic)||(name==='minimum'&&state.columnMode==='fixed')||(name==='safe'&&state.columnMode==='fixed');
+  if(active==='c')disabled||=(['empty','invalid'].includes(name)&&state.placement!=='areas')||(['main','aside'].includes(name)&&state.preset==='mobile')||(['headerSpan','footerSpan'].includes(name)&&state.placement==='auto')||(name==='regionSpan'&&(state.placement==='auto'||(state.placement==='areas'&&state.invalid)));
+  if(active==='d')disabled||=(name==='subgap'&&(!state.overrideGap||state.mode!=='subgrid'))||(name==='overrideGap'&&state.mode!=='subgrid')||(name==='columns'&&state.axis==='columns');
+  el.disabled=disabled;el.title=disabled?'Does not apply to the current configuration':'';
+ });
+}
+// 4. Resolve declarations. Generated CSS is both applied and displayed verbatim.
+function aColumns(s){
+ const n=s.columns, repeated=value=>Array(n).fill(value).join(' ');
+ if(s.custom.trim())return s.custom.trim();
+ switch(s.trackPreset){
+ case 'fixed':return repeated('200px');case 'equal':return repeated('1fr');case 'fraction':return [s.fraction+'fr',...Array(n-1).fill('1fr')].join(' ');case 'auto':return repeated('auto');
+ case 'intrinsic':return Array.from({length:n},(_,i)=>['min-content','max-content','auto','1fr'][i]).join(' ');
+ case 'bounded':return repeated(`minmax(${s.minimum}px, 1fr)`);case 'automatic':return repeated('minmax(auto, 1fr)');case 'zero':return repeated('minmax(0, 1fr)');
+ case 'fit':return [`fit-content(${s.fit}px)`,...Array(n-1).fill('1fr')].join(' ');default:return s.tracks.slice(0,n).join(' ');
+ }
+}
+function areaData(s){
+ const mobile=s.preset==='mobile', tablet=s.preset==='tablet';
+ let rows=mobile?['header','filters','kpis','feed','tasks','footer']:tablet?['header header','filters filters','kpis kpis','feed tasks','footer footer']:['header header','filters filters','kpis tasks','feed tasks','footer footer'];
+ if(s.empty&&!mobile)rows=tablet?['header header','filters .','kpis kpis','feed tasks','footer footer']:['header header','filters .','kpis tasks','feed tasks','footer footer'];
+ if(!s.headerSpan&&!mobile)rows[0]='header .';
+ if(!s.footerSpan&&!mobile)rows[rows.length-1]='footer .';
+ if(s.invalid&&s.placement==='areas')rows=mobile?['header','filters','header','feed','tasks','footer']:['header header','header filters','kpis tasks','feed tasks','footer footer'];
+ return rows.map(row=>row.split(' '));
+}
+function resolve(s=state){
+ const rules=[], notes=[];
+ const add=(selector,declarations)=>rules.push(`${selector} {\n${Object.entries(declarations).map(([key,value])=>`  ${key}: ${value};`).join('\n')}\n}`);
+ const base={display:'grid',width:s.width+'px',height:s.definite?s.height+'px':'auto',gap:`${s.gy}px ${s.gx}px`,'align-content':'normal','justify-content':'normal','grid-auto-flow':s.flow||'row'};
+ let explicitRows=1, explicitColumns=0;
+ if(active==='a'){
+  const row={auto:'auto',fixed:'100px',bounded:'minmax(80px, auto)',fraction:'1fr'}[s.rowMode];
+  Object.assign(base,{'grid-template-columns':aColumns(s),'grid-template-rows':`repeat(${s.explicitRows}, ${row})`,'grid-auto-rows':s.autoRows});
+  explicitRows=s.explicitRows;explicitColumns=s.custom.trim()?null:s.columns;
+ }
+ if(active==='b'){
+  const min=s.safe?`min(100%, ${s.minimum}px)`:s.minimum+'px';
+  const columns=s.columnMode==='fixed'?`repeat(${s.columns}, 1fr)`:s.columnMode==='minimum'?`repeat(${s.columns}, minmax(${min}, 1fr))`:`repeat(auto-${s.columnMode}, minmax(${min}, 1fr))`;
+  Object.assign(base,{'grid-template-columns':columns,'grid-template-rows':`repeat(${s.explicitRows}, auto)`,'grid-auto-flow':s.flow+(s.dense?' dense':''),'grid-auto-rows':s.autoRows,'grid-auto-columns':s.autoColumns+'px'});
+  explicitRows=s.explicitRows;explicitColumns=['fixed','minimum'].includes(s.columnMode)?s.columns:null;
+ }
+ if(active==='c'){
+  const rows=areaData(s);explicitRows=rows.length;explicitColumns=s.preset==='mobile'?1:2;
+  const normal=s.preset==='mobile'?'minmax(0, 1fr)':`minmax(0, ${s.main}fr) minmax(0, ${s.aside}fr)`;
+  const named=s.preset==='mobile'?'[main-start] minmax(0, 1fr) [main-end aside-start aside-end]':`[main-start] minmax(0, ${s.main}fr) [main-end aside-start] minmax(0, ${s.aside}fr) [aside-end]`;
+  Object.assign(base,{'grid-template-columns':s.custom.trim()||(s.placement==='lines'?named:normal),'grid-template-rows':`repeat(${rows.length}, auto)`,'grid-auto-rows':s.autoRows,'grid-auto-columns':s.autoColumns+'px'});
+  if(s.placement==='areas')base['grid-template-areas']=rows.map(row=>'"'+row.join(' ')+'"').join('\n    ');
+  if(s.invalid&&s.placement==='areas')notes.push('Invalid area template: the browser rejects the nonrectangular header area. Regions use auto-placement in this isolated fixture.');
+ }
+ if(active==='d'){
+  const shared=s.mode==='subgrid'||s.mode==='parent', row={auto:'auto',bounded:'minmax(40px, auto)',fixed:'80px'}[s.parentRows];
+  Object.assign(base,{'grid-template-columns':s.axis==='columns'?'max-content minmax(0, 1fr)':`repeat(${s.columns}, minmax(0, 1fr))`,'grid-auto-rows':row,'font-size':(13*s.scale/100)+'px','align-items':'stretch'});
+  explicitColumns=s.axis==='columns'?2:s.columns;explicitRows=0;
+  if(shared&&s.axis==='rows')base['grid-template-rows']=`repeat(4, ${row})`,explicitRows=4;
+ }
+ add('#fixture',base);
+ add('#fixture > .tile',{'box-sizing':'border-box','min-width':s.itemMin==='zero'||active==='c'||active==='d'?'0':'auto'});
+ if(active==='a'||active==='b'){
+  add('#fixture .tile',{'overflow-wrap':s.wrap==='nowrap'?'normal':s.wrap,'white-space':s.wrap==='nowrap'?'nowrap':'normal'});
+  if(active==='a')add('#fixture > [data-index="0"]',{'grid-column':s.span?'span 2':'auto'});
+  if(active==='b')for(let i=0;i<s.count;i++)add(`#fixture > [data-index="${i}"]`,{'grid-column':`span ${s.spans[i][0]}`,'grid-row':`span ${s.spans[i][1]}`});
+ }
+ if(active==='c'){
+  const rows=areaData(s), names=['header','filters','kpis','feed','tasks','footer'];
+  names.forEach((name,i)=>{
+   const positions=[];rows.forEach((r,y)=>r.forEach((v,x)=>{if(v===name)positions.push([x+1,y+1]);}));
+   const declarations={display:s.visible[i]?'block':'none'};
+   if(s.placement==='areas'&&!s.invalid)declarations['grid-area']=name;
+   else if(s.placement!=='auto'&&!(s.placement==='areas'&&s.invalid)){
+    const xs=positions.map(p=>p[0]),ys=positions.map(p=>p[1]);
+    const start=Math.min(...xs),end=Math.max(...xs)+1;
+    declarations['grid-column']=s.placement==='lines'?(start===1?'main-start':'aside-start')+' / '+(end===explicitColumns+1?'aside-end':'main-end'):(i===0||i===5)&&end-start>1?`${start} / span ${end-start}`:`${start} / ${end}`;
+    declarations['grid-row']=`${Math.min(...ys)} / ${Math.max(...ys)+1}`;
+   }
+   if(s.regionSpans[i]&&s.placement!=='auto'&&!(s.placement==='areas'&&s.invalid)){
+    const start=s.placement==='areas'?name+'-start':declarations['grid-column'].split('/')[0].trim();
+    declarations['grid-column']=`${start} / span ${s.regionSpans[i]}`;
+   }
+   add(`#fixture > [data-region="${name}"]`,declarations);
+  });
+ }
+ if(active==='d'){
+  const columns=s.axis==='columns', shared=s.mode==='subgrid',parent=s.mode==='parent';
+  const card={};
+  if(columns){
+   Object.assign(card,{display:'grid','grid-column':'1 / -1','grid-template-columns':shared?'subgrid':'max-content minmax(0, 1fr)','column-gap':shared?(s.overrideGap?s.subgap+'px':'normal'):s.gx+'px'});
+  }else if(s.mode==='flow')card.display='block';
+  else if(s.mode==='flex')Object.assign(card,{display:'flex','flex-direction':'column'});
+  else Object.assign(card,{display:'grid','grid-template-rows':shared?'subgrid':s.mode==='fixed'?'52px 64px 1fr auto':'auto auto 1fr auto','row-gap':shared?(s.overrideGap?s.subgap+'px':'normal'):s.gy+'px'});
+  if((shared||parent)&&!columns)card['grid-row']='span 4';
+  add('#fixture > .deal-card',card);
+  if(s.mode==='flex'&&!columns)add('#fixture .card-section:last-child',{'margin-top':'auto'});
+  if(shared&&!columns)for(let i=0;i<4;i++)add(`#fixture .card-section:nth-child(${i+1})`,{'grid-row':String(i+1)});
+ }
+ if((active==='a'||active==='c')&&s.custom.trim()){
+  explicitColumns=null;
+  if(CSS.supports('grid-template-columns',s.custom.trim()))notes.push('Custom columns are active; clear the custom field to use the preset track controls.');
+ }
+ return {css:rules.join('\n\n'),notes,explicitRows,explicitColumns};
+}
+// 5. Preview DOM. Preserve element identity during live layout changes.
+function structure(){return active+':'+(state.count||0)+':'+(state.extra||0)+':'+(active==='d'?state.axis:'');}
+function buildPreview(){
+ const fixture=$('fixture'), key=structure();
+ if(key===structureKey)return;
+ fixture.replaceChildren();
+ const count=active==='c'?6+state.extra:state.count;
+ for(let i=0;i<count;i++){
+  const el=document.createElement(i===0&&active==='c'?'header':i===5&&active==='c'?'footer':'article');
+  el.className='tile';el.dataset.index=i;
+  if(active==='a')el.innerHTML='<span class="id-badge"></span><h3></h3><div class="money"></div><p></p>';
+  if(active==='b')el.innerHTML='<span class="id-badge"></span><h3></h3><small>Qualified · Proposal</small><div class="money"></div><p></p><footer><button type="button" data-card-action>Open deal</button></footer>';
+  if(active==='c'){
+   el.classList.add('dashboard-region');el.dataset.region=['header','filters','kpis','feed','tasks','footer'][i]||'widget-'+(i-5);
+   el.innerHTML='<span class="id-badge"></span><h3></h3><p></p><button type="button" data-card-action>Inspect region</button>';
+  }
+  if(active==='d'){
+   el.classList.add('deal-card');
+   el.innerHTML=state.axis==='columns'?'<div class="detail-row"><span></span><span></span></div><div class="detail-row"><span>Owner</span><span></span></div><div class="detail-row"><span>Next step</span><span></span></div>':'<section class="card-section"><span class="id-badge"></span><h3></h3></section><section class="card-section"><strong></strong><p>Forecast · 75% probability</p></section><section class="card-section"><p></p></section><footer class="card-section"><button type="button" data-card-action>Open deal</button></footer>';
+  }
+  fixture.appendChild(el);
+ }
+ structureKey=key;
+}
+function renderPreview(){
+ buildPreview();const s=state;
+ $('fixture').classList.toggle('section-lines',s.diag.sections);$('fixture').classList.toggle('row-highlight',Boolean(s.highlight));
+ all('#fixture > .tile').forEach((el,i)=>{
+  el.classList.toggle('selected',i===s.selected);el.classList.remove('overflowing');
+  if(active==='a'){
+   const content=(s.content[i]||'short')==='short'?kpiRoles[i%3]:contents[s.content[i]];el.classList.toggle('abstract',s.presentation==='abstract');
+   el.querySelector('.id-badge').textContent=letters[i];el.querySelector('h3').textContent=content[0];el.querySelector('.money').textContent=s.presentation==='abstract'?letters[i]:content[1];el.querySelector('p').textContent=content[2];
+   if(s.presentation==='abstract'&&s.content[i]==='identifier')el.querySelector('p').textContent=content[1];
+  }
+  if(active==='b'){
+   el.querySelector('.id-badge').textContent=letters[i];el.querySelector('h3').textContent=titles[i];el.querySelector('.money').textContent='$'+[48000,92000,18500,67000][i%4].toLocaleString('en-US');
+   el.querySelector('p').textContent=s.content==='short'?descriptions[0]:s.content==='long'?descriptions[1]+' '+descriptions[3]:s.content==='identifier'?contents.identifier[1]:descriptions[i%4];
+   el.querySelector('button').setAttribute('aria-label','Open deal '+letters[i]);
+  }
+  if(active==='c'){
+   const names=['Header','Filters','KPI summary','Activity feed','Upcoming tasks','Footer'],texts=['Northstar CRM · Sales operations','This quarter · All owners · Active pipeline','$842k revenue · 42 active deals · 28% conversion','Maya added a proposal. Leo completed a discovery call. The Atlas account requested a regional rollout plan.','Review Atlas proposal. Prepare the Northstar workshop. Confirm renewal dates.','Workspace updated · 09:42'];
+   el.querySelector('.id-badge').textContent=el.dataset.region;el.querySelector('h3').textContent=names[i]||'Forecast widget '+(i-5);el.querySelector('p').textContent=texts[i]||'Generated insight · '+(i-5)+' accounts need follow-up.';
+   el.querySelector('button').setAttribute('aria-label','Inspect '+(names[i]||'widget '+(i-5)));
+  }
+  if(active==='d'){
+   const length=s.lengths[i]||'short', title=length==='long'?titles[1]:length==='medium'?titles[i]+' · Regional sales':titles[i].split(' ').slice(0,2).join(' '),description=length==='long'?descriptions[1]+' '+descriptions[3]:length==='medium'?descriptions[2]:descriptions[0];
+   if(s.axis==='rows'){
+    el.querySelector('.id-badge').textContent=letters[i];el.querySelector('h3').textContent=title;el.querySelector('strong').textContent='$'+[48000,92000,18500][i%3].toLocaleString('en-US');el.children[2].querySelector('p').textContent=description;
+    el.querySelector('button').setAttribute('aria-label','Open deal '+letters[i]);
+   }else{
+    const cells=all('.detail-row>span',el);cells[0].textContent=length==='long'?'International account reference':length==='medium'?'Opportunity name':'Deal';cells[1].textContent=letters[i]+' · '+title;cells[3].textContent=['Maya Chen','Leo Nowak','Sofia Martin'][i%3];cells[5].textContent=description;
+   }
+  }
+ });
+}
+function render(forceControls=false){
+ const s=state, current=stages[active][s.step];
+ all('[data-lab]').forEach(el=>el.setAttribute('aria-pressed',String(el.dataset.lab===active)));
+ if($('stage-select').dataset.lab!==active){$('stage-select').innerHTML=stages[active].map((v,i)=>`<option value="${i}">${v.label}</option>`).join('');$('stage-select').dataset.lab=active;}
+ $('stage-select').value=s.step;$('step-number').textContent=`${s.step+1} / ${stages[active].length}`;
+ $('step-state').textContent=s.modified?'Modified':'Stage preset';$('previous').disabled=s.step===0;$('next').disabled=s.step===stages[active].length-1;
+ $('explore').setAttribute('aria-pressed',String(s.learningMode==='explore'));$('guided').setAttribute('aria-pressed',String(s.learningMode==='guided'));
+ $('status').textContent=(s.learningMode==='guided'?'Guided':'Explore')+' · '+current.label.split(' · ')[0]+(s.modified?' · Modified':'');
+ $('lab-title').textContent=labTitles[active];$('challenge').textContent=challenges[active];$('prediction').textContent=current.prediction;$('mechanism').textContent=current.mechanism;
+ $('world-title').textContent=worldTitles[active];$('world-subtitle').textContent=active==='d'&&s.axis==='columns'?'Aligned label / value records':active==='b'?'Stable DOM sequence · A–L':active==='a'?'Shared column tracks · content contributions':'Stable regions · reusable semantic content';
+ for(const key of Object.keys(s.diag))$(key).checked=s.diag[key];
+ $('gaps-control').hidden=active!=='b';$('inspector').open=s.inspector;
+ renderControls(forceControls);renderPreview();
+ lastModel=resolve();$('layout-rules').textContent=lastModel.css;$('active-css').textContent=lastModel.css;
+ $('diff-panel').hidden=active!=='c';
+ if(active==='c'){
+  const baseline=resolve({...s,preset:'desktop',width:900,custom:'',empty:false,invalid:false}).css.split('\n\n'),current=lastModel.css.split('\n\n');
+  const diff=baseline.flatMap((block,i)=>block===current[i]?[]:[...block.split('\n').map(line=>'- '+line),...(current[i]||'').split('\n').map(line=>'+ '+line)]);
+  $('preset-diff').textContent='/* Desktop baseline → active CSS */\n'+(diff.join('\n')||'/* No differences */');
+ }
+ $('feedback').textContent=lastModel.notes.join(' ');$('feedback').classList.toggle('warning',lastModel.notes.length>0);
+ if(measureFrame)cancelAnimationFrame(measureFrame);measure();
+}
+// 6. Probes and diagnostic overlay: read geometry only; never position lesson items.
+const round = value=>Math.round(value*10)/10;
+function trackPixels(serialized){
+ const stripped=serialized.replace(/\[[^\]]*\]/g,' ').trim();
+ if(!stripped||stripped==='none')return [];
+ const values=stripped.split(/\s+/);return values.every(v=>/^\d+(\.\d+)?px$/.test(v))?values.map(parseFloat):[];
+}
+function measure(){
+ measureFrame=0;
+ const fixture=$('fixture'), rect=fixture.getBoundingClientRect(),css=getComputedStyle(fixture),s=state;
+ const cols=trackPixels(css.gridTemplateColumns),rows=trackPixels(css.gridTemplateRows),gx=parseFloat(css.columnGap)||0,gy=parseFloat(css.rowGap)||0;
+ const tiles=all('#fixture > .tile').filter(el=>getComputedStyle(el).display!=='none');
+ const measurements=tiles.map(el=>{const r=el.getBoundingClientRect();return {el,index:Number(el.dataset.index),x:r.left-rect.left,y:r.top-rect.top,w:r.width,h:r.height,r};});
+ const visual=[...measurements].sort((a,b)=>Math.abs(a.y-b.y)>1?a.y-b.y:a.x-b.x);
+ measurements.forEach(m=>{
+  const overflow=m.el.scrollWidth>m.el.clientWidth+1||m.el.scrollHeight>m.el.clientHeight+1;
+  m.el.classList.toggle('overflowing',s.diag.overflow&&overflow);
+  let order=m.el.querySelector('.order-label');
+  if(s.diag.order){if(!order){order=document.createElement('span');order.className='order-label';order.setAttribute('aria-hidden','true');m.el.appendChild(order);}order.textContent=`DOM ${m.index+1} · Visual ${visual.indexOf(m)+1}`;}
+  else if(order)order.remove();
+ });
+ const selected=measurements.find(m=>m.index===s.selected)||measurements[0];
+ const implicitRows=Math.max(0,rows.length-lastModel.explicitRows),explicitCols=lastModel.explicitColumns;
+ let info=`Container: ${round(rect.width)} × ${round(rect.height)}px\nColumns: ${css.gridTemplateColumns}\nRows: ${css.gridTemplateRows}\nGap: ${css.rowGap} / ${css.columnGap}\nAuto-flow: ${css.gridAutoFlow}\nRows: ${lastModel.explicitRows} explicit, ${implicitRows} implicit (computed list)\n`;
+ info+=explicitCols===null?(active==='b'?'Auto-repeat: computed list includes collapsed tracks; implicit columns cannot be distinguished from this list alone.\n':'Custom columns: explicit count is not inferred from item geometry.\n'):`Columns: ${explicitCols} declared, ${Math.max(0,cols.length-explicitCols)} additional (computed list)\n`;
+ if(active==='c')info+='Computed areas: '+css.gridTemplateAreas+'\n';
+ if(selected){const childCSS=getComputedStyle(selected.el);info+=`\nSelected ${active==='c'?selected.el.dataset.region:letters[selected.index]}\nx ${round(selected.x)}, y ${round(selected.y)}px\n${round(selected.w)} × ${round(selected.h)}px\ncolumn: ${childCSS.gridColumn}\nrow: ${childCSS.gridRow}\nmin-width: ${childCSS.minWidth}\nscroll: ${selected.el.scrollWidth} × ${selected.el.scrollHeight}px`;
+  if(active==='d')info+='\nNested rows: '+childCSS.gridTemplateRows+'\nNested columns: '+childCSS.gridTemplateColumns;
+ }
+ $('inspect-values').textContent=info;
+ $('geometry-table').querySelector('tbody').innerHTML=measurements.map(m=>`<tr><th>${active==='c'?escapeHTML(m.el.dataset.region):letters[m.index]}</th><td>${round(m.x)} / ${round(m.y)}</td><td>${round(m.w)} × ${round(m.h)}</td></tr>`).join('');
+ $('section-values').textContent=active==='d'&&s.axis==='rows'?measurements.map(m=>letters[m.index]+': '+[...m.el.children].filter(el=>el.classList.contains('card-section')).map(el=>round(el.getBoundingClientRect().top-rect.top)).join(' / ')+'px').join('\n'):'';
+ $('section-values').style.whiteSpace='pre-wrap';
+ const overX=Math.max(0,fixture.scrollWidth-fixture.clientWidth),overY=Math.max(0,fixture.scrollHeight-fixture.clientHeight);
+ const supported=active==='d'&&s.mode==='subgrid'&&!CSS.supports('grid-template-rows','subgrid');
+ const validation=(active==='a'||active==='c')&&s.custom.trim()&&!CSS.supports('grid-template-columns',s.custom.trim());
+ const extraNote=validation?'Custom column declaration rejected by the browser.':supported?'Subgrid is unavailable in this browser.':active==='b'&&cols.length&&s.spans.slice(0,s.count).some(v=>v[0]>cols.length)?'Selected spans exceed the current column structure.':'';
+ if(extraNote)$('feedback').textContent=extraNote;
+ $('metrics').innerHTML=`<span>Container <b>${round(rect.width)} × ${round(rect.height)}px</b></span><span>Tracks <b>${cols.length||'—'} columns / ${rows.length||'—'} rows</b></span><span>Overflow <b>${overX}px / ${overY}px</b></span><span id="focus-metric">Focus <b>—</b></span>`;
+ drawOverlay(cols,rows,gx,gy,measurements,rect);
+}
+function drawOverlay(cols,rows,gx,gy,items,rect){
+ const svg=$('overlay'),s=state;
+ const w=Math.min(6000,Math.max(rect.width,$('fixture').scrollWidth)),h=Math.min(6000,Math.max(rect.height,$('fixture').scrollHeight));
+ svg.setAttribute('width',w);svg.setAttribute('height',h);svg.innerHTML='';
+ if(!s.diag.tracks&&!s.diag.gaps)return;
+ const NS='http://www.w3.org/2000/svg';
+ const node=(tag,attrs,text)=>{const el=document.createElementNS(NS,tag);Object.entries(attrs).forEach(([k,v])=>el.setAttribute(k,v));if(text)el.textContent=text;svg.appendChild(el);};
+ let x=0,y=0;
+ const xs=[],ys=[];
+ cols.forEach((size,i)=>{xs.push(x);if(s.diag.tracks&&size>0){node('rect',{x,y:0,width:size,height:Math.min(h,rect.height),fill:i%2?'#315fa807':'#315fa811',stroke:'#315fa860','stroke-dasharray':'4 3'});node('text',{x:x+3,y:12},`C${i+1} ${round(size)}px`);}x+=size+(size>0&&cols.slice(i+1).some(v=>v>0)?gx:0);});
+ rows.forEach((size,i)=>{ys.push(y);if(s.diag.tracks&&size>0){node('line',{x1:0,x2:w,y1:y+size,y2:y+size,stroke:'#98631b80','stroke-dasharray':'4 3'});node('text',{x:Math.max(60,rect.width-4),y:y+size-(s.diag.order?18:4),'text-anchor':'end'},`R${i+1} ${round(size)}px`);}y+=size+gy;});
+ if(s.diag.gaps&&active==='b')rows.forEach((rh,ri)=>cols.forEach((cw,ci)=>{
+  const cx=xs[ci]+cw/2,cy=ys[ri]+rh/2;
+  const occupied=items.some(m=>cx>m.x-1&&cx<m.x+m.w+1&&cy>m.y-1&&cy<m.y+m.h+1);
+  if(!occupied&&cw>0&&rh>0)node('rect',{x:xs[ci]+2,y:ys[ri]+2,width:Math.max(0,cw-4),height:Math.max(0,rh-4),fill:'#ffce7d55',stroke:'#98631b','stroke-dasharray':'3 3'});
+ }));
+}
+// 7. Events: one action path for pointer and keyboard changes.
+$('demo-shell').addEventListener('input',event=>{
+ const el=event.target;
+ if(!el.dataset.control||!['range','text'].includes(el.type))return;
+ dispatch({type:'control',key:el.dataset.control,value:el.type==='range'?Number(el.value):el.value});
+});
+$('demo-shell').addEventListener('change',event=>{
+ const el=event.target;
+ if(el.id==='stage-select')dispatch({type:'stage',value:el.value});
+ else if(el.dataset.control&&el.type!=='range'&&el.type!=='text')dispatch({type:'control',key:el.dataset.control,value:el.type==='checkbox'?el.checked:el.value});
+ else if(Object.hasOwn(state.diag,el.id))dispatch({type:'diag',key:el.id,value:el.checked});
+});
+$('demo-shell').addEventListener('click',async event=>{
+ const lab=event.target.closest('[data-lab]');if(lab){dispatch({type:'lab',value:lab.dataset.lab});return;}
+ const card=event.target.closest('#fixture > .tile');
+ if(card){dispatch({type:'select',value:card.dataset.index});if(event.target.closest('[data-card-action]'))$('feedback').textContent='Selected '+(active==='c'?card.dataset.region:'deal '+letters[Number(card.dataset.index)])+'.';return;}
+ const button=event.target.closest('button');if(!button)return;
+ switch(button.id){
+ case 'previous':dispatch({type:'stage',value:state.step-1});break;case 'next':dispatch({type:'stage',value:state.step+1});break;
+ case 'reset':dispatch({type:'reset'});break;case 'explore':case 'guided':dispatch({type:'mode',value:button.id});break;
+ case 'copy-css':try{await navigator.clipboard.writeText($('active-css').textContent);$('feedback').textContent='Effective CSS copied.';}catch{
+  const text=document.createElement('textarea');text.value=$('active-css').textContent;text.style.position='fixed';text.style.opacity='0';document.body.appendChild(text);text.select();const copied=document.execCommand('copy');text.remove();button.focus();$('feedback').textContent=copied?'Effective CSS copied.':'Select the CSS panel and copy it with Ctrl+C.';
+ }break;
+ }
+});
+$('inspector').addEventListener('toggle',()=>{state.inspector=$('inspector').open;});
+$('fixture').addEventListener('focusin',event=>{
+ const card=event.target.closest('[data-index]');if(!card)return;
+ const metric=$('focus-metric');if(metric)metric.innerHTML='Focus <b>'+letters[Number(card.dataset.index)]+' · DOM '+(Number(card.dataset.index)+1)+'</b>';
+ if(state.diag.order)$('feedback').textContent='Keyboard focus: '+(active==='c'?card.dataset.region:letters[Number(card.dataset.index)])+' · source order '+(Number(card.dataset.index)+1);
+});
+const observer=new ResizeObserver(()=>{if(!measureFrame)measureFrame=requestAnimationFrame(measure);});observer.observe($('fixture'));
+window.addEventListener('resize',()=>{if(!measureFrame)measureFrame=requestAnimationFrame(measure);});
+render(true);
+})();
+</script>
+</body>
+</html>

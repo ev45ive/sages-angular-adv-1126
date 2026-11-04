@@ -1,0 +1,513 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CSS Layout &amp; Sizing · Section 4 — Flexbox</title>
+<style id="shell-style">
+/* DEMOSHELL 1.0 — Keep shell chrome and tokens consistent across all demos.
+   Customize only the lesson/world content in .ds-world and the registries in JS. */
+#demo-shell {
+  --shell-bg:#FFFFFF;--shell-side:#F7F9FC;--shell-work:#EEF2F8;
+  --shell-ink:#25344B;--shell-muted:#64758D;--shell-subtle:#8897AA;
+  --shell-border:#D8E0E9;--shell-accent:#315FA8;--shell-accent-soft:#E8F0FD;
+  --shell-warning:#98631B;--shell-warning-bg:#FFF2DB;
+  --shell-danger:#A54747;--shell-success:#287963;--shell-code:#152338;
+  --shell-radius-xs:4px;--shell-radius-sm:6px;--shell-radius-md:9px;--shell-radius-lg:12px;
+  --shell-gap-1:4px;--shell-gap-2:8px;--shell-gap-3:12px;--shell-gap-4:16px;--shell-gap-5:24px;
+  --shell-font:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font:13px/1.5 var(--shell-font); color:var(--shell-ink);background:var(--shell-bg);
+  border:1px solid var(--shell-border);border-radius:var(--shell-radius-lg);
+  max-width:1420px;margin:16px auto;overflow:hidden; box-shadow:0 5px 24px #24344a0a;
+}
+#demo-shell *,#demo-shell *::before,#demo-shell *::after{box-sizing:border-box}
+#demo-shell button,#demo-shell select,#demo-shell input{font:inherit}
+#demo-shell button{cursor:pointer}
+#demo-shell button:focus-visible,#demo-shell input:focus-visible,#demo-shell select:focus-visible{outline:2px solid var(--shell-accent);outline-offset:2px}
+#demo-shell button:disabled{opacity:.5;cursor:default}
+#demo-shell .ds-header{min-height:64px;background:#17263D;color:#F6F9FF;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 18px}
+#demo-shell h1{font-size:16px;line-height:1.15;letter-spacing:-.3px;margin:0;font-weight:700}
+#demo-shell .ds-kicker{font-size:11px;color:#A8B8D0;margin-top:4px}
+#demo-shell .ds-status{border:1px solid #5F7390;border-radius:6px;color:#ECF4FF;font-size:11px;white-space:nowrap;padding:5px 9px}
+#demo-shell .ds-columns{display:grid;grid-template-columns:304px minmax(0,1fr);min-height:690px}
+#demo-shell .ds-sidebar{background:var(--shell-side);padding:14px;border-right:1px solid var(--shell-border);display:flex;flex-direction:column;gap:13px;max-height:820px;overflow:auto}
+#demo-shell .ds-section{border-bottom:1px solid var(--shell-border);padding-bottom:13px;min-width:0}
+#demo-shell .ds-section:last-child{border-bottom:0;padding-bottom:0}
+#demo-shell .ds-section-title{display:flex;align-items:baseline;justify-content:space-between;gap:8px;font-size:12px;font-weight:700;margin:0 0 9px}
+#demo-shell .ds-meta{font-size:11px;color:var(--shell-muted);font-weight:400}
+#demo-shell .ds-label{font-size:11px;color:var(--shell-muted);display:block}
+#demo-shell .ds-hint{font-size:11px;color:var(--shell-muted);margin:7px 0 0}
+#demo-shell .ds-seg{display:flex;background:#FFF;border:1px solid var(--shell-border);border-radius:6px;overflow:hidden;min-width:0}
+#demo-shell .ds-seg button{flex:1;border:0;border-right:1px solid var(--shell-border);color:#52647C;background:transparent;min-height:32px;font-size:11px;padding:5px 6px}
+#demo-shell .ds-seg button:last-child{border:0}
+#demo-shell .ds-seg button[aria-pressed="true"]{background:var(--shell-accent);color:#FFF;font-weight:650}
+#demo-shell .ds-mini-actions{display:flex;align-items:center;gap:7px;margin:9px 0 5px}
+#demo-shell .ds-btn{min-height:32px;border-radius:6px;border:1px solid var(--shell-border);color:#435771;background:white;padding:6px 10px;font-size:11px;font-weight:600}
+#demo-shell .ds-btn-primary{background:var(--shell-accent);color:white;border-color:var(--shell-accent)}
+#demo-shell .ds-btn-block{width:100%}
+#demo-shell .ds-step{flex:1;text-align:center;font-size:11px;color:var(--shell-muted)}
+#demo-shell .ds-field{margin:10px 0}
+#demo-shell .ds-fieldrow{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:4px}
+#demo-shell output{font-size:11px;color:var(--shell-accent);font-variant-numeric:tabular-nums}
+#demo-shell input[type="range"]{width:100%;accent-color:var(--shell-accent);cursor:pointer;display:block;margin:3px 0;height:18px}
+#demo-shell input[type="checkbox"]{width:15px;height:15px;accent-color:var(--shell-accent);cursor:pointer;margin:0}
+#demo-shell .ds-all{display:flex;align-items:center;gap:9px;font-weight:700;font-size:11px;padding:5px 0 9px}
+#demo-shell .ds-problem{display:grid;grid-template-columns:20px minmax(0,1fr) 22px;gap:7px;align-items:center;border-radius:6px;border:1px solid transparent;padding:5px;margin:0 -5px}
+#demo-shell .ds-problem[data-selected="true"]{background:var(--shell-accent-soft);border-color:#BED1F3}
+#demo-shell .ds-problem button{border:0;background:none;color:var(--shell-ink);text-align:left;font-size:11px;min-height:28px;padding:0}
+#demo-shell .ds-issue-icon{font-size:11px;color:var(--shell-warning);text-align:center}
+#demo-shell .ds-inspector{border:1px solid var(--shell-border);border-radius:9px;background:white;padding:10px}
+#demo-shell .ds-inspect-title{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:12px;font-weight:700}
+#demo-shell .ds-pill{display:inline-block;border-radius:6px;background:var(--shell-warning-bg);color:var(--shell-warning);font-size:10px;padding:3px 6px;font-weight:600}
+#demo-shell .ds-pill.ok{color:var(--shell-success);background:#E6F4ED}
+#demo-shell .ds-chain{display:grid;grid-template-columns:85px minmax(0,1fr);gap:5px 9px;margin:10px 0;font-size:11px}
+#demo-shell .ds-chain dt{color:var(--shell-subtle)}
+#demo-shell .ds-chain dd{margin:0;min-width:0;overflow-wrap:anywhere;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:10px}
+#demo-shell .ds-compare-values{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:9px 0}
+#demo-shell .ds-value{background:#F2F5F9;border-radius:6px;padding:8px;min-width:0}
+#demo-shell .ds-value label{display:block;color:var(--shell-muted);font-size:10px}
+#demo-shell .ds-value b{font-size:12px;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+#demo-shell .ds-explain{font-size:11px;color:#586B84;margin:9px 0}
+#demo-shell .ds-workspace{background:var(--shell-work);min-width:0;display:flex;flex-direction:column}
+#demo-shell .ds-toolbar{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;padding:11px 15px;border-bottom:1px solid var(--shell-border)}
+#demo-shell .ds-toolbar strong{font-size:12px}
+#demo-shell .ds-toolbar-group{display:flex;align-items:center;gap:8px}
+#demo-shell select{height:32px;border:1px solid var(--shell-border);border-radius:6px;color:var(--shell-ink);background:white;padding:0 7px;font-size:11px;max-width:100%}
+#demo-shell .ds-stage{border-radius:6px;padding:7px 15px;font-size:11px;color:#546780;border-bottom:1px solid var(--shell-border);background:#F7F9FD}
+#demo-shell .ds-world-wrap{padding:16px;min-width:0;overflow:auto}
+#demo-shell .ds-world{background:#FFF;border:1px solid var(--shell-border);border-radius:9px;max-width:100%;width:100%;padding:16px;min-height:410px;margin:0 auto;transition:background .12s}
+#demo-shell .ds-world-heading{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;flex-wrap:wrap;margin-bottom:14px}
+#demo-shell .ds-world h2{font-size:17px;margin:0;line-height:1.25}
+#demo-shell .ds-world p{font-size:11px;color:var(--shell-muted);margin:4px 0 0}
+#demo-shell .ds-world-badge{background:#EDF4FF;color:#2F5F9D;padding:4px 9px;border-radius:6px;font-weight:650;font-size:10px}
+#demo-shell .ds-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+#demo-shell .ds-metric{border:1px solid var(--shell-border);border-radius:9px;background:white;padding:11px;min-width:0;text-align:left;cursor:pointer;color:var(--shell-ink)}
+#demo-shell .ds-metric span{color:var(--shell-muted);display:block;font-size:11px}
+#demo-shell .ds-metric strong{font-size:22px;display:block;font-variant-numeric:tabular-nums;white-space:nowrap}
+#demo-shell .ds-metric small{color:var(--shell-muted);font-size:10px}
+#demo-shell [data-entity].selected{outline:2px solid var(--shell-accent);outline-offset:2px}
+#demo-shell .ds-chart{border:1px solid var(--shell-border);border-radius:9px;padding:13px;margin-top:12px}
+#demo-shell .ds-chart-label{display:flex;justify-content:space-between;font-size:11px;font-weight:650;gap:10px;margin-bottom:7px}
+#demo-shell .ds-bars{display:flex;align-items:end;gap:4px;height:120px;background:linear-gradient(to top,#E6ECF5 1px,transparent 1px) 0 0/100% 30px}
+#demo-shell .ds-bars div{flex:1;min-width:3px;min-height:0;border-radius:3px 3px 0 0;background:#6E9BD6;transition:height .12s}
+#demo-shell .ds-bars div:last-child{background:var(--shell-accent)}
+#demo-shell .ds-axis{display:flex;justify-content:space-between;color:var(--shell-subtle);font-size:10px;margin-top:6px}
+#demo-shell .ds-question{border-left:3px solid var(--shell-accent);background:#F1F5FB;padding:9px 12px;margin-top:12px;border-radius:0 6px 6px 0}
+#demo-shell .ds-question strong{font-size:11px}
+#demo-shell .ds-question p{font-size:11px;color:var(--shell-ink)}
+#demo-shell .ds-compare-panel{border:1px solid #C6D9F6;border-radius:9px;background:#F2F7FF;padding:10px 12px;margin-top:10px;font-size:11px}
+#demo-shell .ds-compare-panel strong{display:block;font-size:12px;margin-bottom:3px}
+#demo-shell .ds-bottom{background:#FFF;border-top:1px solid var(--shell-border);padding:13px 16px}
+#demo-shell .ds-bottom-title{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:12px;font-weight:700;margin-bottom:9px}
+#demo-shell .ds-code{white-space:pre-wrap;word-break:break-word;max-height:220px;overflow:auto;background:var(--shell-code);color:#E6ECF7;padding:13px;border-radius:6px;font:11px/1.55 ui-monospace,Consolas,monospace;margin:9px 0 0}
+#demo-shell .ds-footer-note{font-size:11px;color:var(--shell-muted);padding:9px 16px;background:#FAFCFE;border-top:1px solid var(--shell-border)}
+@media(max-width:800px){#demo-shell .ds-columns{grid-template-columns:minmax(0,1fr)}#demo-shell .ds-sidebar{max-height:none;border-right:0;border-bottom:1px solid var(--shell-border)}#demo-shell .ds-world-wrap{padding:10px}}
+@media(max-width:430px){#demo-shell{margin:0}#demo-shell .ds-metrics{grid-template-columns:1fr}#demo-shell .ds-world{padding:10px}#demo-shell .ds-header{padding:10px}#demo-shell .ds-metric strong{font-size:19px}}
+@media(prefers-reduced-motion:reduce){#demo-shell *,#demo-shell *::before,#demo-shell *::after{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+</style>
+<style id="lesson-style">
+body{margin:0;padding:0 12px;background:#e7edf5} [hidden]{display:none!important}
+#demo-shell .ds-header{flex-wrap:wrap}#demo-shell .lab-nav{display:flex;gap:5px;flex-wrap:wrap}
+#demo-shell .lab-nav button{background:transparent;color:#d8e5f6;border:1px solid #5f7390;border-radius:6px;padding:5px 10px;min-height:32px}
+#demo-shell .lab-nav button[aria-pressed=true]{background:#e8f0fd;color:#25344b;border-color:#e8f0fd}
+#demo-shell .ds-columns{min-height:760px}#demo-shell .ds-sidebar{max-height:calc(100vh - 120px);min-height:600px}
+#demo-shell .ds-toolbar-group{flex-wrap:wrap}#demo-shell .ds-world{padding:0;min-height:0;max-width:none;width:max-content;margin:0}
+#demo-shell .ds-world-wrap{min-height:390px;max-height:790px;overflow:auto;position:relative}
+#demo-shell .ds-section details>summary{cursor:pointer;font-size:12px;font-weight:650;min-height:30px;align-content:center}
+#demo-shell .control-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0 8px}
+#demo-shell .field{min-width:0;margin:7px 0}#demo-shell .field.wide{grid-column:1/-1}
+#demo-shell .field label{display:block;font-size:11px;color:var(--shell-muted);margin-bottom:3px}
+#demo-shell .field select,#demo-shell input[type=number]{width:100%;height:32px;border:1px solid var(--shell-border);border-radius:6px;background:white;color:var(--shell-ink);padding:0 6px;min-width:0}
+#demo-shell .field .range-heading{display:flex;justify-content:space-between;gap:4px;align-items:center}
+#demo-shell .field .range-heading label{margin:0}#demo-shell .check{display:flex;gap:8px;align-items:center;min-height:30px;font-size:11px}
+#demo-shell .check label{cursor:pointer}#demo-shell .item-tabs{display:flex;gap:5px;margin:8px 0}
+#demo-shell .item-tabs button{flex:1}#demo-shell .item-tabs button[aria-pressed=true]{background:var(--shell-accent-soft);border-color:var(--shell-accent);color:var(--shell-accent)}
+#demo-shell .lesson-note{font-size:12px;line-height:1.6;margin:0;padding:12px 16px;border-bottom:1px solid var(--shell-border);background:#f7f9fd}
+#demo-shell .lesson-note strong{display:block}#demo-shell .lesson-note details{margin-top:5px}#demo-shell .lesson-note summary{cursor:pointer;color:var(--shell-accent);font-size:11px}
+#demo-shell .readouts{display:flex;flex-wrap:wrap;gap:6px 18px;padding:10px 16px;background:#fff;border-top:1px solid var(--shell-border);font-size:11px;font-variant-numeric:tabular-nums}
+#demo-shell .readouts b{font-weight:650}#demo-shell .ds-code{white-space:pre;word-break:normal;max-height:330px;font-size:10px}
+#demo-shell #inspect-values{font-size:10px;line-height:1.65;white-space:pre-wrap;overflow-wrap:anywhere;margin:8px 0}
+#demo-shell .probe-help{font-size:10px;color:var(--shell-muted);margin:5px 0}#demo-shell .space-meter{padding:8px 16px;background:#fff;border-top:1px solid var(--shell-border);font-size:11px}
+#demo-shell .space-meter meter{width:100%;height:10px}#demo-shell .world-label{font-size:11px;margin:0 0 6px;color:var(--shell-muted)}
+#demo-shell .preview-frame{position:relative;width:max-content}#demo-shell .overlay{position:absolute;inset:0;pointer-events:none;z-index:10;overflow:visible}
+#demo-shell .geom-tag{position:absolute;transform:translateY(-50%);background:#25344bec;color:#fff;border:1px solid #fff;border-radius:4px;padding:1px 4px;font:10px/1.6 ui-monospace,Consolas,monospace;white-space:nowrap;max-width:210px}
+#demo-shell .line-box{position:absolute;border:1px dashed #315fa8;background:#315fa808;border-radius:3px}
+#demo-shell .selected-entity{outline:2px solid #315fa8;outline-offset:2px}#demo-shell .is-scroll{box-shadow:inset 0 0 0 2px #287963}
+#demo-shell .crm-btn{border:1px solid #bccadd;background:#fff;border-radius:6px;padding:8px 12px;color:#25344b;cursor:pointer;white-space:nowrap;min-height:36px;font-size:12px}
+#demo-shell .crm-btn.primary{background:#315fa8;border-color:#315fa8;color:#fff}#demo-shell .crm-input{border:1px solid #bccadd;border-radius:6px;padding:8px;font-size:12px;min-width:0;max-width:100%}
+#demo-shell .a-item{padding:12px;border:1px solid #b7c4d5;background:#e5ebf3;color:#25344b;box-sizing:border-box;position:relative}
+#demo-shell .a-item:nth-child(2){background:#d3dde9}#demo-shell .a-item:nth-child(3){background:#bdccde}
+#demo-shell .a-letter{font-size:17px;font-weight:700;display:block;margin-bottom:8px}#demo-shell .a-copy{display:block;font-size:13px;line-height:1.5}
+#demo-shell .toolbar-mode .a-item{background:#f7f9fc;padding:8px}#demo-shell .toolbar-mode .a-copy{margin-bottom:6px;font-size:11px}
+#demo-shell .toolbar-mode input{width:100%;display:block}#demo-shell .toolbar-mode button{max-width:100%}
+#demo-shell .workspace-nav{background:#1d304c;color:#dce7f6;padding:12px;border-radius:6px}
+#demo-shell .workspace-nav strong{display:block;color:#fff;font-size:14px;margin-bottom:14px}#demo-shell .workspace-nav button{display:block;text-align:left;background:none;border:0;color:inherit;padding:10px 5px;width:100%;border-radius:4px;font-size:12px}
+#demo-shell .workspace-nav button[aria-pressed=true]{background:#ffffff20}#demo-shell .workspace-list{background:#f3f6fa;border:1px solid #d8e0e9;border-radius:6px;padding:10px}
+#demo-shell .workspace-list h3{font-size:13px;margin:0 0 12px}#demo-shell .deal-row{display:block;padding:10px 6px;border:0;border-bottom:1px solid #d8e0e9;background:none;text-align:left;width:100%;color:#25344b;font-size:12px}
+#demo-shell .deal-row span{display:block;font-size:10px;color:#64758d}#demo-shell .deal-row[aria-pressed=true]{background:#e8f0fd}
+#demo-shell .details-panel{border:1px solid #d8e0e9;border-radius:6px;background:#fff;min-width:0}
+#demo-shell .details-header{padding:14px;border-bottom:1px solid #d8e0e9;flex:none}#demo-shell .details-header h3{font-size:15px;margin:0 0 4px}
+#demo-shell .details-body{padding:14px}#demo-shell .details-body p{font-size:12px;line-height:1.7;margin:0 0 16px;color:#435771}
+#demo-shell .details-body h4{font-size:12px;margin:0 0 8px}#demo-shell .details-footer{padding:12px;border-top:1px solid #d8e0e9;background:#f7f9fc;flex:none}
+#demo-shell .details-chain{display:flex;flex-direction:column;flex:1 1 auto;min-width:0}#demo-shell .details-footer small{display:block;font-size:10px;margin-top:6px;color:#64758d}
+#demo-shell .basis-lab{margin-top:16px;padding:12px;border:1px solid #d8e0e9;background:white;border-radius:6px}
+#demo-shell .basis-sample>div{border:1px solid #b7c4d5;background:#e5ebf3;padding:12px;min-height:0}
+#demo-shell .filter-search{width:180px;flex:0 1 180px;min-width:80px}
+#demo-shell .filter-chip{background:#edf2fa;border:1px solid #bacade;border-radius:16px;color:#25344b;padding:7px 11px;font-size:12px;white-space:nowrap;flex:0 0 auto}
+#demo-shell .filter-actions{display:flex;gap:7px;flex:0 0 auto}#demo-shell .filter-chip:nth-of-type(3n){font-size:16px;padding-block:13px}
+#demo-shell .filter-chip:nth-of-type(4n){font-size:11px;padding-block:4px}#demo-shell .tab-sequence{padding:8px 16px;background:#fff;font-size:11px;border-top:1px solid #d8e0e9}
+#demo-shell .deal-card{border:1px solid #bfcddd;border-radius:8px;padding:16px;background:#fff;min-width:0;color:#25344b}
+#demo-shell .deal-card header{margin-bottom:12px}#demo-shell .deal-card h3{font-size:14px;line-height:1.4;margin:0 0 7px}
+#demo-shell .card-status{display:inline-block;font-size:10px;border-radius:4px;padding:2px 5px;background:#edf2fa;color:#435771}
+#demo-shell .card-body p{font-size:12px;line-height:1.65;margin:0 0 14px;color:#546780}#demo-shell .card-body strong{display:block;margin-bottom:14px;font-size:14px}
+#demo-shell .card-footer{padding-top:12px}#demo-shell .grid-reference{margin-top:16px;padding:12px;border:1px solid #d8e0e9;border-radius:6px;background:#fff}
+#demo-shell .grid-reference h3{font-size:12px;margin:0 0 10px}#demo-shell .mini-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+#demo-shell .mini-grid article{background:#edf2fa;border:1px solid #c3d0e2;padding:12px;min-width:0;font-size:11px;overflow-wrap:anywhere}
+#demo-shell .feedback{font-size:11px;padding:8px 16px;border-top:1px solid #d8e0e9;min-height:33px;background:#fff;color:#287963}
+@media(max-width:800px){body{padding:0 4px}#demo-shell .ds-sidebar{max-height:none;min-height:0}#demo-shell .ds-header{gap:10px}#demo-shell .ds-world-wrap{max-height:750px}#demo-shell .ds-toolbar{align-items:flex-start}#demo-shell .ds-toolbar-group{max-width:100%}}
+@media(max-width:430px){body{padding:0}#demo-shell .lab-nav button{padding:4px 8px}#demo-shell .ds-toolbar{padding:10px}#demo-shell .ds-world-wrap{padding:10px}}
+</style>
+<style id="active-layout"></style>
+</head>
+<body>
+<main id="demo-shell">
+ <header class="ds-header"><div><h1>CSS Layout &amp; Sizing · Flexbox</h1><div class="ds-kicker" id="lab-title"></div></div><nav class="lab-nav" aria-label="Flexbox labs"><button data-lab="a" aria-pressed="true">4A · Sizing</button><button data-lab="b" aria-pressed="false">4B · Workspace</button><button data-lab="c" aria-pressed="false">4C · Wrapping</button><button data-lab="d" aria-pressed="false">4D · Cards</button></nav><span id="status" class="ds-status">Explore</span></header>
+ <div class="ds-columns">
+  <aside class="ds-sidebar" aria-label="Lesson controls">
+   <section class="ds-section"><h2 class="ds-section-title">Scenario <span id="stage-count" class="ds-meta"></span></h2><div class="ds-seg" role="group" aria-label="Learning mode"><button data-mode="explore" aria-pressed="true">Explore</button><button data-mode="guided" aria-pressed="false">Guided</button></div><div class="ds-field"><label class="ds-label" for="stage-select">Learning stage</label><select id="stage-select" style="width:100%"></select></div><div class="ds-mini-actions"><button class="ds-btn" id="previous" aria-label="Previous stage">←</button><span class="ds-step" id="step-counter"></span><button class="ds-btn" id="next" aria-label="Next stage">→</button></div></section>
+   <section class="ds-section"><h2 class="ds-section-title">Controls <span class="ds-meta">Live CSS</span></h2><div id="controls"></div></section>
+   <section class="ds-section"><h2 class="ds-section-title">Observe</h2><div class="check"><input id="show-dimensions" type="checkbox" checked><label for="show-dimensions">Item dimensions</label></div><div class="check"><input id="show-axes" type="checkbox"><label for="show-axes">Main / cross axes</label></div><div class="check"><input id="show-lines" type="checkbox"><label for="show-lines">Flex lines</label></div><div class="check"><input id="show-space" type="checkbox"><label for="show-space">Remaining space</label></div><div class="check"><input id="show-overflow" type="checkbox"><label for="show-overflow">Overflow / scroll boundaries</label></div><div class="check"><input id="show-tab" type="checkbox"><label for="show-tab">Document / keyboard sequence</label></div></section>
+   <section class="ds-section"><details id="inspector"><summary>CSS inspector</summary><div class="ds-inspector"><label class="ds-label" for="inspect-target">Inspect element</label><select id="inspect-target" style="width:100%"></select><pre id="inspect-values"></pre><details><summary>Active layout CSS</summary><pre id="active-css" class="ds-code"></pre></details><details><summary>Preset CSS changes</summary><pre id="css-diff" class="ds-code"></pre></details></div></details></section>
+   <section class="ds-section"><button id="reset" class="ds-btn ds-btn-block">Reset lab</button><button id="restore-stage" class="ds-btn ds-btn-block" style="margin-top:7px">Restore stage</button></section>
+  </aside>
+  <section class="ds-workspace" aria-label="Interactive preview">
+   <div class="ds-toolbar"><strong id="preview-title"></strong><div class="ds-toolbar-group"><span class="ds-meta" id="viewport-label"></span><button id="repair" class="ds-btn">Try smallest repair</button></div></div>
+   <div class="lesson-note"><strong id="prediction"></strong><details id="why"><summary>Explanation · alternatives · trade-off</summary><div id="explanation"></div></details></div>
+   <div class="ds-stage" id="axis-label" hidden></div>
+   <div class="ds-world-wrap" id="preview-scroll"><div class="preview-frame" id="preview-frame"><div id="fixture" class="ds-world"></div><div id="overlay" class="overlay" aria-hidden="true"></div></div></div>
+   <div class="readouts" id="readouts" aria-live="off"></div>
+   <div class="space-meter" id="space-meter" hidden></div>
+   <div class="tab-sequence" id="tab-sequence" hidden></div>
+   <div id="feedback" class="feedback" role="status" aria-live="polite">Ready to explore.</div>
+  </section>
+ </div>
+</main>
+<script>
+'use strict';
+/* 1. Stable reference data and vocabulary. */
+const $=id=>document.getElementById(id);
+const qs=(selector,root=document)=>root.querySelector(selector);
+const qa=(selector,root=document)=>[...root.querySelectorAll(selector)];
+const clone=value=>structuredClone(value);
+const esc=value=>String(value).replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+const directions=['row','row-reverse','column','column-reverse'];
+const alignments=['stretch','flex-start','flex-end','center','baseline'];
+const distributions=['flex-start','flex-end','center','space-between','space-around','space-evenly'];
+const flexPresets={initial:[0,1,'auto'],auto:[1,1,'auto'],none:[0,0,'auto'],'1':[1,1,'0%'],'0 0 240px':[0,0,'240px']};
+const content={short:['Maya','Open','Add'],mixed:['Search contacts','Qualified opportunities','Add contact'],long:['Search all contacts in the workspace','Enterprise opportunity review','Add a new contact'],unbreakable:['Search','CRM_ENTERPRISE_OPPORTUNITY_2026_EUROPE_RENEWAL_IDENTIFIER','Add contact']};
+const filters=['Owner: Maya','Stage: Qualified','Region: Europe','Value: over €10,000','Close date: this quarter','Source: Partner','Priority: High','Industry: Technology','Team: Enterprise sales','Activity: This week','Forecast: Commit','Tags: Renewal'];
+const deals=[{name:'Acme renewal',status:'Negotiation',value:'€48,000'},{name:'Northstar rollout',status:'Qualified',value:'€72,000'},{name:'Atlas expansion',status:'Proposal',value:'€31,500'},{name:'Cedar partnership',status:'Discovery',value:'€18,000'},{name:'Meridian upgrade',status:'Qualified',value:'€52,000'},{name:'Harbor pilot',status:'Discovery',value:'€9,000'},{name:'Nimbus platform',status:'Proposal',value:'€94,000'},{name:'Orbit services',status:'Negotiation',value:'€26,000'}];
+const descriptions=['A focused renewal with the existing team.','The customer is expanding into three regions. Coordinate onboarding, training and a phased rollout with the regional owners.','Procurement needs a revised proposal, updated security documentation and a detailed migration plan. The account team is arranging technical workshops before the next review. Include implementation milestones, operational responsibilities and a clear success measure for each phase.'];
+const titles={a:'Flex sizing & distribution',b:'CRM workspace & scrolling',c:'Filter wrapping & alignment',d:'Card stretch & internal distribution'};
+const itemDefault=(index=0)=>({grow:0,shrink:1,basis:'auto',basisValue:160,size:0,min:'auto',minValue:80,max:0,content:['short','mixed','long'][index],shorthand:'initial'});
+const defaults={
+ a:{width:760,height:260,definite:false,direction:'row',writing:'ltr',gap:12,presentation:'toolbar',shared:false,selected:0,anywhere:false,items:[0,1,2].map(index=>({...itemDefault(index),content:'mixed'}))},
+ b:{width:1200,height:600,preset:'desktop',direction:'row',gap:12,selected:2,compact:false,long:false,scroll:'body',minHeight:'zero',definite:true,basisProbe:'0%',probeDefinite:false,items:[{grow:0,shrink:0,basis:'220px',min:0,max:0},{grow:0,shrink:0,basis:'320px',min:0,max:0},{grow:1,shrink:1,basis:'0px',min:0,max:0}],deal:0},
+ c:{width:760,height:260,direction:'row',writing:'ltr',count:6,length:'mixed',wrap:'nowrap',rowGap:12,columnGap:10,justify:'flex-start',align:'flex-start',alignContent:'flex-start',selected:1,self:'auto',autoMargin:false,order:0,grid:false},
+ d:{width:850,count:4,length:'mixed',wrap:'wrap',align:'flex-start',selected:0,self:'auto',minHeight:0,maxHeight:0,footer:'natural',internal:'block',grid:false}
+};
+/* 2. Scenario definitions. Each record owns its deterministic snapshot, repair and teaching text. */
+const stage=(label,question,why,change=()=>{},repair=()=>{},transfer='Try the same rule with different content or available space.')=>({label,question,why,change,repair,transfer});
+const setA=(s,values)=>s.items.forEach(item=>Object.assign(item,values));
+const abstract=s=>{s.presentation='abstract';s.items.forEach((item,i)=>item.content=['short','mixed','long'][i]);};
+const stages={
+ a:[
+  stage('A1 · Initial behavior','Does display: flex make these three items equal?','Initial flex values preserve content-sensitive starting sizes; they do not request equal shares. Alternative: zero basis with growth. Choose according to whether content should influence allocation.',()=>{},s=>{s.items[0].grow=1;s.items[2].shrink=0;}),
+  stage('A2 · Basis','With width and basis set, which one governs the starting main size?','An auto basis can use the specified main size. A non-auto basis supplies a different starting point; constraints still affect the final size. Compare content, lengths and percentages.',s=>{abstract(s);s.items.forEach((x,i)=>Object.assign(x,{size:120,basis:'px',basisValue:[120,210,280][i],min:'zero'}));},s=>setA(s,{basis:'auto'})),
+  stage('A3 · Positive space','Will grow 1 / 1 / 1 produce equal final widths?','Growth distributes additional space from the bases. Equal increments can leave unequal final sizes. A zero basis changes the allocation question; it is suitable when equal shares matter more than natural widths.',s=>{abstract(s);s.width=900;s.items.forEach((x,i)=>Object.assign(x,{grow:1,basis:'px',basisValue:[90,170,260][i],min:'zero'}));},s=>setA(s,{basis:'zero',grow:1})),
+  stage('A4 · auto versus 1','How will auto and zero-percent bases change three unequal labels?','flex: auto expands to 1 1 auto. The flex: 1 preset uses 1 1 0%. Compare the resulting computed declarations and dimensions. Minimum constraints can still prevent equal sizes.',s=>{abstract(s);s.width=900;setA(s,{grow:1,shrink:1,basis:'auto',min:'zero',shorthand:'auto'});},s=>setA(s,{grow:1,shrink:1,basis:'percent',basisValue:0,shorthand:'1'})),
+  stage('A5 · Negative space','Which item gives back the most pixels with shrink 1 / 1 / 1?','Shrink distribution uses factors scaled by flex base sizes, subject to constraints. Equal shrink factors do not imply equal pixel losses. Protect essential actions selectively; prohibiting all shrinkage can overflow.',s=>{abstract(s);s.width=430;s.items.forEach((x,i)=>Object.assign(x,{basis:'px',basisValue:[120,220,300][i],min:'zero',content:'short'}));},s=>{s.items[0].shrink=0;}),
+  stage('A6 · Automatic minimum','Why does this identifier resist shrinking?','The automatic minimum can constrain a non-scroll flex item. min-width: 0 removes that floor but does not itself wrap text. overflow-wrap: anywhere changes break opportunities. Choose clipping, wrapping or a retained minimum according to content needs.',s=>{abstract(s);s.width=520;setA(s,{grow:1,basis:'zero',content:'short'});s.items[1].content='unbreakable';},s=>{s.items[1].min='zero';s.anywhere=true;}),
+  stage('A7 · Maximum & redistribution','Where does growth go after B reaches its maximum?','A maximum constrains one item while remaining eligible items can receive space. Naive final-size ratios ignore these constraints. Keep a maximum when readability requires it; accept that other items receive more room.',s=>{abstract(s);s.width=900;setA(s,{grow:1,basis:'zero',min:'zero',content:'short'});s.items[1].max=160;},s=>{s.items[1].max=0;}),
+  stage('A8 · Main size & axis','What changes when the main axis becomes vertical?','Width is not always the main size. In this column example, the size control writes height and the flex basis participates vertically. Compare basis auto with a fixed basis while holding height constant.',s=>{abstract(s);s.direction='column';s.definite=true;s.height=500;s.items.forEach((x,i)=>Object.assign(x,{basis:'px',basisValue:[70,110,150][i],size:60,min:'zero',content:'short'}));},s=>setA(s,{basis:'auto'})),
+  stage('A9 · Choose a shorthand','How can Search fill the row while Add contact stays protected?','Use growth where additional room is useful and disable shrinking on the essential action. A flexible search still needs a sensible minimum and overflow policy. Fixed widths trade adaptability for predictability.',s=>{s.width=560;s.items.forEach(x=>x.content='mixed');},s=>{Object.assign(s.items[0],{grow:1,shrink:1,basis:'auto',min:'zero',shorthand:'auto'});Object.assign(s.items[2],{grow:0,shrink:0,basis:'auto',shorthand:'none'});})
+ ],
+ b:[
+  stage('B1 · Horizontal allocation','Which panel should receive the remaining workspace?','Fixed navigation and list bases leave flexible space for details. This is useful while those fixed commitments fit. Narrow the workspace to test the limit.',()=>{},s=>{s.items[1].shrink=1;}),
+  stage('B2 · Multiple flexible panels','Do auto bases and zero bases divide space the same way?','Auto bases retain specified or intrinsic starting-size influence; zero bases distribute from zero, subject to minimums. Compare content priorities against equal space shares.',s=>{s.items[1]={grow:1,shrink:1,basis:'auto',min:0,max:0};s.items[2]={grow:1,shrink:1,basis:'auto',min:0,max:0};},s=>{s.items[1].basis='0px';s.items[2].basis='0px';}),
+  stage('B3 · Panel constraints','Can every minimum fit inside 700 pixels?','When fixed panels, minimums and gaps exceed the available space, overflow is a real constraint conflict. Relax one commitment or change composition; growth factors cannot create space.',s=>{s.width=700;s.items[1].min=300;s.items[2].min=340;},s=>{s.items[1].shrink=1;s.items[1].min=160;s.items[2].min=0;}),
+  stage('B4 · Responsive composition','Which few declarations change Desktop into Mobile?','Presets change direction, bases, gaps and navigation density on the same DOM. The frame width is controlled independently of the host browser. Inspect the CSS changes before deciding whether a stacked product workflow is appropriate.',()=>{},s=>applyWorkspacePreset(s,'mobile')),
+  stage('B5 · Nested vertical layout','Which region should use the space between header and footer?','The details panel owns a column layout. A definite outer height makes available space meaningful; the growing content chain can shrink so that the body owns scrolling.',s=>{s.long=true;s.scroll='none';},s=>{s.scroll='body';s.minHeight='zero';}),
+  stage('B6 · Scroll ownership','What happens to the footer when the whole panel scrolls?','Scrolling the details panel includes its footer. Scrolling the body keeps header and footer outside that region. Workspace scrolling moves all panels. Choose the owner based on what must remain visible.',s=>{s.long=true;s.scroll='panel';},s=>{s.scroll='body';s.minHeight='zero';}),
+  stage('B7 · Minimum height chain','Why does the intermediate flex child push the footer down?','The non-scrolling intermediate flex child has an automatic minimum. Its body may scroll, but the intermediate child can still refuse to shrink. Setting min-height: 0 at that constrained link allows the intended body scroll. It is not a blanket rule for every scroll container.',s=>{s.long=true;s.minHeight='auto';},s=>{s.minHeight='zero';}),
+  stage('B8 · 0 versus 0%','Will a percentage basis resolve to zero in an indefinite column?','The dedicated column probe compares 0px, 0% and auto with an auto or definite height. An unresolved percentage basis can be content-based. Use DOM dimensions as evidence; the browser does not expose an exact flex-base-size measurement.',s=>{s.basisProbe='0%';s.probeDefinite=false;},s=>{s.basisProbe='0px';})
+ ],
+ c:[
+  stage('C1 · No wrapping','What happens when more filters must fit on one line?','Non-shrinking chips and actions can exceed the row; the search field gives back space until its minimum. Wrapping trades a compact single row for additional cross-axis space.',()=>{},s=>{s.wrap='wrap';}),
+  stage('C2 · Independent lines','Will the second line share the first line’s columns?','Each flex line distributes its own main-axis space. Flexbox does not establish common column tracks across lines. Use Grid when those repeated tracks are a requirement.',s=>{s.wrap='wrap';s.count=9;},s=>{s.justify='space-between';}),
+  stage('C3 · Row & column gaps','Which gap separates lines and which separates items?','Physical row-gap and column-gap remain row and column gaps as the flex direction changes. Unlike child margins, container gap has no outer-edge contribution. Test both directions.',s=>{s.wrap='wrap';s.count=9;s.rowGap=24;s.columnGap=8;},s=>{s.rowGap=12;s.columnGap=12;}),
+  stage('C4 · Main-axis distribution','Where does space-between distribute each line’s remaining room?','Justification distributes free space on each line after flex sizing and auto margins. Different item counts can produce different intervals. Use a gap for a stable minimum separation.',s=>{s.wrap='wrap';s.count=7;s.justify='space-between';},s=>{s.justify='flex-start';}),
+  stage('C5 · Item cross alignment','Do center and baseline align these mixed-size labels alike?','align-items acts across a line’s cross axis. Baseline alignment follows text baselines; center follows boxes. Stretch applies when cross sizing permits it.',s=>{s.count=3;s.width=1000;s.align='baseline';},s=>{s.align='center';}),
+  stage('C6 · One-item override','Can one filter align differently without moving every item?','align-self replaces the container’s item-alignment choice for one selected item. It does not position the entire flex line. Prefer a local override when only one role differs.',s=>{s.count=3;s.width=1000;s.align='stretch';s.self='flex-end';},s=>{s.self='auto';}),
+  stage('C7 · Multi-line alignment','When does align-content have room to make a difference?','Line alignment needs a multi-line flex container and available cross-axis space. With nowrap it does not distribute multiple lines. Toggle wrapping while keeping the same explicit height.',s=>{s.wrap='wrap';s.count=8;s.width=600;s.height=400;s.alignContent='space-between';},s=>{s.alignContent='flex-start';}),
+  stage('C8 · Auto margins','Does an auto margin force the actions onto a separate row?','An auto margin absorbs available space on the line containing that item. It does not create a dedicated row. Compare justification with an auto margin, then narrow the container.',s=>{s.wrap='wrap';s.count=3;s.width=1000;s.autoMargin=true;},s=>{s.autoMargin=false;s.justify='space-between';}),
+  stage('C9 · Direction & reversal','Which way do the main and cross axes point now?','Direction and writing direction jointly determine start and end. Reversal affects visual placement, while the document sequence remains unchanged. Follow axis labels and tab through the controls.',s=>{s.direction='column';s.height=440;s.wrap='wrap';},s=>{s.direction='row-reverse';s.writing='rtl';}),
+  stage('C10 · Visual order','Does moving the actions visually also move them in keyboard order?','The order property changes visual ordering, not the DOM or sequential keyboard navigation. Preserve a meaningful document sequence; visual order should not carry essential semantics.',s=>{s.order=-1;s.wrap='wrap';},s=>{s.order=0;}),
+  stage('C11 · Flex or Grid','Do filters need flexible lines or shared column tracks?','The filters remain a Flexbox example. The small card reference uses explicit Grid columns to show the separate requirement of two-dimensional alignment. Flexible tags and repeated tracks solve different problems.',s=>{s.wrap='wrap';s.count=9;},s=>{s.grid=true;})
+ ],
+ d:[
+  stage('D1 · Natural card heights','Why do these cards and their footers end at different heights?','Natural heights follow content. This is reasonable for an unconstrained collection; a new visual requirement may justify coordinated sizing. Fixed heights trade resilience for uniformity.',()=>{},s=>{s.align='stretch';}),
+  stage('D2 · Stretch within a line','Will stretch equalize every card across every wrapped row?','Cross-axis stretch coordinates auto-sized cards within the same flex line. Different lines can have different heights. It does not create a shared cross-row height track.',s=>{s.align='stretch';},s=>{s.internal='column';s.footer='auto';}),
+  stage('D3 · Cross-axis alternatives','Which alignment keeps each card’s natural height?','Start and center position natural-size boxes; stretch can fill the line’s cross size. Compare the same descriptions without changing content.',s=>{s.align='center';},s=>{s.align='stretch';}),
+  stage('D4 · Internal column','Does making each card a column also push its footer down?','A column establishes an internal vertical main axis. It does not allocate leftover space to the footer on its own. Choose an auto margin or a growing body for that separate responsibility.',s=>{s.align='stretch';s.internal='column';},s=>{s.footer='auto';}),
+  stage('D5 · Auto-margin footer','Where does the unused vertical space go?','An auto top margin before the footer absorbs positive space. It places the footer at the end without stretching the content body. It cannot create space when long content exceeds a maximum.',s=>{s.align='stretch';s.internal='column';s.footer='auto';},s=>{s.footer='grow';}),
+  stage('D6 · Growing body','What changes if the body receives the extra space instead?','A growing body fills available main-axis space, placing the footer after it. Its box expands; an auto-margin footer instead leaves the body natural. Region bounds distinguish them.',s=>{s.align='stretch';s.internal='column';s.footer='grow';},s=>{s.footer='auto';}),
+  stage('D7 · Height constraints','Can a maximum height preserve all of this content?','A maximum may force overflow; it does not erase content requirements. Relax the cap, reduce content or choose a deliberate scrolling/truncation contract. This experiment leaves overflow visible.',s=>{s.align='stretch';s.internal='column';s.footer='auto';s.maxHeight=240;s.length='long';},s=>{s.maxHeight=0;}),
+  stage('D8 · Multiple flex lines','Will a short second row inherit the first row’s height?','Line heights are resolved independently. Equal heights across an entire collection are a different requirement from stretch within a row. Inspect line grouping before selecting a mechanism.',s=>{s.align='stretch';s.internal='column';s.footer='auto';s.width=720;s.count=5;},s=>{s.grid=true;}),
+  stage('D9 · Shared tracks','When is a two-dimensional layout the clearer contract?','The Grid reference aligns repeated columns. A collection requiring coordinated row and column tracks may be better expressed in Grid. Flexbox remains useful for each card’s internal distribution.',s=>{s.align='stretch';s.internal='column';s.footer='auto';s.count=6;},s=>{s.grid=true;})
+ ]
+};
+function applyWorkspacePreset(s,preset){
+ s.preset=preset;
+ const configs={desktop:{width:1200,direction:'row',gap:12,compact:false,items:[[0,0,'220px'],[0,0,'320px'],[1,1,'0px']]},tablet:{width:768,direction:'row',gap:8,compact:true,items:[[0,0,'72px'],[0,1,'260px'],[1,1,'0px']]},mobile:{width:390,direction:'column',gap:8,compact:true,items:[[0,0,'auto'],[0,0,'auto'],[1,1,'auto']]}};
+ const c=configs[preset];Object.assign(s,{width:c.width,direction:c.direction,gap:c.gap,compact:c.compact});
+ s.items.forEach((item,i)=>Object.assign(item,{grow:c.items[i][0],shrink:c.items[i][1],basis:c.items[i][2]}));
+}
+/* 3. Single state store, reducer and explicit state ownership. */
+const state={lab:'a',mode:'explore',labs:clone(defaults),stage:{a:0,b:0,c:0,d:0},modified:{a:false,b:false,c:false,d:false},observe:{dimensions:true,axes:false,lines:false,space:false,overflow:false,tab:false},inspection:{a:'a-parent',b:'b-parent',c:'c-parent',d:'d-parent'},lastB:null};
+function current(){return state.labs[state.lab];}
+function currentStage(){return stages[state.lab][state.stage[state.lab]];}
+function loadStage(index){state.stage[state.lab]=Math.max(0,Math.min(stages[state.lab].length-1,index));const s=clone(defaults[state.lab]);currentStage().change(s);state.labs[state.lab]=s;state.modified[state.lab]=false;}
+function normalizeNumber(value,min,max,fallback=0){const n=Number(value);return Number.isFinite(n)?Math.min(max,Math.max(min,n)):fallback;}
+function dispatch(action){
+ const s=current();
+ if(action.type==='lab'){state.lab=action.value;renderControls();renderFixture();syncScenario();}
+ if(action.type==='mode'){state.mode=action.value;}
+ if(action.type==='stage'){loadStage(action.value);renderFixture();}
+ if(action.type==='reset'){state.labs[state.lab]=clone(defaults[state.lab]);state.stage[state.lab]=0;state.modified[state.lab]=false;renderFixture();}
+ if(action.type==='restore'){loadStage(state.stage[state.lab]);renderFixture();}
+ if(action.type==='repair'){currentStage().repair(s);state.modified[state.lab]=true;renderFixture();}
+ if(action.type==='observe'){state.observe[action.key]=action.value;}
+ if(action.type==='inspect'){state.inspection[state.lab]=action.value;}
+ if(action.type==='set'){
+  let value=action.value;
+  if(action.kind==='number'||action.kind==='range')value=normalizeNumber(value,action.min,action.max);
+  if(action.key==='selected'){s.selected=Number(value);}
+  else if(action.item){
+   const targets=state.lab==='a'&&s.shared?s.items:[s.items[s.selected]];
+   targets.forEach(item=>{if(action.key==='shorthand'&&value!=='custom'){const [grow,shrink,basis]=flexPresets[value];Object.assign(item,{grow,shrink,basis:basis==='0%'?'percent':basis==='240px'?'px':basis,basisValue:basis==='0%'?0:basis==='240px'?240:item.basisValue,shorthand:value});}else{item[action.key]=value;if(state.lab==='a'&&['grow','shrink','basis','basisValue'].includes(action.key))item.shorthand='custom';}});
+  }else if(state.lab==='b'&&action.key==='preset'){applyWorkspacePreset(s,value);}
+  else s[action.key]=value;
+  if(action.key==='count'&&state.lab==='c'&&s.selected!==13&&s.selected>s.count)s.selected=1;
+  if(action.key==='count'&&state.lab==='d'&&s.selected>=s.count)s.selected=s.count-1;
+  if(action.key!=='selected'&&action.key!=='shared')state.modified[state.lab]=true;
+  if(needsFixture(action.key))renderFixture();
+ }
+ syncScenario();syncControls();applyLayout();queueProbe();
+}
+const needsFixture=key=>['presentation','content','count','length','long','compact','deal','grid'].includes(key);
+/* 4. Control schemas. Input definitions own units, ranges and source-state paths. */
+const select=(key,label,options,extra={})=>({key,label,options,kind:'select',...extra});
+const range=(key,label,min,max,step=1,unit='px',extra={})=>({key,label,min,max,step,unit,kind:'range',...extra});
+const check=(key,label,extra={})=>({key,label,kind:'checkbox',...extra});
+const number=(key,label,min,max,extra={})=>({key,label,min,max,step:1,kind:'number',...extra});
+function schemas(){const s=current();
+ if(state.lab==='a')return [
+  select('presentation','Presentation',[['toolbar','CRM toolbar'],['abstract','Three rectangles']]),range('width','Container width',240,1400),check('definite','Definite height'),range('height','Container height',120,900),select('direction','Direction',directions),select('writing','Writing direction',['ltr','rtl']),range('gap','Gap',0,40),check('anywhere','Wrap anywhere'),check('shared','Edit A, B and C together'),
+  select('selected','Inspect / edit item',[[0,'A · Search'],[1,'B · Filter'],[2,'C · Add contact']]),
+  select('shorthand','Flex shorthand',['initial','auto','none','1','0 0 240px','custom'],{item:true}),
+  range('grow','Grow',0,5,.25,'',{item:true}),range('shrink','Shrink',0,5,.25,'',{item:true}),select('basis','Basis',['auto','content',['px','Length'],['zero','0px'],['percent','Percentage']],{item:true}),range('basisValue','Basis value',0,600,1,s.items[s.selected].basis==='percent'?'%':'px',{item:true}),range('size','Main size · 0 = auto',0,600,1,'px',{item:true}),select('min','Minimum',['auto',['zero','0'],['px','Length']],{item:true}),range('minValue','Minimum length',0,400,1,'px',{item:true}),range('max','Maximum · 0 = none',0,800,1,'px',{item:true}),select('content','Content',['short','mixed','long','unbreakable'],{item:true})
+ ];
+ if(state.lab==='b')return [select('preset','Layout preset',['desktop','tablet','mobile']),range('width','Viewport width',320,1400),range('height','Viewport height',280,900),check('definite','Definite workspace height'),select('direction','Direction',directions),range('gap','Gap',0,32),check('compact','Compact navigation'),check('long','Long content'),select('scroll','Scroll owner',[['none','None'],['workspace','Workspace'],['panel','Details panel'],['body','Details body']]),select('minHeight','Intermediate min-height',[['auto','auto'],['zero','0']]),select('selected','Edit panel',[[0,'Navigation'],[1,'Deal list'],[2,'Details']]),range('grow','Panel grow',0,4,.25,'',{item:true}),range('shrink','Panel shrink',0,4,.25,'',{item:true}),select('basis','Panel basis',['auto','0px','0%','72px','160px','220px','260px','320px','40%'],{item:true}),range('min','Panel main minimum',0,500,1,'px',{item:true}),range('max','Panel main max · 0 = none',0,900,1,'px',{item:true}),select('basisProbe','Column probe basis',['0px','0%','auto']),check('probeDefinite','Column probe definite height')];
+ if(state.lab==='c')return [range('width','Container width',240,1400),range('height','Cross space / height',80,700),range('count','Filter count',2,12,1,''),select('length','Label lengths',['short','mixed','long']),select('direction','Direction',directions),select('writing','Writing direction',['ltr','rtl']),select('wrap','Wrap',['nowrap','wrap','wrap-reverse']),range('rowGap','Row gap',0,48),range('columnGap','Column gap',0,48),select('justify','Justify content',distributions),select('align','Align items',alignments),select('alignContent','Align content',[...distributions,'stretch']),select('selected','Override target',[[0,'Search'],...Array.from({length:s.count},(_,i)=>[i+1,`Filter ${i+1}`]),[13,'Action group']]),select('self','Selected align-self',['auto',...alignments]),check('autoMargin','Actions: inline-start auto'),range('order','Actions: order',-2,2,1,''),check('grid','Show Grid reference')];
+ return [range('width','Collection width',240,1400),range('count','Card count',2,8,1,''),select('length','Descriptions',['short','mixed','long']),select('wrap','Wrap',['nowrap','wrap','wrap-reverse']),select('align','Align items',alignments),select('selected','Override card',Array.from({length:s.count},(_,i)=>[i,`Card ${i+1}`])),select('self','Selected align-self',['auto',...alignments]),range('minHeight','Minimum card height',0,600),range('maxHeight','Maximum · 0 = none',0,700),select('internal','Internal layout',[['block','Normal block'],['column','Flex column'],['row','Flex row']]),select('footer','Footer mechanism',[['natural','Natural flow'],['auto','Auto top margin'],['grow','Growing body']]),check('grid','Show Grid reference')];
+}
+let activeSchemas=[];
+function renderControls(){
+ activeSchemas=schemas();$('controls').innerHTML='<div class="control-grid">'+activeSchemas.map(def=>{
+  const id='control-'+def.key;
+  if(def.kind==='checkbox')return `<div class="check field wide"><input id="${id}" type="checkbox" data-control="${def.key}"><label for="${id}">${esc(def.label)}</label></div>`;
+  if(def.kind==='select')return `<div class="field wide"><label for="${id}">${esc(def.label)}</label><select id="${id}" data-control="${def.key}">${def.options.map(option=>{const [v,l]=Array.isArray(option)?option:[option,option];return `<option value="${esc(v)}">${esc(l)}</option>`;}).join('')}</select></div>`;
+  return `<div class="field ${def.kind==='range'?'wide':''}"><div class="range-heading"><label for="${id}">${esc(def.label)}</label>${def.kind==='range'?`<output id="output-${def.key}" for="${id}"></output>`:''}</div><input id="${id}" data-control="${def.key}" type="${def.kind}" min="${def.min}" max="${def.max}" step="${def.step}"></div>`;
+ }).join('')+'</div>';
+}
+function syncControls(){
+ const s=current();activeSchemas=schemas();
+ for(const def of activeSchemas){const input=$('control-'+def.key);if(!input)continue;
+  if(def.kind==='select'&&def.key==='selected')input.innerHTML=def.options.map(option=>`<option value="${option[0]}">${esc(option[1])}</option>`).join('');
+  const value=def.item?s.items[s.selected][def.key]:s[def.key];if(def.kind==='checkbox')input.checked=Boolean(value);else input.value=String(value);if(def.kind==='range')$('output-'+def.key).textContent=value+(def.unit?' '+def.unit:'');
+  input.disabled=state.lab==='a'&&((def.key==='height'&&!s.definite)||(def.key==='basisValue'&&!['px','percent'].includes(s.items[s.selected].basis))||(def.key==='minValue'&&s.items[s.selected].min!=='px'));
+ }
+ for(const key of Object.keys(state.observe))$('show-'+key).checked=state.observe[key];
+}
+function syncScenario(){
+ const lab=state.lab,list=stages[lab],index=state.stage[lab];
+ if($('stage-select').dataset.lab!==lab){$('stage-select').innerHTML=list.map((x,i)=>`<option value="${i}">${esc(x.label)}</option>`).join('');$('stage-select').dataset.lab=lab;}
+ $('stage-select').value=index;$('stage-count').textContent=list.length+' stages';$('step-counter').textContent=(index+1)+' / '+list.length;
+ $('previous').disabled=index===0;$('next').disabled=index===list.length-1;
+ $('lab-title').textContent='Section 4 · '+titles[lab];$('preview-title').textContent=titles[lab];
+ $('status').textContent=(state.mode==='guided'?'Guided':'Explore')+(state.modified[lab]?' · modified':'')+' · '+list[index].label.split(' · ')[0];
+ qa('[data-lab]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.lab===lab)));
+ qa('[data-mode]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.mode===state.mode)));
+ $('prediction').textContent=list[index].question;$('explanation').textContent=list[index].why+' Transfer: '+list[index].transfer;
+}
+/* 5. Preview DOM. Sizing changes update CSS only; workspace preset switches preserve instances. */
+let fixtureSignature='';
+function renderFixture(){
+ const lab=state.lab,s=current();let html='';
+ if(lab==='a')html=`<div id="a-parent" data-probe="Flex container">${s.items.map((item,i)=>{
+  const label=(content[item.content]||content.mixed)[i];return `<div class="a-item" id="a-item-${i}" data-probe="Item ${'ABC'[i]}">${s.presentation==='abstract'?`<span class="a-letter">${'ABC'[i]}</span><span class="a-copy">${esc(label)}</span>`:i===0?`<label class="a-copy" for="contact-search">${esc(label)}</label><input class="crm-input" id="contact-search" placeholder="Find a contact" value="Maya Chen">`:`<span class="a-copy">${esc(label)}</span><button class="crm-btn ${i===2?'primary':''}" data-preview-action="${i===1?'filter':'add'}">${i===1?'Filter':'Add contact'}</button>`}</div>`;}).join('')}</div>`;
+ if(lab==='b'){
+  const signature='b-'+s.long;
+  if(fixtureSignature===signature&&$('b-parent')){syncWorkspaceData();return;}
+  html=`<div id="b-parent" data-probe="Workspace"><nav id="b-nav" class="workspace-nav" data-probe="Navigation"><strong>CRM</strong>${['Deals','Contacts','Activity'].map((name,i)=>`<button data-nav="${name}" aria-pressed="${i===0}"><span class="nav-short">${name[0]}</span><span class="nav-full">${name}</span></button>`).join('')}</nav><section id="b-list" class="workspace-list" data-probe="Deal list"><h3>Pipeline · 4 deals</h3>${deals.slice(0,4).map((deal,i)=>`<button class="deal-row" data-deal="${i}" aria-pressed="${i===s.deal}">${esc(deal.name)}<span>${esc(deal.status)} · ${esc(deal.value)}</span></button>`).join('')}</section><section id="b-details" class="details-panel" data-probe="Details panel"><header class="details-header" id="b-header" data-probe="Details header"><h3 id="deal-name"></h3><span id="deal-summary"></span></header><div class="details-chain" id="b-chain" data-probe="Intermediate flex child"><section id="b-body" class="details-body" data-probe="Details body">${Array.from({length:s.long?16:2},(_,i)=>`<h4>${['Overview','Next activity','Implementation notes','Customer requirements'][i%4]}</h4><p>${esc(descriptions[i%3])}</p>`).join('')}</section></div><footer id="b-footer" class="details-footer" data-probe="Persistent footer"><button class="crm-btn primary" data-preview-action="save">Save changes</button><small>Deal actions</small></footer></section></div><div class="basis-lab" id="basis-lab"><div class="world-label">Column basis probe · auto height versus 300px height</div><div id="b-probe" class="basis-sample" data-probe="Basis probe">${[1,3,6].map((n,i)=>`<div id="b-probe-${i}" data-probe="Basis item ${'ABC'[i]}">${Array.from({length:n},()=>`<div>Item ${'ABC'[i]} content line</div>`).join('')}</div>`).join('')}</div></div>`;
+  fixtureSignature=signature;
+ }
+ if(lab==='c')html=`<div id="c-parent" data-probe="Filter toolbar"><input id="c-search" data-probe="Search" class="crm-input filter-search" aria-label="Search deals" placeholder="Search deals">${filters.slice(0,s.count).map((label,i)=>`<button id="c-filter-${i}" data-probe="Filter ${i+1}" data-preview-action="chip" class="filter-chip">${esc(s.length==='short'?label.split(':')[0]:s.length==='long'?label+' · Enterprise accounts':label)}</button>`).join('')}<div class="filter-actions" id="c-actions" data-probe="Action group"><button class="crm-btn" data-preview-action="clear">Clear filters</button><button class="crm-btn primary" data-preview-action="deal">Add deal</button></div></div>${s.grid?gridReference(s.width):''}`;
+ if(lab==='d')html=`<div id="d-parent" data-probe="Card collection">${deals.slice(0,s.count).map((deal,i)=>`<article class="deal-card" id="d-card-${i}" data-probe="Card ${i+1}"><header id="d-header-${i}"><h3>${esc(deal.name)}</h3><span class="card-status">${esc(deal.status)}</span></header><div class="card-body" id="d-body-${i}" data-probe="Card ${i+1} body"><p>${esc(descriptions[s.length==='short'?0:s.length==='long'?2:i%3])}</p><strong>${esc(deal.value)}</strong></div><footer class="card-footer" id="d-footer-${i}" data-probe="Card ${i+1} footer"><button class="crm-btn" data-preview-action="open">Open deal</button></footer></article>`).join('')}</div>${s.grid?gridReference(s.width):''}`;
+ if(lab!=='b')fixtureSignature='';
+ $('fixture').innerHTML=html;if(lab==='b')syncWorkspaceData();syncInspectionOptions();
+}
+function gridReference(width){return `<section class="grid-reference" style="width:${width}px"><h3>Grid reference · three shared column tracks</h3><div class="mini-grid">${deals.slice(0,6).map((deal,i)=>`<article>${esc(deal.name)}<p>${esc(descriptions[i%3])}</p></article>`).join('')}</div></section>`;}
+function syncWorkspaceData(){const s=current(),deal=deals[s.deal];$('deal-name').textContent=deal.name;$('deal-summary').textContent=deal.status+' · '+deal.value;qa('[data-deal]').forEach(button=>button.setAttribute('aria-pressed',String(Number(button.dataset.deal)===s.deal)));}
+/* 6. Pure CSS resolution. The generated declarations are the declarations applied to the scene. */
+const rule=(selector,values)=>`${selector} {\n${Object.entries(values).map(([key,value])=>`  ${key}: ${value};`).join('\n')}\n}`;
+const isColumn=s=>s.direction?.startsWith('column');
+function basisValue(item){return item.basis==='px'?item.basisValue+'px':item.basis==='percent'?item.basisValue+'%':item.basis==='zero'?'0px':item.basis;}
+function resolveCSS(lab,s){
+ const rules=[],parent='#'+lab+'-parent',scope='#demo-shell ';
+ const add=(selector,values)=>rules.push(rule(scope+selector,values));
+ if(lab==='a'){
+  const column=isColumn(s),main=column?'height':'width';
+  add(parent,{display:'flex','flex-direction':s.direction,direction:s.writing,gap:s.gap+'px',width:s.width+'px',height:s.definite?s.height+'px':'auto','align-items':'flex-start',padding:'16px'});
+  s.items.forEach((item,i)=>add('#a-item-'+i,{'flex-grow':item.grow,'flex-shrink':item.shrink,'flex-basis':basisValue(item),[main]:item.size?item.size+'px':'auto',['min-'+main]:item.min==='auto'?'auto':item.min==='zero'?'0px':item.minValue+'px',['max-'+main]:item.max?item.max+'px':'none','overflow-wrap':s.anywhere?'anywhere':'normal'}));
+ }
+ if(lab==='b'){
+  const main=isColumn(s)?'height':'width';
+  add(parent,{display:'flex','flex-direction':s.direction,gap:s.gap+'px',width:s.width+'px',height:s.definite?s.height+'px':'auto',padding:'12px','align-items':'stretch',overflow:s.scroll==='workspace'?'auto':'visible'});
+  ['b-nav','b-list','b-details'].forEach((id,i)=>{const item=s.items[i];add('#'+id,{'flex-grow':item.grow,'flex-shrink':item.shrink,'flex-basis':item.basis,['min-'+main]:item.min+'px',['max-'+main]:item.max?item.max+'px':'none'});});
+  add('#b-details',{display:'flex','flex-direction':'column','min-width':isColumn(s)?'0px':s.items[2].min+'px','min-height':isColumn(s)?s.items[2].min+'px':'0px',overflow:s.scroll==='panel'?'auto':'visible'});
+  add('#b-chain',{display:'flex','flex-direction':'column','min-height':s.minHeight==='zero'?'0px':'auto','flex':'1 1 auto'});
+  add('#b-body',{'flex':'1 1 auto','min-height':'0px',overflow:s.scroll==='body'?'auto':'visible'});
+  add('#b-nav .nav-full',{display:s.compact?'none':'inline'});add('#b-nav .nav-short',{display:s.compact?'inline':'none'});
+  if(isColumn(s)){
+   add('#b-nav',{display:'flex',gap:'8px','align-items':'center',padding:'6px 10px'});add('#b-nav strong',{margin:'0 8px 0 0'});add('#b-nav button',{width:'auto',padding:'4px 8px'});
+   add('#b-list .deal-row',{padding:'4px 6px'});add('#b-list h3',{margin:'0 0 4px'});
+  }
+  add('#b-probe',{display:'flex','flex-direction':'column',height:s.probeDefinite?'300px':'auto',width:'360px',gap:'4px'});
+  add('#b-probe > div',{'flex-grow':'1','flex-shrink':'1','flex-basis':s.basisProbe});
+ }
+ if(lab==='c'){
+  add(parent,{display:'flex','flex-direction':s.direction,direction:s.writing,'flex-wrap':s.wrap,width:s.width+'px',height:s.height+'px','row-gap':s.rowGap+'px','column-gap':s.columnGap+'px','justify-content':s.justify,'align-items':s.align,'align-content':s.alignContent,padding:'16px'});
+  add('.filter-search',{flex:'0 1 180px',width:'180px','min-width':'80px'});
+  add('.filter-chip',{flex:'0 0 auto'});
+  add('#c-actions',{display:'flex',gap:'7px',flex:'0 0 auto','margin-inline-start':s.autoMargin?'auto':'0px',order:s.order});
+  const target=s.selected===0?'#c-search':s.selected===13?'#c-actions':'#c-filter-'+(s.selected-1);add(target,{'align-self':s.self});
+ }
+ if(lab==='d'){
+  add(parent,{display:'flex','flex-wrap':s.wrap,'align-items':s.align,gap:'16px',width:s.width+'px',padding:'16px'});
+  add('.deal-card',{'flex':'1 1 220px','max-width':'360px',display:s.internal==='block'?'block':'flex','flex-direction':s.internal==='row'?'row':'column','min-height':s.minHeight+'px','max-height':s.maxHeight?s.maxHeight+'px':'none'});
+  add('#d-card-'+s.selected,{'align-self':s.self});
+  add('.card-body',{'flex-grow':s.footer==='grow'?'1':'0','min-width':'0px'});
+  add('.card-footer',{'margin-top':s.footer==='auto'?'auto':'0px','flex-shrink':'0'});
+ }
+ return rules.join('\n\n');
+}
+function compareCSS(before,after){
+ const parse=text=>new Map([...text.matchAll(/([^{}]+)\{([^}]+)\}/g)].map(match=>[match[1].trim(),new Map([...match[2].matchAll(/([\w-]+)\s*:\s*([^;]+);/g)].map(value=>[value[1],value[2].trim()]))]));
+ const baseline=parse(before),active=parse(after),changes=[];
+ for(const [selector,properties] of active){const old=baseline.get(selector)||new Map(),diff=[];for(const [key,value] of properties)if(old.get(key)!==value){if(old.has(key))diff.push(`- ${key}: ${old.get(key)};`);diff.push(`+ ${key}: ${value};`);}if(diff.length)changes.push(selector+' {\n'+diff.map(line=>'  '+line).join('\n')+'\n}');}
+ return changes.length?changes.join('\n\n'):'No differences from Desktop baseline.';
+}
+function applyLayout(){
+ const lab=state.lab,s=current(),css=resolveCSS(lab,s);$('active-layout').textContent=css;$('active-css').textContent=css;
+ $('fixture').classList.toggle('toolbar-mode',lab==='a'&&s.presentation==='toolbar');
+ if(lab==='b'){
+  $('css-diff').textContent='Compared with Desktop baseline\n'+compareCSS(resolveCSS('b',defaults.b),css);
+ }else $('css-diff').textContent='Layout presets are available in 4B.';
+ $('viewport-label').textContent=s.width+'px × '+(lab==='b'?(s.definite?s.height+'px':'auto'):lab==='c'?s.height+'px':lab==='a'&&s.definite?s.height+'px':'auto');
+ const column=isColumn(s),reverse=s.direction?.endsWith('reverse'),rtl=s.writing==='rtl';
+ $('axis-label').hidden=!state.observe.axes;
+ $('axis-label').textContent=column?`Main: ${reverse?'bottom → top':'top → bottom'} · Cross: ${rtl!==(s.wrap==='wrap-reverse')?'right → left':'left → right'}`:`Main: ${Boolean(reverse)!==rtl?'right → left':'left → right'} · Cross: ${s.wrap==='wrap-reverse'?'bottom → top':'top → bottom'}`;
+ syncInspectionOptions();
+}
+/* 7. Browser probes. Values are DOM geometry, never a substitute flex algorithm. */
+function syncInspectionOptions(){
+ const entities=qa('[data-probe]',$('fixture'));const options=entities.map(el=>`<option value="${el.id}">${esc(el.dataset.probe)}</option>`).join('');
+ if($('inspect-target').innerHTML!==options)$('inspect-target').innerHTML=options;
+ if(!$(state.inspection[state.lab]))state.inspection[state.lab]=state.lab+'-parent';$('inspect-target').value=state.inspection[state.lab];
+}
+function contentBox(el){const c=getComputedStyle(el);return {width:el.clientWidth-parseFloat(c.paddingLeft)-parseFloat(c.paddingRight),height:el.clientHeight-parseFloat(c.paddingTop)-parseFloat(c.paddingBottom)};}
+const fixed=n=>Number(n).toFixed(1);
+function detectLines(parent,column){
+ const lines=[];
+ if(getComputedStyle(parent).flexWrap==='nowrap'){
+  const items=[...parent.children],rects=items.map(el=>el.getBoundingClientRect());
+  return items.length?[{items,start:Math.min(...rects.map(r=>column?r.left:r.top)),end:Math.max(...rects.map(r=>column?r.right:r.bottom))}]:[];
+ }
+ [...parent.children].forEach(el=>{const r=el.getBoundingClientRect(),start=column?r.left:r.top,end=column?r.right:r.bottom;let line=lines.find(line=>Math.min(end,line.end)-Math.max(start,line.start)>1);if(!line){line={start,end,items:[]};lines.push(line);}line.start=Math.min(line.start,start);line.end=Math.max(line.end,end);line.items.push(el);});
+ return lines.sort((a,b)=>a.start-b.start);
+}
+let pending=false;
+function queueProbe(){if(pending)return;pending=true;requestAnimationFrame(()=>{pending=false;probe();});}
+function probe(){
+ const s=current(),lab=state.lab,parent=$(lab+'-parent');if(!parent)return;
+ const column=isColumn(s),p=parent.getBoundingClientRect(),pc=contentBox(parent),children=[...parent.children],lines=detectLines(parent,column),selected=$(state.inspection[lab])||parent;
+ qa('.selected-entity',$('fixture')).forEach(el=>el.classList.remove('selected-entity'));selected.classList.add('selected-entity');
+ const rect=selected.getBoundingClientRect(),computed=getComputedStyle(selected),box=contentBox(selected);
+ const properties=['display','direction','flex-direction','flex-wrap','flex-grow','flex-shrink','flex-basis','width','height','min-width','max-width','min-height','max-height','align-items','align-self','align-content','justify-content','row-gap','column-gap','margin-inline-start','margin-top','overflow-x','overflow-y','order'];
+ $('inspect-values').textContent=selected.dataset.probe+'\nBorder box: '+fixed(rect.width)+' × '+fixed(rect.height)+'px\nContent box: '+fixed(box.width)+' × '+fixed(box.height)+'px\nScroll: '+selected.scrollWidth+' × '+selected.scrollHeight+'px\nClient: '+selected.clientWidth+' × '+selected.clientHeight+'px\n\n'+properties.map(prop=>prop+': '+computed.getPropertyValue(prop)).join('\n');
+ const overflowX=parent.scrollWidth>parent.clientWidth+1,overflowY=parent.scrollHeight>parent.clientHeight+1;
+ $('readouts').innerHTML=`<span>Content box <b>${fixed(pc.width)} × ${fixed(pc.height)}px</b></span><span>Main axis <b>${column?'vertical':'horizontal'}</b></span><span>Flex lines <b>${lines.length}</b></span><span>Overflow <b>${overflowX?'X ':''}${overflowY?'Y':''}${!overflowX&&!overflowY?'none':''}</b></span>`;
+ if(lab==='b'){
+  const footer=$('b-footer').getBoundingClientRect(),details=$('b-details').getBoundingClientRect(),body=$('b-body');
+  $('readouts').innerHTML+=`<span>Body scroll <b>${body.scrollHeight>body.clientHeight+1?'yes':'no'}</b></span><span>Footer inside panel <b>${footer.bottom<=details.bottom+1?'yes':'no'}</b></span>`;
+ }
+ const remaining=lines.map(line=>{const total=line.items.reduce((sum,el)=>{const r=el.getBoundingClientRect(),c=getComputedStyle(el);return sum+(column?r.height:r.width)+(parseFloat(column?c.marginTop:c.marginLeft)||0)+(parseFloat(column?c.marginBottom:c.marginRight)||0);},0);const css=getComputedStyle(parent),gap=parseFloat(column?css.rowGap:css.columnGap)||0;return (column?pc.height:pc.width)-total-gap*(line.items.length-1);});
+ $('space-meter').hidden=!state.observe.space;$('space-meter').innerHTML='Remaining after layout, excluding distributed justification: '+remaining.map((n,i)=>`line ${i+1}: ${fixed(n)}px`).join(' · ');
+ $('tab-sequence').hidden=!state.observe.tab;
+ const focusables=qa('button,input,select,a[href]',$('fixture')).filter(el=>!el.disabled&&el.getClientRects().length);
+ $('tab-sequence').textContent='DOM / Tab sequence: '+focusables.map((el,i)=>`${i+1}. ${el.getAttribute('aria-label')||el.textContent.trim()||el.placeholder||el.id}`).join(' → ');
+ qa('.is-scroll',$('fixture')).forEach(el=>el.classList.remove('is-scroll'));
+ if(state.observe.overflow)qa('[data-probe]',$('fixture')).forEach(el=>{const c=getComputedStyle(el);if(/auto|scroll/.test(c.overflowX+' '+c.overflowY))el.classList.add('is-scroll');});
+ const origin=$('preview-frame').getBoundingClientRect(),tags=[];
+ if(state.observe.dimensions)children.forEach((el,i)=>{const r=el.getBoundingClientRect();tags.push(`<span class="geom-tag" style="left:${r.left-origin.left+3}px;top:${r.top-origin.top+8}px">${i+1} · ${fixed(r.width)} × ${fixed(r.height)}</span>`);});
+ if(state.observe.lines)lines.forEach((line,i)=>{const rs=line.items.map(el=>el.getBoundingClientRect()),left=Math.min(...rs.map(r=>r.left))-origin.left,top=Math.min(...rs.map(r=>r.top))-origin.top,right=Math.max(...rs.map(r=>r.right))-origin.left,bottom=Math.max(...rs.map(r=>r.bottom))-origin.top;tags.push(`<div class="line-box" style="left:${left}px;top:${top}px;width:${right-left}px;height:${bottom-top}px"><span class="geom-tag">Line ${i+1}</span></div>`);});
+ if(lab==='d'&&state.observe.lines)qa('.card-body',$('fixture')).forEach(el=>{const r=el.getBoundingClientRect();tags.push(`<div class="line-box" style="left:${r.left-origin.left}px;top:${r.top-origin.top}px;width:${r.width}px;height:${r.height}px;border-color:#287963"></div>`);});
+ $('overlay').innerHTML=tags.join('');
+}
+/* 8. Event wiring. A single delegated state path handles native keyboard and pointer inputs. */
+$('demo-shell').addEventListener('input',event=>{const el=event.target;if(el.dataset.control&&el.type==='range')handleControl(el);});
+$('demo-shell').addEventListener('change',event=>{
+ const el=event.target;
+ if(el.dataset.control&&el.type!=='range')handleControl(el);
+ else if(el.id==='stage-select')dispatch({type:'stage',value:Number(el.value)});
+ else if(el.id==='inspect-target')dispatch({type:'inspect',value:el.value});
+ else if(el.id.startsWith('show-'))dispatch({type:'observe',key:el.id.slice(5),value:el.checked});
+});
+function handleControl(el){const def=activeSchemas.find(def=>def.key===el.dataset.control);if(!def)return;dispatch({type:'set',key:def.key,value:el.type==='checkbox'?el.checked:el.value,item:def.item,kind:def.kind,min:def.min,max:def.max});}
+$('demo-shell').addEventListener('click',event=>{
+ const button=event.target.closest('button');
+ if(button?.dataset.lab){dispatch({type:'lab',value:button.dataset.lab});return;}
+ if(button?.dataset.mode){dispatch({type:'mode',value:button.dataset.mode});return;}
+ if(button?.id==='previous'||button?.id==='next'){dispatch({type:'stage',value:state.stage[state.lab]+(button.id==='next'?1:-1)});return;}
+ if(button?.id==='reset'){dispatch({type:'reset'});return;}
+ if(button?.id==='restore-stage'){dispatch({type:'restore'});return;}
+ if(button?.id==='repair'){dispatch({type:'repair'});$('feedback').textContent='Applied the stage’s alternative. Inspect the declarations and compare the result.';return;}
+ if(button?.dataset.deal!==undefined){dispatch({type:'set',key:'deal',value:Number(button.dataset.deal)});$('feedback').textContent='Selected '+deals[current().deal].name+'.';return;}
+ if(button?.dataset.nav){qa('[data-nav]').forEach(el=>el.setAttribute('aria-pressed',String(el===button)));$('feedback').textContent=button.dataset.nav+' selected in the workspace sketch.';return;}
+ if(button?.dataset.previewAction){
+  const action=button.dataset.previewAction;
+  if(action==='clear'&&state.lab==='c'){dispatch({type:'set',key:'count',value:2});$('feedback').textContent='Cleared optional filters; two baseline filters remain.';}
+  else if(action==='chip'){button.setAttribute('aria-pressed',String(button.getAttribute('aria-pressed')!=='true'));$('feedback').textContent=button.textContent+' selected.';}
+  else $('feedback').textContent=({filter:'Filter action selected.',add:'New contact action selected.',deal:'New deal action selected.',save:'Changes saved in this local sketch.',open:'Deal action selected.'})[action]||'Action selected.';
+ }
+ const entity=event.target.closest('[data-probe]');if(entity){state.inspection[state.lab]=entity.id;syncInspectionOptions();queueProbe();}
+});
+$('preview-scroll').addEventListener('scroll',queueProbe,{passive:true});
+window.addEventListener('resize',queueProbe);document.addEventListener('scroll',event=>{if($('fixture').contains(event.target))queueProbe();},{capture:true,passive:true});
+new ResizeObserver(queueProbe).observe($('fixture'));
+renderControls();renderFixture();syncScenario();syncControls();applyLayout();queueProbe();
+</script>
+</body>
+</html>
