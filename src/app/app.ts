@@ -6,7 +6,7 @@ import { RouterOutlet } from '@angular/router';
   selector: 'app-root',
   styles: [],
   template: `
-    <h1>Hello, {{ title() }}</h1>
+    <h1>Hello, {{ title().toUpperCase() }}</h1>
 
     <router-outlet />
   `,
