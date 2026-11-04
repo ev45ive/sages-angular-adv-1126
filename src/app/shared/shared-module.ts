@@ -25,62 +25,59 @@ import {
 } from '@angular/material/list';
 import { MatOption, MatSelect } from '@angular/material/select';
 import { MatToolbar } from '@angular/material/toolbar';
+import { MatLineModule } from '@angular/material/core';
+
+// const SharedImports = [
+// ]
+
+export const SharedForms = [
+  MatOption,
+  MatSelect,
+  MatSuffix,
+  MatCheckbox,
+  MatFormField,
+  MatInput,
+  MatLabel,
+  [[[MatButton]]],
+];
+
+export const SharedUI = [
+  CommonModule,
+
+  MatButton,
+  MatCard,
+  MatCardActions,
+  MatCardContent,
+  MatCardHeader,
+  MatCardSubtitle,
+  MatCardTitle,
+
+  MatChip,
+  MatChipSet,
+  MatIcon,
+  MatList,
+  // MatLineModule,
+  MatListItem,
+  MatListItemLine,
+  MatListItemMeta,
+  MatListItemTitle,
+  MatListItemIcon,
+  MatToolbar,
+];
+
+export const SharedImports = [
+  CommonModule,
+  SharedForms,
+  //
+  SharedUI,
+];
 
 @NgModule({
   declarations: [],
-  imports: [
-    CommonModule,
-    MatButton,
-    MatCard,
-    MatCardActions,
-    MatCardContent,
-    MatCardHeader,
-    MatCardSubtitle,
-    MatCardTitle,
-    MatCheckbox,
-    MatChip,
-    MatChipSet,
-    MatFormField,
-    MatIcon,
-    MatInput,
-    MatLabel,
-    MatList,
-    MatListItem,
-    MatListItemIcon,
-    MatListItemLine,
-    MatListItemMeta,
-    MatListItemTitle,
-    MatOption,
-    MatSelect,
-    MatSuffix,
-    MatToolbar,
-  ],
+  imports: [SharedImports],
   exports: [
-    CommonModule,
-    MatButton,
-    MatCard,
-    MatCardActions,
-    MatCardContent,
-    MatCardHeader,
-    MatCardSubtitle,
-    MatCardTitle,
-    MatCheckbox,
-    MatChip,
-    MatChipSet,
-    MatFormField,
-    MatIcon,
-    MatInput,
-    MatLabel,
-    MatList,
-    MatListItem,
-    MatListItemIcon,
-    MatListItemLine,
-    MatListItemMeta,
-    MatListItemTitle,
-    MatOption,
-    MatSelect,
-    MatSuffix,
-    MatToolbar,
+    // ...SharedImports
+    SharedImports,
   ],
 })
 export class SharedModule {}
