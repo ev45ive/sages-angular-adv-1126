@@ -1,150 +1,169 @@
 import { Component } from '@angular/core';
+import { MatButton } from '@angular/material/button';
+import { MatCard, MatCardActions, MatCardContent, MatCardHeader, MatCardSubtitle, MatCardTitle } from '@angular/material/card';
+import { MatCheckbox } from '@angular/material/checkbox';
+import { MatChip, MatChipSet } from '@angular/material/chips';
+import { MatFormField, MatLabel, MatSuffix } from '@angular/material/form-field';
+import { MatIcon } from '@angular/material/icon';
+import { MatInput } from '@angular/material/input';
+import { MatList, MatListItem, MatListItemIcon, MatListItemLine, MatListItemMeta, MatListItemTitle } from '@angular/material/list';
+import { MatOption, MatSelect } from '@angular/material/select';
+import { MatToolbar } from '@angular/material/toolbar';
 
 @Component({
   selector: 'app-deals-page',
+  imports: [
+    MatButton,
+    MatCard,
+    MatCardActions,
+    MatCardContent,
+    MatCardHeader,
+    MatCardSubtitle,
+    MatCardTitle,
+    MatCheckbox,
+    MatChip,
+    MatChipSet,
+    MatFormField,
+    MatIcon,
+    MatInput,
+    MatLabel,
+    MatList,
+    MatListItem,
+    MatListItemIcon,
+    MatListItemLine,
+    MatListItemMeta,
+    MatListItemTitle,
+    MatOption,
+    MatSelect,
+    MatSuffix,
+    MatToolbar,
+  ],
   template: `
     <div class="min-h-screen bg-surface text-on-surface">
-      <header class="border-b border-outline-variant bg-surface-container-low px-6 py-4">
-        <span class="text-title-md text-on-surface-variant">CRM System</span>
-      </header>
+      <mat-toolbar class="border-b border-outline-variant">
+        <span class="text-title-md">CRM System</span>
+      </mat-toolbar>
 
       <main class="mx-auto max-w-5xl p-6">
         <div class="mb-4 flex items-center justify-between">
           <h1 class="text-headline-sm">Deals</h1>
-          <button type="button" class="btn-filled">New Deal</button>
+          <button matButton="filled" type="button">New Deal</button>
         </div>
 
         <div class="grid grid-cols-[260px_1fr] items-start gap-4">
-          <aside class="card p-3">
-            <label class="relative block">
-              <span class="sr-only">Filter deals</span>
-              <input type="search" placeholder="Filter deals..." class="field pr-9" />
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                aria-hidden="true"
-                class="pointer-events-none absolute right-3 top-1/2 size-4 -translate-y-1/2 text-on-surface-variant"
-              >
-                <circle cx="11" cy="11" r="7" />
-                <path d="m20 20-3.5-3.5" />
-              </svg>
-            </label>
+          <aside>
+            <mat-form-field class="w-full">
+              <mat-label>Filter deals</mat-label>
+              <input matInput type="search" />
+              <mat-icon matSuffix aria-hidden="true">search</mat-icon>
+            </mat-form-field>
 
-            <ul class="mt-3 space-y-1">
-              <li>
-                <button type="button" aria-current="true" class="list-item list-item-active">
-                  <span class="min-w-0">
-                    <span class="block truncate text-title-sm">Enterprise License — Tech Solutions</span>
-                    <span class="meta block">$48,000</span>
-                  </span>
-                  <span class="badge bg-tertiary-container text-on-tertiary-container">negotiation</span>
-                </button>
-              </li>
-              <li>
-                <button type="button" class="list-item">
-                  <span class="min-w-0">
-                    <span class="block truncate text-title-sm">Pilot Program — DataFlow</span>
-                    <span class="meta block">$12,000</span>
-                  </span>
-                  <span class="badge bg-secondary-container text-on-secondary-container">new</span>
-                </button>
-              </li>
-              <li>
-                <button type="button" class="list-item">
-                  <span class="min-w-0">
-                    <span class="block truncate text-title-sm">Design Workshop — Creative Co</span>
-                    <span class="meta block">$5,000</span>
-                  </span>
-                  <span class="badge bg-surface-variant text-on-surface-variant">proposal</span>
-                </button>
-              </li>
-              <li>
-                <button type="button" class="list-item">
-                  <span class="min-w-0">
-                    <span class="block truncate text-title-sm">Renewal — BuildRight</span>
-                    <span class="meta block">$24,000</span>
-                  </span>
-                  <span class="badge bg-error-container text-on-error-container">closed-lost</span>
-                </button>
-              </li>
-            </ul>
+            <mat-list class="mt-3">
+              <button mat-list-item type="button" aria-current="true" [activated]="true">
+                <span matListItemTitle>Enterprise License — Tech Solutions</span>
+                <span matListItemLine>$48,000</span>
+                <mat-chip-set matListItemMeta>
+                  <mat-chip>negotiation</mat-chip>
+                </mat-chip-set>
+              </button>
+              <button mat-list-item type="button">
+                <span matListItemTitle>Pilot Program — DataFlow</span>
+                <span matListItemLine>$12,000</span>
+                <mat-chip-set matListItemMeta>
+                  <mat-chip>new</mat-chip>
+                </mat-chip-set>
+              </button>
+              <button mat-list-item type="button">
+                <span matListItemTitle>Design Workshop — Creative Co</span>
+                <span matListItemLine>$5,000</span>
+                <mat-chip-set matListItemMeta>
+                  <mat-chip>proposal</mat-chip>
+                </mat-chip-set>
+              </button>
+              <button mat-list-item type="button">
+                <span matListItemTitle>Renewal — BuildRight</span>
+                <span matListItemLine>$24,000</span>
+                <mat-chip-set matListItemMeta>
+                  <mat-chip>closed-lost</mat-chip>
+                </mat-chip-set>
+              </button>
+            </mat-list>
           </aside>
 
           <div>
-            <section class="card">
-              <div class="flex items-start justify-between gap-3">
-                <div>
-                  <h2 class="text-title-lg">Enterprise License — Tech Solutions</h2>
-                  <p class="mt-1 text-body-md text-on-surface-variant">Annual enterprise license for 50 seats. Awaiting legal review.</p>
-                </div>
-                <div class="flex shrink-0 items-center gap-2">
-                  <span class="badge bg-tertiary-container text-on-tertiary-container">negotiation</span>
-                  <button type="button" class="btn-outlined">Edit</button>
-                </div>
-              </div>
-              <dl class="mt-4 grid grid-cols-3 gap-4 text-body-md">
-                <div>
-                  <dt class="meta">Value</dt>
-                  <dd class="mt-1 text-title-sm">$48,000</dd>
-                </div>
-                <div>
-                  <dt class="meta">Contact</dt>
-                  <dd class="mt-1 text-title-sm">Anna Kowalska</dd>
-                </div>
-                <div>
-                  <dt class="meta">Public</dt>
-                  <dd class="mt-1 text-title-sm">Yes</dd>
-                </div>
-              </dl>
-            </section>
-
-            <section class="mt-4 card">
-              <div class="flex items-center justify-between">
-                <h2 class="text-title-md">Tasks</h2>
-                <button type="button" class="btn-text">Archive completed</button>
-              </div>
-
-              <div class="mt-3 flex items-end gap-3">
-                <div class="flex-1">
-                  <span class="meta block">New task</span>
-                  <input type="text" placeholder="Task title..." class="field mt-1" />
-                </div>
-                <div class="w-36">
-                  <span class="meta block">Priority</span>
-                  <select class="field mt-1">
-                    <option>Low</option>
-                    <option selected>Medium</option>
-                    <option>High</option>
-                  </select>
-                </div>
-                <button type="button" class="btn-filled">Add</button>
-              </div>
-
-              <ul class="mt-4 space-y-2">
-                <li class="task-row">
-                  <div class="flex items-start gap-3">
-                    <input type="checkbox" class="mt-1 size-4 accent-primary" aria-label="Mark Send revised proposal as done" />
-                    <div>
-                      <p class="text-title-sm">Send revised proposal</p>
-                      <p class="meta">Due: 2026-03-15</p>
-                    </div>
+            <mat-card appearance="outlined">
+              <mat-card-header>
+                <mat-card-title>Enterprise License — Tech Solutions</mat-card-title>
+                <mat-card-subtitle>Annual enterprise license for 50 seats. Awaiting legal review.</mat-card-subtitle>
+              </mat-card-header>
+              <mat-card-content>
+                <mat-chip-set>
+                  <mat-chip>negotiation</mat-chip>
+                </mat-chip-set>
+                <dl class="mt-4 grid grid-cols-3 gap-4 text-body-md">
+                  <div>
+                    <dt class="meta">Value</dt>
+                    <dd class="mt-1 text-title-sm">$48,000</dd>
                   </div>
-                  <span class="badge bg-error-container text-on-error-container">high</span>
-                </li>
-                <li class="task-row">
-                  <div class="flex items-start gap-3">
-                    <input type="checkbox" checked class="mt-1 size-4 accent-primary" aria-label="Mark Schedule call with legal as not done" />
-                    <div>
-                      <p class="text-title-sm text-on-surface-variant line-through">Schedule call with legal</p>
-                      <p class="meta">Due: 2026-03-10</p>
-                    </div>
+                  <div>
+                    <dt class="meta">Contact</dt>
+                    <dd class="mt-1 text-title-sm">Anna Kowalska</dd>
                   </div>
-                  <span class="badge bg-tertiary-container text-on-tertiary-container">medium</span>
-                </li>
-              </ul>
-            </section>
+                  <div>
+                    <dt class="meta">Public</dt>
+                    <dd class="mt-1 text-title-sm">Yes</dd>
+                  </div>
+                </dl>
+              </mat-card-content>
+              <mat-card-actions align="end">
+                <button matButton="outlined" type="button">Edit</button>
+              </mat-card-actions>
+            </mat-card>
+
+            <mat-card appearance="outlined" class="mt-4">
+              <mat-card-header>
+                <mat-card-title>Tasks</mat-card-title>
+              </mat-card-header>
+              <mat-card-content>
+                <div class="flex items-end gap-3">
+                  <mat-form-field class="flex-1">
+                    <mat-label>New task</mat-label>
+                    <input matInput type="text" />
+                  </mat-form-field>
+                  <mat-form-field class="w-36">
+                    <mat-label>Priority</mat-label>
+                    <mat-select value="Medium">
+                      <mat-option value="Low">Low</mat-option>
+                      <mat-option value="Medium">Medium</mat-option>
+                      <mat-option value="High">High</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                  <button matButton="filled" type="button">Add</button>
+                </div>
+
+                <mat-list class="mt-4">
+                  <mat-list-item>
+                    <mat-checkbox matListItemIcon aria-label="Mark Send revised proposal as done" />
+                    <span matListItemTitle>Send revised proposal</span>
+                    <span matListItemLine>Due: 2026-03-15</span>
+                    <mat-chip-set matListItemMeta>
+                      <mat-chip>high</mat-chip>
+                    </mat-chip-set>
+                  </mat-list-item>
+                  <mat-list-item>
+                    <mat-checkbox matListItemIcon checked aria-label="Mark Schedule call with legal as not done" />
+                    <span matListItemTitle class="line-through">Schedule call with legal</span>
+                    <span matListItemLine>Due: 2026-03-10</span>
+                    <mat-chip-set matListItemMeta>
+                      <mat-chip>medium</mat-chip>
+                    </mat-chip-set>
+                  </mat-list-item>
+                </mat-list>
+              </mat-card-content>
+              <mat-card-actions align="end">
+                <button matButton="text" type="button">Archive completed</button>
+              </mat-card-actions>
+            </mat-card>
           </div>
         </div>
       </main>
