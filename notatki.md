@@ -28,3 +28,8 @@ ng new sages --directory "." -s -t --skip-tests --routing --ssr true --standalon
 # Material
 ng add @angular/
 
+
+# Design Tokens
+
+https://m3.material.io/foundations/design-tokens/overview
+https://v21.primeng.org/theming/styled#architecture
