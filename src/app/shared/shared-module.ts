@@ -26,6 +26,7 @@ import {
 import { MatOption, MatSelect } from '@angular/material/select';
 import { MatToolbar } from '@angular/material/toolbar';
 import { MatLineModule } from '@angular/material/core';
+import { RouterLink, RouterLinkActive } from '@angular/router';
 
 // const SharedImports = [
 // ]
@@ -63,6 +64,9 @@ export const SharedUI = [
   MatListItemTitle,
   MatListItemIcon,
   MatToolbar,
+
+  RouterLink,
+  RouterLinkActive,
 ];
 
 export const SharedImports = [

@@ -33,5 +33,11 @@
       "rule": "*",
       "severity": "warn"
     }
-  ]
+  ],
+  "chat.tools.terminal.autoApprove": {
+    "npx prettier": true,
+    "npx tsc": true,
+    "npx eslint": true,
+    "ng g": true
+  }
 }
