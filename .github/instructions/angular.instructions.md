@@ -1,6 +1,6 @@
 ---
 description: "Use when writing or reviewing Angular components, services, templates, forms, routes, Material imports, or Tailwind and CSS styling in TypeScript. Covers standalone components, signals, inject(), native control flow, host bindings, Material shared imports, and accessibility."
-applyTo: ["src/**/*.ts", "src/**/*.html", "src/**/*.css"]
+applyTo: "src/**/*.ts,src/**/*.html,src/**/*.css"
 ---
 # Angular Rules
 

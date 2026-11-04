@@ -1,9 +1,15 @@
 ---
-description: "Use when finishing Angular or template changes, verifying a feature, running prettier, tsc, eslint, the ng serve dev server, or browser checks. Covers verification order, scope of fixes, and asking before browser tools."
-applyTo: ["src/**"]
+description: "Use when generating Angular files with ng g schematics, finishing Angular or template changes, verifying a feature, running prettier, tsc, eslint, the ng serve dev server, or browser checks. Covers schematic generation, verification order, scope of fixes, and asking before browser tools."
+applyTo: "src/**"
 ---
 
 # Workflow Rules
+
+## Code Generation
+
+- Never create files by hand that an `ng g` schematic can generate.
+- Do not change schematic flags unless the user asks. Let defaults come from `angular.json`.
+- Prefer batch generation: prepare all needed `ng g` commands first, then run them together in one terminal call.
 
 ## Verification Order
 

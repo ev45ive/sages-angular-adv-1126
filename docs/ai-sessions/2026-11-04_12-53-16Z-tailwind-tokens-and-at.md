@@ -3158,3 +3158,214 @@ reference AGENTS.md from CLAUDE.md
 - Import any Material component through lists in  app/shared/shared-module into component  `imports` array.
 - Avoid ::ng-deep, !important, prefer css variables / tokens, if needed css overrides should be named classes (.fix-...-override)
 
+
+
+---
+
+_**User (2026-11-04 14:25:48Z)**_
+
+add required point to instructions:
+
+- AI should never create files that can be generated using 'ng g .. ' schematics
+- Should never change schematic flags unless user asks to so they default to angular.json 
+- Prefer batch generation - prepare multiple ng g commands and run them in batch
+
+---
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="read" data-tool-name="read_file"><details>
+<summary>Tool use: **read_file**</summary>
+
+Read `workflow.instructions.md`
+
+**Input:**
+
+- endLine: `200`
+- filePath: `c:\Projects\sages-angular-adv-1126\.github\instructions\workflow.instructions.md`
+- startLine: `1`
+
+**Result:**
+
+```
+---
+description: "Use when finishing Angular or template changes, verifying a feature, running prettier, tsc, eslint, the ng serve dev server, or browser checks. Covers verification order, scope of fixes, and asking before browser tools."
+applyTo: ["src/**"]
+---
+
+# Workflow Rules
+
+## Verification Order
+
+- Format changed files with prettier: `npx prettier --write <files>`. Config is in `.prettierrc`.
+- Type-check with `npx tsc --noEmit -p tsconfig.app.json`.
+- Lint changed files only: `npx eslint <files>`.
+- Use the running `ng serve` session to check the build. Do not run `ng build` unless asked. If no session is running, ask before starting one.
+- Fix only problems in changed files, or problems that stop `ng serve` from rebuilding.
+- The editor's CSS linter reports `@theme` and `@apply` as errors. These are false positives from Tailwind at-rules.
+
+## Browser Checks
+
+- Ask before using `open_browser_page`, `click_element`, or any other browser tool to verify, debug, or fix.
+
+## Scope
+
+- Template-only requests: do not add logic beyond the `imports` array unless the user approves.
+- Do not create markdown files to document changes unless requested.
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+The file still matches what I wrote, so I'll add a code-generation section and extend the description so it's discoverable for schematic tasks. 
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **workflow.instructions.md**</summary>
+
+@@ lines 8-8 @@
+
+```
+Code Generation
+
+- Never create files by hand that an `ng g` schematic can generate.
+- Do not change schematic flags unless the user asks. Let defaults come from `angular.json`.
+- Prefer batch generation: prepare all needed `ng g` commands first, then run them together in one terminal call.
+
+## 
+```
+
+@@ lines 2-2 @@
+
+```
+generating Angular files with ng g schematics, finishing Angular or template changes, verifying a feature, running prettier, tsc, eslint, the ng serve dev server, or browser checks. Covers schematic generation,
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+I added a "Code Generation" section to `.github/instructions/workflow.instructions.md` with the three rules:
+
+- Never create by hand files that an `ng g` schematic can generate.
+- Don't change schematic flags unless asked; defaults come from `angular.json`.
+- Prepare multiple `ng g` commands and run them together in one terminal call.
+
+I also extended the file's description so it matches schematic-generation tasks.
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="task" data-tool-name="manage_todo_list"><details>
+<summary>Tool use: **manage_todo_list**</summary>
+
+Created 4 todos
+</details></tool-use>
+
+---
+
+_**User (2026-11-04 14:26:36Z)**_
+
+fix :
+
+The 'applyTo' attribute must be a string.
+
+One or more glob pattern (separated by comma) that describe for which files the instructions apply to. Based on these patterns, the file is automatically included in the prompt, when the context contains a file that matches one or more of these patterns. Use `**` when you want this file to always be added. Example: `**/*.ts`, `**/*.js`, `client/**`
+
+---
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="read" data-tool-name="read_file"><details>
+<summary>Tool use: **read_file**</summary>
+
+Read `angular.instructions.md`, lines 1 to 6
+
+**Input:**
+
+- endLine: `6`
+- filePath: `c:\Projects\sages-angular-adv-1126\.github\instructions\angular.instructions.md`
+- startLine: `1`
+
+**Result:**
+
+```
+---
+description: "Use when writing or reviewing Angular components, services, templates, forms, routes, Material imports, or Tailwind and CSS styling in TypeScript. Covers standalone components, signals, inject(), native control flow, host bindings, Material shared imports, and accessibility."
+applyTo: ["src/**/*.ts", "src/**/*.html", "src/**/*.css"]
+---
+# Angular Rules
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="read" data-tool-name="read_file"><details>
+<summary>Tool use: **read_file**</summary>
+
+Read `workflow.instructions.md`, lines 1 to 6
+
+**Input:**
+
+- endLine: `6`
+- filePath: `c:\Projects\sages-angular-adv-1126\.github\instructions\workflow.instructions.md`
+- startLine: `1`
+
+**Result:**
+
+```
+---
+description: "Use when generating Angular files with ng g schematics, finishing Angular or template changes, verifying a feature, running prettier, tsc, eslint, the ng serve dev server, or browser checks. Covers schematic generation, verification order, scope of fixes, and asking before browser tools."
+applyTo: ["src/**"]
+---
+
+# Workflow Rules
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+Both files use YAML arrays for `applyTo`, which the tool rejects. I'll switch them to comma-separated strings. 
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **angular.instructions.md**</summary>
+
+@@ lines 3-3 @@
+
+```
+"src/**/*.ts,src/**/*.html,src/**/*.css"
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+
+```
+
+```
+
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **workflow.instructions.md**</summary>
+
+@@ lines 3-3 @@
+
+```
+"src/**"
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+Both instruction files now use a comma-separated string for `applyTo`. `angular.instructions.md` uses `src/**/*.ts,src/**/*.html,src/**/*.css`, and `workflow.instructions.md` uses `src/**`.
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="task" data-tool-name="manage_todo_list"><details>
+<summary>Tool use: **manage_todo_list**</summary>
+
+Created 5 todos
+</details></tool-use>
