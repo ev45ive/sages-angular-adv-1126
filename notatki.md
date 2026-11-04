@@ -33,3 +33,18 @@ ng add @angular/
 
 https://m3.material.io/foundations/design-tokens/overview
 https://v21.primeng.org/theming/styled#architecture
+
+# Flex
+https://css-tricks.com/snippets/css/a-guide-to-flexbox/
+
+http://www.flexboxdefense.com/
+https://flexboxfroggy.com/
+
+
+# CSS GRID
+https://css-tricks.com/complete-guide-css-grid-layout/
+https://cssgridgarden.com/
+
+
+# CSS Specifity
+https://css-tricks.com/specifics-on-css-specificity/ 
