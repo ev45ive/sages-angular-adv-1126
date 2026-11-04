@@ -59,6 +59,21 @@ https://css-tricks.com/specifics-on-css-specificity/
         - What will change together says together
         - What will change separatly gets separated
 
-- Extensibility - Open/Closed - If its different responsibility:
-        - use extension/port/outlet/input/slot/param/...
+- Extensibility 
+        - Open/Closed - If its different responsibility:
+        - Use extension/port/outlet/input/slot/params/...
 
+- Ownership
+    - who can change this, upstream to consumers (dependecies)
+
+- Scope
+    - Impact radius - what will be affected
+
+
+# Komponenty
+
+ui - Komponent "prezentacyjny" - zależy od rodzica (page)
+page - Komponent "kontrolujący" - ładuje dane dla dzieci (ui)
+
+
+# Core/Shared/Features
