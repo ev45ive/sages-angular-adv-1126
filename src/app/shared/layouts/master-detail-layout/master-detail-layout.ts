@@ -10,6 +10,8 @@ import { Component } from '@angular/core';
  * - `[appMasterDetailList]` element: left column (master list).
  * - Any other content: right column (detail).
  *
+ * Snippets: `mdl` (layout), `mdl-item` (master list item).
+ *
  * @example
  * ```html
  * <app-master-detail-layout>

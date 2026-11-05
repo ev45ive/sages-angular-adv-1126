@@ -1423,3 +1423,826 @@ _**Agent (copilot/claude-haiku-5.5)**_
 
 Created 4 todos
 </details></tool-use>
+
+---
+
+_**User (2026-11-05 09:03:21Z)**_
+
+create workspace vscode snippets 
++ cursor placeholders
++ commented out placeholder selected example blocks (use or delete)
++ gitignore exception
++ update JSDoc with snippets list
+
+---
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+I'll check the current `.gitignore` and whether a `.vscode` folder already exists before creating the snippets.       
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="search" data-tool-name="file_search"><details>
+<summary>Tool use: **file_search**</summary>
+
+Searched for files matching `**/{.gitignore,.vscode/**}`, 7 matches
+
+**Input:**
+
+- query: `**/{.gitignore,.vscode/**}`
+
+**Result:**
+
+```
+7 total results
+c:\Projects\sages-angular-adv-1126\.gitignore
+c:\Projects\sages-angular-adv-1126\.vscode\extensions.json
+c:\Projects\sages-angular-adv-1126\.vscode\mcp.json
+c:\Projects\sages-angular-adv-1126\.vscode\launch.json
+c:\Projects\sages-angular-adv-1126\.vscode\settings.json
+c:\Projects\sages-angular-adv-1126\.vscode\tasks.json
+c:\Projects\sages-angular-adv-1126\docs\ai-sessions\.gitignore
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="read" data-tool-name="read_file"><details>
+<summary>Tool use: **read_file**</summary>
+
+Read `.gitignore`
+
+**Input:**
+
+- endLine: `200`
+- filePath: `c:\Projects\sages-angular-adv-1126\.gitignore`
+- startLine: `1`
+
+**Result:**
+
+```
+# See https://docs.github.com/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
+
+# Compiled output
+/dist
+/tmp
+/out-tsc
+/bazel-out
+
+# Node
+/node_modules
+npm-debug.log
+yarn-error.log
+
+# IDEs and editors
+.idea/
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# Visual Studio Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/mcp.json
+.history/*
+
+# Miscellaneous
+/.angular/cache
+.sass-cache/
+/connect.lock
+/coverage
+/libpeerconnection.log
+testem.log
+/typings
+__screenshots__/
+
+# System files
+.DS_Store
+Thumbs.db
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+`.vscode/*` is ignored, with exceptions for the existing JSON files. I'll add a snippets exception, create the snippet file, and list the snippets in the JSDoc. The `mdl` snippet keeps a commented-out example block for the user to uncomment or delete. 
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="create_file"><details>
+<summary>Tool use: **create_file**</summary>
+
+Created `angular.code-snippets`
+
+**Input:**
+
+- content:
+
+```
+{
+  "Master-detail layout": {
+    "scope": "html,typescript",
+    "prefix": "mdl",
+    "description": "Master-detail layout; selected text becomes the detail content",
+    "body": [
+      "<app-master-detail-layout>",
+      "  <aside appMasterDetailList>",
+      "    ${1:<!-- master list -->}",
+      "  </aside>",
+      "",
+      "  <div>",
+      "    ${2:${TM_SELECTED_TEXT:<!-- detail content -->}}",
+      "  </div>",
+      "",
+      "  <!-- Example (uncomment or delete):",
+      "  <mat-list>",
+      "    <button mat-list-item type=\"button\">${3:Item title}</button>",
+      "  </mat-list>",
+      "  -->",
+      "</app-master-detail-layout>",
+      "$0"
+    ]
+  },
+  "Master list item": {
+    "scope": "html,typescript",
+    "prefix": "mdl-item",
+    "description": "Master list item button for the master-detail layout",
+    "body": [
+      "<button mat-list-item type=\"button\" aria-current=\"${1|false,true|}\">",
+      "  <span matListItemTitle>${2:Title}</span>",
+      "  <span matListItemLine>${3:Subtitle}</span>",
+      "</button>",
+      "$0"
+    ]
+  }
+}
+
+```
+
+- filePath: `c:\Projects\sages-angular-adv-1126\.vscode\angular.code-snippets`
+
+**Result:**
+
+```
+The following files were successfully edited:
+c:\Projects\sages-angular-adv-1126\.vscode\angular.code-snippets
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **angular.code-snippets**</summary>
+
+@@ lines 1-1 @@
+
+```
+{
+  "Master-detail layout": {
+    "scope": "html,typescript",
+    "prefix": "mdl",
+    "description": "Master-detail layout; selected text becomes the detail content",
+    "body": [
+      "<app-master-detail-layout>",
+      "  <aside appMasterDetailList>",
+      "    ${1:<!-- master list -->}",
+      "  </aside>",
+      "",
+      "  <div>",
+      "    ${2:${TM_SELECTED_TEXT:<!-- detail content -->}}",
+      "  </div>",
+      "",
+      "  <!-- Example (uncomment or delete):",
+      "  <mat-list>",
+      "    <button mat-list-item type=\"button\">${3:Item title}</button>",
+      "  </mat-list>",
+      "  -->",
+      "</app-master-detail-layout>",
+      "$0"
+    ]
+  },
+  "Master list item": {
+    "scope": "html,typescript",
+    "prefix": "mdl-item",
+    "description": "Master list item button for the master-detail layout",
+    "body": [
+      "<button mat-list-item type=\"button\" aria-current=\"${1|false,true|}\">",
+      "  <span matListItemTitle>${2:Title}</span>",
+      "  <span matListItemLine>${3:Subtitle}</span>",
+      "</button>",
+      "$0"
+    ]
+  }
+}
+
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **.gitignore**</summary>
+
+@@ lines 30-30 @@
+
+```
+!.vscode/*.code-snippets
+
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+
+```
+
+```
+
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **master-detail-layout.ts**</summary>
+
+@@ lines 13-13 @@
+
+```
+Snippets: `mdl` (layout), `mdl-item` (master list item).
+ *
+ * 
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+The snippet file, gitignore exception, and JSDoc update are in place. I'll confirm git no longer ignores the snippet file and that the JSON and TypeScript files parse and format.    
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="run_in_terminal"><details>
+<summary>Tool use: **run_in_terminal**</summary>
+
+Running ` git status --short .vscode .gitignore; git check-ignore -v .vscode/angular.c...`
+
+Confirm the snippet file is not ignored by git and that both files pass formatting and parse checks
+
+```bash
+git status --short .vscode .gitignore; git check-ignore -v .vscode/angular.code-snippets; npx prettier --check .vscode/angular.code-snippets src/app/shared/layouts/master-detail-layout/master-detail-layout.ts
+```
+
+**Result:**
+
+```
+ M .gitignore
+?? .vscode/angular.code-snippets
+.gitignore:30:!.vscode/*.code-snippets  .vscode/angular.code-snippets
+Checking formatting...
+[warn] .vscode/angular.code-snippets
+[warn] Code style issues found in the above file. Run Prettier with --write to fix.
+
+Command exited with code 1
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+The snippet file is not ignored, but Prettier flags its formatting. I'll format that file and re-check.    
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="run_in_terminal"><details>
+<summary>Tool use: **run_in_terminal**</summary>
+
+Running ` npx prettier --write .vscode/angular.code-snippets && npx prettier --check ....`
+
+Format the new snippet file and re-run checks
+
+```bash
+npx prettier --write .vscode/angular.code-snippets && npx prettier --check .vscode/angular.code-snippets src/app/shared/layouts/master-detail-layout/master-detail-layout.ts && npx eslint src/app/shared/layouts/master-detail-layout/master-detail-layout.ts
+```
+
+**Result:**
+
+```
+.vscode/angular.code-snippets 45ms
+Checking formatting...
+All matched files use Prettier code style!
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+I added the workspace snippets, the gitignore exception, and the JSDoc snippet list.
+
+- **Snippets:** `.vscode/angular.code-snippets`, scoped to HTML and TypeScript.
+  - `mdl` inserts the layout with `$1`/`$2`/`$3` placeholders and `$0` as the final cursor position. The detail placeholder defaults to the selected text. A commented-out `mat-list` example sits inside the snippet, to uncomment or delete.
+  - `mdl-item` inserts a master list item button with title and subtitle placeholders, plus an `aria-current` choice.
+- **Gitignore:** added `!.vscode/*.code-snippets` in `.gitignore`. Git now lists the snippet file as untracked, so it is not ignored.
+- **JSDoc:** the layout component now lists `mdl` and `mdl-item`.
+
+Prettier passes on both files and ESLint passes on the layout file. I did not test the snippets in the editor.
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="task" data-tool-name="manage_todo_list"><details>
+<summary>Tool use: **manage_todo_list**</summary>
+
+Created 3 todos
+</details></tool-use>
+
+---
+
+_**User (2026-11-05 09:08:41Z)**_
+
+restore it
+
+---
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="read" data-tool-name="read_file"><details>
+<summary>Tool use: **read_file**</summary>
+
+Read `master-detail-layout.ts`
+
+**Input:**
+
+- endLine: `200`
+- filePath: `c:\Projects\sages-angular-adv-1126\src\app\shared\layouts\master-detail-layout\master-detail-layout.ts`
+- startLine: `1`
+
+**Result:**
+
+````
+import { Component } from '@angular/core';
+
+/**
+ * Two-column master-detail layout that stacks on mobile and goes side by side from `md`.
+ *
+ * Rationale: one shared grid keeps the column widths and breakpoint consistent across features,
+ * and consumers only supply content.
+ *
+ * Slots:
+ * - `[appMasterDetailList]` element: left column (master list).
+ * - Any other content: right column (detail).
+ *
+ * Snippets: `mdl` (layout), `mdl-item` (master list item).
+ *
+ * @example
+ * ```html
+ * <app-master-detail-layout>
+ *   <aside appMasterDetailList>
+ *     <mat-list>...</mat-list>
+ *   </aside>
+ *
+ *   <div>...detail content...</div>
+ * </app-master-detail-layout>
+ * ```
+ */
+@Component({
+  selector: 'app-master-detail-layout',
+  host: {
+    class:
+      'grid min-h-screen  grid-cols-1 gap-5 md:grid-cols-[minmax(200px,1fr)_3fr] md:items-start',
+    '[class.banana]': '1 < 2',
+  },
+  template: `
+    <aside class="min-w-0">
+      <ng-content select="[appMasterDetailList]" />
+    </aside>
+
+    <div class="min-w-0">
+      <ng-content />
+    </div>
+  `,
+  styles: [],
+})
+export class MasterDetailLayout {}
+````
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+The snippet file reads as nonexistent, so I'll check the `.vscode` folder directly. 
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="list_dir"><details>
+<summary>Tool use: **list_dir**</summary>
+
+Read `.vscode`
+
+**Input:**
+
+- path: `c:\Projects\sages-angular-adv-1126\.vscode`
+
+**Result:**
+
+```
+extensions.json
+launch.json
+mcp.json
+settings.json
+tasks.json
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+The snippet file is missing from `.vscode`. It was untracked, so git cannot restore it. I'll check the session transcript for the original content. 
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="search" data-tool-name="grep_search"><details>
+<summary>Tool use: **grep_search**</summary>
+
+No matches found. Your search pattern might be excluded completely by either the search.exclude settings or .*ignore files.
+If you believe that it should have results, you can check into the .*ignore files and the exclude setting (here are some excluded patterns for reference:[**/node_modules,**/bower_components,**/*.code-search]).
+Then if you want to include those files you can call the tool again by setting "includeIgnoredFiles" to true.
+
+**Input:**
+
+- includePattern: `c:/Users/ev45i/AppData/Roaming/Code/User/workspaceStorage/12b7b5269e638b57275ab0c5d0e98901/GitHub.copilot-chat/transcripts/**`
+- isRegexp: `false`
+- query: `angular.code-snippets`
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="read" data-tool-name="read_file"><details>
+<summary>Tool use: **read_file**</summary>
+
+Read `4c5d4b73-ac97-4bdc-885b-dc47504b60b1.jsonl`, lines 150 to 193
+
+**Input:**
+
+- endLine: `193`
+- filePath: `c:\Users\ev45i\AppData\Roaming\Code\User\workspaceStorage\12b7b5269e638b57275ab0c5d0e98901\GitHub.copilot-chat\transcripts\4c5d4b73-ac97-4bdc-885b-dc47504b60b1.jsonl`
+- startLine: `150`
+
+**Result:**
+
+````
+{"type":"user.message","data":{"content":"add JSDoc block with descr. +  short rationale + useage @example ```html blocks","attachments":[]},"id":"05a675ab-4910-4c47-93be-14d9b585a3f5","timestamp":"2026-11-05T08:59:44.673Z","parentId":"3e45e338-cddd-4baa-9a00-3aa79f109795"}
+{"type":"assistant.turn_start","data":{"turnId":"0"},"id":"fc20ab34-ae01-481e-8475-e7f2bbfffb31","timestamp":"2026-11-05T08:59:44.674Z","parentId":"05a675ab-4910-4c47-93be-14d9b585a3f5"}
+{"type":"assistant.message","data":{"messageId":"02ec9c15-a5b2-459d-bcd9-fed715de6ad1","content":"I'll add the JSDoc block directly above the `@Component` decorator.    ","toolRequests":[{"toolCallId":"toolu_01TDm7k8EjxiToYQRro5r4E5","name":"replace_string_in_file","arguments":"{\"filePath\": \"c:\\\\Projects\\\\sages-angular-adv-1126\\\\src\\\\app\\\\shared\\\\layouts\\\\master-detail-layout\\\\master-detail-layout.ts\", \"oldString\": \"import { Component } from '@angular/core';\\n\\n@Component({\\n  selector: 'app-master-detail-layout',\\n  host: {\", \"newString\": \"import { Component } from '@angular/core';\\n\\n/**\\n * Two-column master-detail layout that stacks on mobile and goes side by side from `md`.\\n *\\n * Rationale: one shared grid keeps the column widths and breakpoint consistent across features,\\n * and consumers only supply content.\\n *\\n * Slots:\\n * - `[appMasterDetailList]` element: left column (master list).\\n * - Any other content: right column (detail).\\n *\\n * @example\\n * ```html\\n * <app-master-detail-layout>\\n *   <aside appMasterDetailList>\\n *     <mat-list>...</mat-list>\\n *   </aside>\\n *\\n *   <div>...detail content...</div>\\n * </app-master-detail-layout>\\n * ```\\n */\\n@Component({\\n  selector: 'app-master-detail-layout',\\n  host: {\"}","type":"function"}],"reasoningText":"I'm adding a concise JSDoc block to the component class with a description and a short usage example showing how the master-detail layout projects content via the `appMasterDetailList` att
+… (output truncated)
+````
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+The transcript has the original `create_file` content, so I can restore the snippet file from it. I'll recreate it, format it with Prettier as before, and check the gitignore and JSDoc entries are still there. 
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="create_file"><details>
+<summary>Tool use: **create_file**</summary>
+
+Created `angular.code-snippets`
+
+**Input:**
+
+- content:
+
+```
+{
+  "Master-detail layout": {
+    "scope": "html,typescript",
+    "prefix": "mdl",
+    "description": "Master-detail layout; selected text becomes the detail content",
+    "body": [
+      "<app-master-detail-layout>",
+      "  <aside appMasterDetailList>",
+      "    ${1:<!-- master list -->}",
+      "  </aside>",
+      "",
+      "  <div>",
+      "    ${2:${TM_SELECTED_TEXT:<!-- detail content -->}}",
+      "  </div>",
+      "",
+      "  <!-- Example (uncomment or delete):",
+      "  <mat-list>",
+      "    <button mat-list-item type=\"button\">${3:Item title}</button>",
+      "  </mat-list>",
+      "  -->",
+      "</app-master-detail-layout>",
+      "$0"
+    ]
+  },
+  "Master list item": {
+    "scope": "html,typescript",
+    "prefix": "mdl-item",
+    "description": "Master list item button for the master-detail layout",
+    "body": [
+      "<button mat-list-item type=\"button\" aria-current=\"${1|false,true|}\">",
+      "  <span matListItemTitle>${2:Title}</span>",
+      "  <span matListItemLine>${3:Subtitle}</span>",
+      "</button>",
+      "$0"
+    ]
+  }
+}
+
+```
+
+- filePath: `c:\Projects\sages-angular-adv-1126\.vscode\angular.code-snippets`
+
+**Result:**
+
+```
+The following files were successfully edited:
+c:\Projects\sages-angular-adv-1126\.vscode\angular.code-snippets
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="search" data-tool-name="grep_search"><details>
+<summary>Tool use: **grep_search**</summary>
+
+Searched for regex `` code-snippets|Snippets: `mdl` `` (`**/{.gitignore,src/app/shared/layouts/master-detail-layout/master-detail-layout.ts}`), 2 results
+
+**Input:**
+
+- includePattern: `{.gitignore,src/app/shared/layouts/master-detail-layout/master-detail-layout.ts}`
+- isRegexp: `true`
+- query: `code-snippets|Snippets: `mdl``
+
+**Result:**
+
+```
+Found 2 matches in 2 files for "code-snippets|Snippets: `mdl`"
+
+.gitignore
+30:!.vscode/*.code-snippets
+
+src/app/shared/layouts/master-detail-layout/master-detail-layout.ts
+13: * Snippets: `mdl` (layout), `mdl-item` (master list item).
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **angular.code-snippets**</summary>
+
+@@ lines 1-1 @@
+
+```
+{
+  "Master-detail layout": {
+    "scope": "html,typescript",
+    "prefix": "mdl",
+    "description": "Master-detail layout; selected text becomes the detail content",
+    "body": [
+      "<app-master-detail-layout>",
+      "  <aside appMasterDetailList>",
+      "    ${1:<!-- master list -->}",
+      "  </aside>",
+      "",
+      "  <div>",
+      "    ${2:${TM_SELECTED_TEXT:<!-- detail content -->}}",
+      "  </div>",
+      "",
+      "  <!-- Example (uncomment or delete):",
+      "  <mat-list>",
+      "    <button mat-list-item type=\"button\">${3:Item title}</button>",
+      "  </mat-list>",
+      "  -->",
+      "</app-master-detail-layout>",
+      "$0"
+    ]
+  },
+  "Master list item": {
+    "scope": "html,typescript",
+    "prefix": "mdl-item",
+    "description": "Master list item button for the master-detail layout",
+    "body": [
+      "<button mat-list-item type=\"button\" aria-current=\"${1|false,true|}\">",
+      "  <span matListItemTitle>${2:Title}</span>",
+      "  <span matListItemLine>${3:Subtitle}</span>",
+      "</button>",
+      "$0"
+    ]
+  }
+}
+
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="run_in_terminal"><details>
+<summary>Tool use: **run_in_terminal**</summary>
+
+Running ` npx prettier --write .vscode/angular.code-snippets && npx prettier --check ....`
+
+Format the restored snippet file, confirm it is not ignored, and check that it parses as JSON
+
+```bash
+npx prettier --write .vscode/angular.code-snippets && npx prettier --check .vscode/angular.code-snippets && git check-ignore -v .vscode/angular.code-snippets; node.exe -e "JSON.parse(require('fs').readFileSync('.vscode/angular.code-snippets','utf8'));console.log('json ok')"
+```
+
+**Result:**
+
+```
+.vscode/angular.code-snippets 54ms
+Checking formatting...
+All matched files use Prettier code style!
+.gitignore:30:!.vscode/*.code-snippets  .vscode/angular.code-snippets
+<anonymous_script>:23
+    ],
+    ^
+
+SyntaxError: Unexpected token ']', ...""$0",
+    ],
+  },
+  "... is not valid JSON
+    at JSON.parse (<anonymous>)
+    at [eval]:1:6
+    at runScriptInThisContext (node:internal/vm:219:10)
+    at node:internal/process/execution:451:12
+    at [eval]-wrapper:6:24
+    at runScriptInContext (node:internal/process/execution:449:60)
+    at evalFunction (node:internal/process/execution:283:30)
+    at evalTypeScript (node:internal/process/execution:295:3)
+    at node:internal/main/eval_string:71:3
+
+Node.js v24.15.0
+
+Command exited with code 1
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+I restored `angular.code-snippets`. It had been deleted from the workspace, and git could not restore it because it is untracked. I rebuilt it from the original content in the session transcript and reran Prettier on it.
+
+Prettier added trailing commas, so strict JSON parsing fails. VS Code snippet files accept trailing commas, so this should not affect the snippets. The gitignore exception and the JSDoc snippet list are still in place.
+
+I did not test the snippets in the editor. I also did not touch the layout component's optional left column, which is still missing. Tell me if "restore it" meant that instead.
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="task" data-tool-name="manage_todo_list"><details>
+<summary>Tool use: **manage_todo_list**</summary>
+
+Created 4 todos
+</details></tool-use>
+
+---
+
+_**User (2026-11-05 09:09:57Z)**_
+
+can we make it that example item is in the list block and whole example is selected by default so i can just press del, or uncomment and edit it before moveing to next placeholder
+
+---
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="read" data-tool-name="read_file"><details>
+<summary>Tool use: **read_file**</summary>
+
+Read `angular.code-snippets`
+
+**Input:**
+
+- endLine: `80`
+- filePath: `c:\Projects\sages-angular-adv-1126\.vscode\angular.code-snippets`
+- startLine: `1`
+
+**Result:**
+
+```
+{
+  "Master-detail layout": {
+    "scope": "html,typescript",
+    "prefix": "mdl",
+    "description": "Master-detail layout; selected text becomes the detail content",
+    "body": [
+      "<app-master-detail-layout>",
+      "  <aside appMasterDetailList>",
+      "    ${1:<!-- master list -->}",
+      "  </aside>",
+      "",
+      "  <div>",
+      "    ${2:${TM_SELECTED_TEXT:<!-- detail content -->}}",
+      "  </div>",
+      "",
+      "  <!-- Example (uncomment or delete):",
+      "  <mat-list>",
+      "    <button mat-list-item type=\"button\">${3:Item title}</button>",
+      "  </mat-list>",
+      "  -->",
+      "</app-master-detail-layout>",
+      "$0",
+    ],
+  },
+  "Master list item": {
+    "scope": "html,typescript",
+    "prefix": "mdl-item",
+    "description": "Master list item button for the master-detail layout",
+    "body": [
+      "<button mat-list-item type=\"button\" aria-current=\"${1|false,true|}\">",
+      "  <span matListItemTitle>${2:Title}</span>",
+      "  <span matListItemLine>${3:Subtitle}</span>",
+      "</button>",
+      "$0",
+    ],
+  },
+}
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+I'll put the example item inside the master list placeholder as one commented, selected placeholder. Pressing Del removes it, and editing it lets the user remove the comment markers before moving on. 
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **angular.code-snippets**</summary>
+
+@@ lines 9-20 @@
+
+```
+<button mat-list-item type=\"button\">Item title</button> -->}",
+      "  </aside>",
+      "",
+      "  <div>",
+      "    ${2:${TM_SELECTED_TEXT:<!-- detail content -->}}",
+      "  </div
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="run_in_terminal"><details>
+<summary>Tool use: **run_in_terminal**</summary>
+
+Running ` npx prettier --write .vscode/angular.code-snippets >/dev/null; npx prettier ...`
+
+Format the snippet file and check it passes Prettier
+
+```bash
+npx prettier --write .vscode/angular.code-snippets >/dev/null; npx prettier --check .vscode/angular.code-snippets
+```
+
+**Result:**
+
+```
+Checking formatting...
+All matched files use Prettier code style!
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+I moved the example into the master list placeholder in `.vscode/angular.code-snippets`. The separate commented example block is gone.
+
+- `mdl` now puts `<!-- <button mat-list-item type="button">Item title</button> -->` in the `appMasterDetailList` placeholder, and the whole text is selected on entry.
+- Pressing Del removes the example. To keep it, remove the `<!--` and `-->` markers and edit the text before pressing Tab.
+
+Prettier passes. I did not test the snippet in the editor.
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="task" data-tool-name="manage_todo_list"><details>
+<summary>Tool use: **manage_todo_list**</summary>
+
+Created 5 todos
+</details></tool-use>
+
+---
+
+_**User (2026-11-05 09:11:42Z)**_
+
+commit all changes
+
+---
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="run_in_terminal"><details>
+<summary>Tool use: **run_in_terminal**</summary>
+
+Running ` git status --short && git log --oneline -5`
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+The tree has five changed files, all already staged. I'll stage everything and commit. 
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="run_in_terminal"><details>
+<summary>Tool use: **run_in_terminal**</summary>
+
+Run in Terminal
+</details></tool-use>

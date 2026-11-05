@@ -1,0 +1,31 @@
+{
+  "Master-detail layout": {
+    "scope": "html,typescript",
+    "prefix": "mdl",
+    "description": "Master-detail layout; selected text becomes the detail content",
+    "body": [
+      "<app-master-detail-layout>",
+      "  <aside appMasterDetailList>",
+      "    ${1:<!-- <button mat-list-item type=\"button\">Item title</button> -->}",
+      "  </aside>",
+      "",
+      "  <div>",
+      "    ${2:${TM_SELECTED_TEXT:<!-- detail content -->}}",
+      "  </div>",
+      "</app-master-detail-layout>",
+      "$0",
+    ],
+  },
+  "Master list item": {
+    "scope": "html,typescript",
+    "prefix": "mdl-item",
+    "description": "Master list item button for the master-detail layout",
+    "body": [
+      "<button mat-list-item type=\"button\" aria-current=\"${1|false,true|}\">",
+      "  <span matListItemTitle>${2:Title}</span>",
+      "  <span matListItemLine>${3:Subtitle}</span>",
+      "</button>",
+      "$0",
+    ],
+  },
+}
