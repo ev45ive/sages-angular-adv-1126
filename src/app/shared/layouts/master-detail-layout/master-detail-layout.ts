@@ -1,4 +1,4 @@
-import { Component, Directive, computed, contentChild } from '@angular/core';
+import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-master-detail-layout',

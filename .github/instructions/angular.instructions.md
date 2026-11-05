@@ -76,3 +76,5 @@ applyTo: "src/**/*.ts,src/**/*.html,src/**/*.css"
 - Tailwind utilities override `@layer components` classes. Check for utility conflicts, for example `pr-9` overrode `.field` padding.
 - Remove CSS classes once no markup uses them.
 - Avoid `::ng-deep` and `!important`. Prefer CSS variables and tokens. If an override is unavoidable, use a named class such as `.fix-<name>-override`.
+- Put layout classes of a reusable component in its `host.class` so consumers do not need to add them.
+- Use mobile-first responsive layouts: write base utilities for the smallest screen (stacked, single column) and add `md:` or `lg:` prefixes for larger screens.

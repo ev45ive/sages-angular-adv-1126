@@ -1237,3 +1237,111 @@ The layout is in `src/app/shared/layouts/master-detail-layout/master-detail-layo
 My previous reply said the example was removed and the mockup uncommented, but I had made no tool calls for those edits. The file now matches that request, but I have not re-run Prettier, `tsc`, or ESLint since your last edits. Prettier flagged a formatting warning on the page earlier, so that check is still outstanding.
 
 Should I restore the optional left column, remove the `banana` binding and unused imports, and run the checks?
+
+---
+
+_**User (2026-11-05 08:57:14Z)**_
+
+Update proper AI instructions with new rules
+
+- Host class binding on the component, so the consumer doesn't need to add layout classes.
+- mobile first RWD layout stacking
+
+---
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+I'll read the Angular instructions file, since it already covers host bindings and Tailwind styling.     
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="read" data-tool-name="read_file"><details>
+<summary>Tool use: **read_file**</summary>
+
+Read `angular.instructions.md`
+
+**Input:**
+
+- endLine: `300`
+- filePath: `c:\Projects\sages-angular-adv-1126\.github\instructions\angular.instructions.md`
+- startLine: `1`
+
+**Result:**
+
+```
+---
+description: "Use when writing or reviewing Angular components, services, templates, forms, routes, Material imports, or Tailwind and CSS styling in TypeScript. Covers standalone components, signals, inject(), native control flow, host bindings, Material shared imports, and accessibility."
+applyTo: "src/**/*.ts,src/**/*.html,src/**/*.css"
+---
+# Angular Rules
+
+## TypeScript Best Practices
+
+- Use strict type checking
+- Prefer type inference when the type is obvious
+- Avoid the `any` type; use `unknown` when type is uncertain
+
+## Angular Best Practices
+
+- Always use standalone components over NgModules
+- Must NOT set `standalone: true` inside Angular decorators. It's the default in Angular v20+.
+- Do NOT set `changeDetection: ChangeDetectionStrategy.OnPush` explicitly. `OnPush` is the default in Angular v22+.
+- Use signals for state management
+- Implement lazy loading for feature routes
+- Do NOT use the `@HostBinding` and `@HostListener` decorators. Put host bindings inside the `host` object of the `@Component` or `@Directive` decorator instead
+- Use `NgOptimizedImage` for all static images.
+  - `NgOptimizedImage` does not work for inline base64 images.
+
+## Accessibility Requirements
+
+- It MUST pass all AXE checks.
+- It MUST follow all WCAG AA minimums, including focus management, color contrast, and ARIA attributes.
+
+## Components
+
+- Keep components small and focused on a single responsibility
+- Use `input()` and `output()` functions instead of decorators
+- Use `model()` for two-way bound properties with `[(prop)]` syntax instead of pairing `input()` with `output()`
+- Use `computed()` for derived state
+- Use `linkedSignal()` for state derived from multiple reactive sources that must stay synchronized
+- Prefer inline templates for small components
+- Prefer Signal Forms (`@angular/forms/signals`) for new forms. They are stable in Angular v22+ and provide signal-based state, type-safe field access, and schema-based validation
+- Wh
+… (output truncated)
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+The two new rules belong in the Styling section of the Angular instructions, since that section already covers Tailwind. I'll add both.     
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **angular.instructions.md**</summary>
+
+@@ lines 78-78 @@
+
+```
+
+- Put layout classes of a reusable component in its `host.class` so consumers do not need to add them.
+- Use mobile-first responsive layouts: write base utilities for the smallest screen (stacked, single column) and add `md:` or `lg:` prefixes for larger screens.
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+I added both rules to the Styling section of `.github/instructions/angular.instructions.md`:
+
+- Layout classes for a reusable component go in its , so consumers don't add them.
+- Responsive layouts are mobile-first: base utilities cover the stacked single-column layout, and `md:` or `lg:` prefixes apply to larger screens.
+
+The file's `applyTo` pattern (`src/**/*.ts`, `*.html`, `*.css`) already covers the layout component, so no other instruction files changed.
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="task" data-tool-name="manage_todo_list"><details>
+<summary>Tool use: **manage_todo_list**</summary>
+
+Created 3 todos
+</details></tool-use>
