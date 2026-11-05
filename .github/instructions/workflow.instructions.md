@@ -8,6 +8,7 @@ applyTo: "src/**"
 ## Code Generation
 
 - Never create files by hand that an `ng g` schematic can generate.
+- `ng g c <path>` already creates a folder named after the last segment. Pass the parent folder, not the folder plus name: `ng g c shared/badge` (creates `shared/badge/badge.ts`), not `ng g c shared/badge/badge` (creates `shared/badge/badge/badge.ts`).
 - Do not change schematic flags unless the user asks. Let defaults come from `angular.json`.
 - Prefer batch generation: prepare all needed `ng g` commands first, then run them together in one terminal call.
 
