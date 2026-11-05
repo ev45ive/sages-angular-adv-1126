@@ -1345,3 +1345,81 @@ _**Agent (copilot/claude-haiku-5.5)**_
 
 Created 3 todos
 </details></tool-use>
+
+---
+
+_**User (2026-11-05 08:59:43Z)**_
+
+add JSDoc block with descr. +  short rationale + useage @example ```html blocks
+
+---
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+I'll add the JSDoc block directly above the `@Component` decorator.    
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **master-detail-layout.ts**</summary>
+
+@@ lines 3-3 @@
+
+````
+/**
+ * Two-column master-detail layout that stacks on mobile and goes side by side from `md`.
+ *
+ * Rationale: one shared grid keeps the column widths and breakpoint consistent across features,
+ * and consumers only supply content.
+ *
+ * Slots:
+ * - `[appMasterDetailList]` element: left column (master list).
+ * - Any other content: right column (detail).
+ *
+ * @example
+ * ```html
+ * <app-master-detail-layout>
+ *   <aside appMasterDetailList>
+ *     <mat-list>...</mat-list>
+ *   </aside>
+ *
+ *   <div>...detail content...</div>
+ * </app-master-detail-layout>
+ * ```
+ */
+
+````
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="run_in_terminal"><details>
+<summary>Tool use: **run_in_terminal**</summary>
+
+Running ` npx prettier --check src/app/shared/layouts/master-detail-layout/master-deta...`
+
+Check formatting and lint of the layout file after adding the JSDoc
+
+```bash
+npx prettier --check src/app/shared/layouts/master-detail-layout/master-detail-layout.ts; npx eslint src/app/shared/layouts/master-detail-layout/master-detail-layout.ts
+```
+
+**Result:**
+
+```
+Checking formatting...
+All matched files use Prettier code style!
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+I added a JSDoc block above  in `src/app/shared/layouts/master-detail-layout/master-detail-layout.ts`. It covers the description, the rationale, the two slots, and an `html` `@example` using `appMasterDetailList`. Prettier and ESLint pass on the file.
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="task" data-tool-name="manage_todo_list"><details>
+<summary>Tool use: **manage_todo_list**</summary>
+
+Created 4 todos
+</details></tool-use>
