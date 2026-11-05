@@ -11,7 +11,10 @@ import { SEED_ACCOUNTS, SEED_CONTACTS, SEED_DEALS, SEED_TASKS } from './deals-se
 export class DealsStore {
   // Read-Write Side - Private to Owner (my wallet!)
   private readonly dealsState = signal<Deal[]>(SEED_DEALS);
-  private readonly tasksState = signal<DealTask[]>(SEED_TASKS);
+
+  // private readonly tasksState = signal<DealTask[]>(SEED_TASKS);
+  private readonly tasksState = signal<ReadonlyArray<DealTask>>(SEED_TASKS);
+
   private readonly accountsState = signal<Account[]>(SEED_ACCOUNTS);
   private readonly contactsState = signal<Contact[]>(SEED_CONTACTS);
 
@@ -41,14 +44,16 @@ export class DealsStore {
     const tasks = this.tasksState();
 
     // Mutation - content changes, Container Reference is the same
-    tasks.push(task);
- 
+    // tasks.push(task); // Compile Error - READONLYArray!
+
+    // tasks.sort -> tasks.toSorted() // ES2025
+
     // Referential stability - oldRef === newRef - same object -> no changes !!!!
     // this.tasksState.set(tasks);
     // this.tasksState.update((tasks) => tasks);
 
     // // Same content -> new container ref -> maybe has changes
-    this.tasksState.set([...tasks]); 
+    this.tasksState.set([...tasks]);
 
     // Clean - no mutations - Change By COPY
     // this.tasksState.update((tasks) => [...tasks, task]);
