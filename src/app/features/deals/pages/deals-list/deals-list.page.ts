@@ -154,69 +154,24 @@ const emptyTask = (): NewTaskDraft => ({ title: '', priority: 'medium' });
   `,
 })
 export class DealsPage {
-  private readonly store = inject(DealsStore);
+  // private readonly store = new DealsStore(new DealsAPI( new DealsConfig() )); // Concrete Coupling 
+  private readonly store = inject(DealsStore); // Abstract Dependency
 
   protected readonly stageLabels = DEAL_STAGE_LABELS;
   protected readonly priorityLabels = TASK_PRIORITY_LABELS;
   protected readonly priorities = Object.keys(TASK_PRIORITY_LABELS) as TaskPriority[];
 
-  /* 
-    getter - signalA()
-    setter - signalA.set(v)
-
-    signal.__subscribers = new Set() // O(1)
-    
-    We want to avoid this:
-    signalA.subscribe(fn) -> .unsubscribe(fn)
-
-  
-    ## Reactive Context - effect()/computed()/inject()/template()/...
-    {
-      this.__prevSubscribers = new Set()
-      this.__currentSubscribers = new Set()
-
-      SIGNALS.__currentContext = this; // singleton
-      {
-        signalA() // get 
-          //  -> signalA.__subscribers.set( SIGNALS.__currentContext ) // start tracking!
-          //  -> this.__currentSubscribers.set( signalAt ) // touched signals
-
-        if(signalX()) signalB() // tracking + auto-untracking if not used
-
-        untracked(() => signalC() ) // no-tracking
-      }
-        
-      // Auto unsubscribe
-      SIGNALS.__currentContext = null
-      this.__prevSubscribers = this.__prevSubscribers.intersection(this.__currentSubscribers) // what was not touched
-
-      // onDestory
-      inject(DestorRef) - when closest parent context  is destroyed
-      .onDestory( () => unsubscribe all )
-    }
-
-    // Updates
-    signalA.set(v) // signalA.update(fn)
-
-    // Schechdule BATCH updates
-    signalA.__subscribers.forEach( sub => SIGNALS.__dirtyEffectsScheduledForCheck.add(sub); scheduleCheck() )
-
-  */
-
   protected readonly filterText = signal('');
   protected readonly selectedDealId = signal<string | null>(null);
 
   protected readonly filteredDeals = computed(() => {
-
-    const filterText = 1 > 2 ? this.filterText() : '';
-
-    return this.store.filterDeals(filterText);
+    return this.store.filterDeals(this.filterText());
   });
 
   protected readonly selectedDeal = computed<Deal | undefined>(
     () =>
       this.filteredDeals().find((deal) => deal.id === this.selectedDealId()) ??
-      this.filteredDeals()[0],
+      this.filteredDeals()[0], // TODO: Decide about this
   );
   protected readonly selectedTasks = computed(() => {
     const deal = this.selectedDeal();
