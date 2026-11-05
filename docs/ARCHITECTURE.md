@@ -14,6 +14,7 @@ src/
     ├── app.routes.ts               # Root routes, features via loadChildren (ADR-0004)
     │
     ├── core/                       # App-wide infrastructure and app-level pages
+    │   ├── index.ts                # Public API (exports PageNotFound)
     │   ├── pages/
     │   │   └── page-not-found/page-not-found.ts
     │   ├── auth/                   # Planned
@@ -22,7 +23,7 @@ src/
     │
     ├── features/                   # Business capabilities (ADR-0001)
     │   └── deals/
-    │       ├── index.ts            # Public API, the only file other features may import (ADR-0002)
+    │       ├── index.ts            # Public API, the only file other features may import; re-exports dealsRoutes (ADR-0002)
     │       ├── deals.routes.ts     # Feature routes, default export
     │       ├── pages/              # Routable, compose UI + state
     │       │   └── deals-list/deals-list.page.ts
@@ -31,6 +32,7 @@ src/
     │       └── model/              # Domain contracts + logic
     │
     └── shared/                     # Domain-independent reusable code
+        ├── index.ts                # Public API, re-exports shared-module
         ├── shared-module.ts        # Shared Material/Router imports
         ├── ui/
         ├── forms/

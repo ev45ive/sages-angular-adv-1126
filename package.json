@@ -33,6 +33,8 @@
     "@angular/cli": "^22.2.5",
     "@angular/compiler-cli": "^22.2.0",
     "@eslint/js": "^10.0.1",
+    "@softarc/eslint-plugin-sheriff": "^0.20.0",
+    "@softarc/sheriff-core": "^0.20.0",
     "@tailwindcss/postcss": "^4.1.12",
     "@types/express": "^5.0.1",
     "@types/node": "^22.12.0",

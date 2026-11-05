@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { SharedUI } from '../../../shared/shared-module';
+import { SharedUI } from '../../../shared';
 
 @Component({
   selector: 'app-page-not-found',

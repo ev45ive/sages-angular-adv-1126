@@ -22,7 +22,7 @@ ADR-0001 and ADR-0002 define dependency rules between `app`, `core`, `shared`, a
 
 ## Decision Outcome
 
-Chosen option: "`@softarc/sheriff`", because it models tags and dependency rules directly and enforces the `index.ts` public-API rule from ADR-0002.
+Chosen option: "Sheriff" (npm packages `@softarc/sheriff-core` and `@softarc/eslint-plugin-sheriff`), because it models tags and dependency rules directly and enforces the `index.ts` public-API rule from ADR-0002.
 
 ### Consequences
 
