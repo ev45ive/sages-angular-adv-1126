@@ -43,10 +43,15 @@ const STAGE_TONE: Record<DealStage, string> = {
       --badge-fg: #7f1d1d;
     }
   `,
-  template: ` <app-badge [class]="tone()">{{ label() }}</app-badge> `,
+  template: ` <app-badge>{{ label() }}</app-badge> `,
+  host: {
+    '[class]': 'tone()',
+  },
 })
 export class DealStageBadge {
   readonly stage = input.required<DealStage>();
+
+  // TODO: DealConfigurationService() .dealStageLabels()
 
   protected readonly label = computed(() => DEAL_STAGE_LABELS[this.stage()]);
   protected readonly tone = computed(() => STAGE_TONE[this.stage()]);
