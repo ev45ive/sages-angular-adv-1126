@@ -36,7 +36,22 @@ export class DealsStore {
 
   addTask(dealId: string, title: string, priority: TaskPriority): void {
     const task: DealTask = { id: crypto.randomUUID(), dealId, title, priority, done: false };
-    this.tasksState.update((tasks) => [...tasks, task]);
+
+    // Mutating Signal() State
+    const tasks = this.tasksState();
+
+    // Mutation - content changes, Container Reference is the same
+    tasks.push(task);
+ 
+    // Referential stability - oldRef === newRef - same object -> no changes !!!!
+    // this.tasksState.set(tasks);
+    // this.tasksState.update((tasks) => tasks);
+
+    // // Same content -> new container ref -> maybe has changes
+    this.tasksState.set([...tasks]); 
+
+    // Clean - no mutations - Change By COPY
+    // this.tasksState.update((tasks) => [...tasks, task]);
   }
 
   toggleTaskDone(taskId: string): void {
