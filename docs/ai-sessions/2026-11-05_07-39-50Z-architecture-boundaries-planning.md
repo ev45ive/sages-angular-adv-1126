@@ -4837,3 +4837,1185 @@ _**Agent (copilot/claude-haiku-5.5)**_
 
 Updated todo list
 </details></tool-use>
+
+---
+
+_**User (2026-11-05 09:13:35Z)**_
+
+what about  ts config path aliases?
+
+@shared -> ...
+@feature/... -> index
+@core -> index
+
+---
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<think><details><summary>Thought Process</summary>
+The alias paths are in place. Next I'll confirm that Sheriff sees alias imports. I'll create three temporary files: a valid alias import, a `shared` to `core` violation through an alias, and a deep import through `@feature`.      
+
+Results after the explicit mapping:
+
+- The valid alias import passes Sheriff.
+- `shared` importing `@core` is blocked by Sheriff's `dependency-rule`.
+- The deep import through `@feature/deals/...` is blocked by TypeScript (TS2307). Sheriff does not flag it, because it does not resolve that alias.
+
+Next I'll delete the temporary files, format `tsconfig.json`, and confirm that the type-check is clean.
+</details></think>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+I'll read the tsconfig files and the Sheriff config first, since Sheriff tags depend on resolved paths.   
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="read" data-tool-name="read_file"><details>
+<summary>Tool use: **read_file**</summary>
+
+Read `tsconfig.json`
+
+**Input:**
+
+- endLine: `60`
+- filePath: `c:\Projects\sages-angular-adv-1126\tsconfig.json`
+- startLine: `1`
+
+**Result:**
+
+```
+/* To learn more about Typescript configuration file: https://www.typescriptlang.org/docs/handbook/tsconfig-json.html. */
+/* To learn more about Angular compiler options: https://angular.dev/reference/configs/angular-compiler-options. */
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "skipLibCheck": true,
+    "isolatedModules": true,
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "target": "ES2022",
+    "module": "preserve"
+  },
+  "angularCompilerOptions": {
+    "enableI18nLegacyMessageIdFormat": false,
+    "strictInjectionParameters": true,
+    "strictInputAccessModifiers": true
+  },
+  "files": [],
+  "references": [
+    {
+      "path": "./tsconfig.app.json"
+    }
+  ]
+}
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="read" data-tool-name="read_file"><details>
+<summary>Tool use: **read_file**</summary>
+
+Read `sheriff.config.ts`
+
+**Input:**
+
+- endLine: `40`
+- filePath: `c:\Projects\sages-angular-adv-1126\sheriff.config.ts`
+- startLine: `1`
+
+**Result:**
+
+```
+import type { SheriffConfig } from '@softarc/sheriff-core';
+
+export const config: SheriffConfig = {
+  modules: {
+    'src/app/core': 'core',
+    'src/app/shared': 'shared',
+    'src/app/features/deals': 'feature:deals',
+  },
+  depRules: {
+    root: ['root', 'core', 'shared', 'feature:*'],
+    core: 'shared',
+    shared: null,
+    'feature:*': ['shared', 'feature:*'],
+  },
+};
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="read" data-tool-name="read_file"><details>
+<summary>Tool use: **read_file**</summary>
+
+Read `tsconfig.app.json`
+
+**Input:**
+
+- endLine: `60`
+- filePath: `c:\Projects\sages-angular-adv-1126\tsconfig.app.json`
+- startLine: `1`
+
+**Result:**
+
+```
+/* To learn more about Typescript configuration file: https://www.typescriptlang.org/docs/handbook/tsconfig-json.html. */
+/* To learn more about Angular compiler options: https://angular.dev/reference/configs/angular-compiler-options. */
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "types": ["node"]
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["src/**/*.spec.ts"]
+}
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+The root `tsconfig.json` is inherited by `tsconfig.app.json`, so I'll add `paths` there. I'm not adding `baseUrl`, because TypeScript 6 deprecates it and paths resolve relative to the config file without it.    
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **tsconfig.json**</summary>
+
+@@ lines 15-15 @@
+
+```
+,
+    "paths": {
+      "@core": ["src/app/core/index.ts"],
+      "@shared": ["src/app/shared/index.ts"],
+      "@feature/*": ["src/app/features/*/index.ts"]
+    }
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+The alias paths are in place. Next I'll confirm that Sheriff sees alias imports. I'll create three temporary files: a valid alias import, a  to  violation through an alias, and a deep import through `@feature`.      
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="create_file"><details>
+<summary>Tool use: **create_file**</summary>
+
+Created `alias-positive-test.ts`
+
+**Input:**
+
+- content:
+
+```
+import { PageNotFound } from '@core';
+import { SharedImports } from '@shared';
+import { dealsRoutes } from '@feature/deals';
+
+export { PageNotFound, SharedImports, dealsRoutes };
+
+```
+
+- filePath: `c:\Projects\sages-angular-adv-1126\src\app\alias-positive-test.ts`
+
+**Result:**
+
+```
+The following files were successfully edited:
+c:\Projects\sages-angular-adv-1126\src\app\alias-positive-test.ts
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="create_file"><details>
+<summary>Tool use: **create_file**</summary>
+
+Created `alias-negative-test.ts`
+
+**Input:**
+
+- content:
+
+```
+import { PageNotFound } from '@core';
+
+export { PageNotFound };
+
+```
+
+- filePath: `c:\Projects\sages-angular-adv-1126\src\app\shared\alias-negative-test.ts`
+
+**Result:**
+
+```
+The following files were successfully edited:
+c:\Projects\sages-angular-adv-1126\src\app\shared\alias-negative-test.ts
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="create_file"><details>
+<summary>Tool use: **create_file**</summary>
+
+Created `alias-deep-test.ts`
+
+**Input:**
+
+- content:
+
+```
+export * from '@feature/deals/pages/deals-list/deals-list.page';
+
+```
+
+- filePath: `c:\Projects\sages-angular-adv-1126\src\app\alias-deep-test.ts`
+
+**Result:**
+
+```
+The following files were successfully edited:
+c:\Projects\sages-angular-adv-1126\src\app\alias-deep-test.ts
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **alias-positive-test.ts**</summary>
+
+@@ lines 1-1 @@
+
+```
+import { PageNotFound } from '@core';
+import { SharedImports } from '@shared';
+import { dealsRoutes } from '@feature/deals';
+
+export { PageNotFound, SharedImports, dealsRoutes };
+
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **alias-negative-test.ts**</summary>
+
+@@ lines 1-1 @@
+
+```
+import { PageNotFound } from '@core';
+
+export { PageNotFound };
+
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **alias-deep-test.ts**</summary>
+
+@@ lines 1-1 @@
+
+```
+export * from '@feature/deals/pages/deals-list/deals-list.page';
+
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="run_in_terminal"><details>
+<summary>Tool use: **run_in_terminal**</summary>
+
+Running ` npx tsc --noEmit -p tsconfig.app.json; echo "TSC\_EXIT=$?"; echo "--- positiv...`
+
+Type-check the alias config and lint the three temporary alias test files with Sheriff
+
+```bash
+npx tsc --noEmit -p tsconfig.app.json; echo "TSC_EXIT=$?"; echo "--- positive:"; npx eslint src/app/alias-positive-test.ts; echo "POS_EXIT=$?"; echo "--- shared->core:"; npx eslint src/app/shared/alias-negative-test.ts; echo "NEG_EXIT=$?"; echo "--- deep:"; npx eslint src/app/alias-deep-test.ts; echo "DEEP_EXIT=$?"
+```
+
+**Result:**
+
+```
+tsconfig.app.json:5:3 - error TS5090: Non-relative paths are not allowed when 'b
+aseUrl' is not set. Did you forget a leading './'?
+
+5   "compilerOptions": {
+    ~~~~~~~~~~~~~~~~~
+
+
+Found 1 error in tsconfig.app.json:5
+
+TSC_EXIT=2
+--- positive:
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+TypeScript 6 requires a leading `./` on non-relative `paths` targets when `baseUrl` is not set. I'll fix the three entries and rerun the checks.      
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **tsconfig.json**</summary>
+
+@@ lines 17-19 @@
+
+```
+./src/app/core/index.ts"],
+      "@shared": ["./src/app/shared/index.ts"],
+      "@feature/*": ["./
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="task" data-tool-name="manage_todo_list"><details>
+<summary>Tool use: **manage_todo_list**</summary>
+
+Created 2 todos
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="run_in_terminal"><details>
+<summary>Tool use: **run_in_terminal**</summary>
+
+Running ` npx tsc --noEmit -p tsconfig.app.json; echo "TSC\_EXIT=$?"; npx eslint src/ap...`
+
+Rerun type-check and the three Sheriff alias checks after the path fix
+
+```bash
+npx tsc --noEmit -p tsconfig.app.json; echo "TSC_EXIT=$?"; npx eslint src/app/alias-positive-test.ts; echo "POS_EXIT=$?"; npx eslint src/app/shared/alias-negative-test.ts; echo "NEG_EXIT=$?"; npx eslint src/app/alias-deep-test.ts; echo "DEEP_EXIT=$?"
+```
+
+**Result:**
+
+```
+src/app/alias-deep-test.ts:1:15 - error TS2307: Cannot find module '@feature/deals/pages/deals-list/deals-list.page' or its corresponding type declarations.
+
+1 export * from '@feature/deals/pages/deals-list/deals-list.page';
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+Found 1 error in src/app/alias-deep-test.ts:1
+
+TSC_EXIT=2
+
+C:\Projects\sages-angular-adv-1126\src\app\alias-positive-test.ts
+  1:1  error  User Error: SH-001 - invalid path mapping detected: @feature/*: ./src/app/features/*/index.ts. Please verify that the path exists  @softarc/sheriff/dependency-rule
+  1:1  error  User Error: SH-001 - invalid path mapping detected: @feature/*: ./src/app/features/*/index.ts. Please verify that the path exists  @softarc/sheriff/encapsulation
+
+✖ 2 problems (2 errors, 0 warnings)
+
+POS_EXIT=1
+
+C:\Projects\sages-angular-adv-1126\src\app\shared\alias-negative-test.ts
+  1:1  error  User Error: SH-001 - invalid path mapping detected: @feature/*: ./src/app/features/*/index.ts. Please verify that the path exists  @softarc/sheriff/dependency-rule
+  1:1  error  User Error: SH-001 - invalid path mapping detected: @feature/*: ./src/app/features/*/index.ts. Please verify that the path exists  @softarc/sheriff/encapsulation
+
+✖ 2 problems (2 errors, 0 warnings)
+
+NEG_EXIT=1
+
+C:\Projects\sages-angular-adv-1126\src\app\alias-deep-test.ts
+  1:1  error  User Error: SH-001 - invalid path mapping detected: @feature/*: ./src/app/features/*/index.ts. Please verify that the path exists  @softarc/sheriff/dependency-rule
+  1:1  error  User Error: SH-001 - invalid path mapping detected: @feature/*: ./src/app/features/*/index.ts. Please verify that the path exists  @softarc/sheriff/encapsulation
+
+✖ 2 problems (2 errors, 0 warnings)
+
+DEEP_EXIT=1
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+Two findings:
+
+1. Sheriff rejects wildcard path mappings. It reports SH-001 "invalid path mapping" because it checks that the literal `@feature/*` target exists. This error appears on every file, so a wildcard would break linting for the whole project.
+2. The TypeScript error on the deep-import test is correct. The wildcard does not resolve `@feature/deals/pages/...` to a file, so TypeScript already blocks that import.
+
+I'll replace the wildcard with an explicit `@feature/deals` mapping. Any new feature will need its own line.       
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **tsconfig.json**</summary>
+
+@@ lines 19-19 @@
+
+```
+deals": ["./src/app/features/deals
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="run_in_terminal"><details>
+<summary>Tool use: **run_in_terminal**</summary>
+
+Running ` npx tsc --noEmit -p tsconfig.app.json; echo "TSC\_EXIT=$?"; npx eslint src/ap...`
+
+Rerun type-check and Sheriff alias checks with explicit feature mapping
+
+```bash
+npx tsc --noEmit -p tsconfig.app.json; echo "TSC_EXIT=$?"; npx eslint src/app/alias-positive-test.ts; echo "POS_EXIT=$?"; npx eslint src/app/shared/alias-negative-test.ts; echo "NEG_EXIT=$?"; npx eslint src/app/alias-deep-test.ts; echo "DEEP_EXIT=$?"
+```
+
+**Result:**
+
+```
+src/app/alias-deep-test.ts:1:15 - error TS2307: Cannot find module '@feature/deals/pages/deals-list/deals-list.page' or its corresponding type declarations.
+
+1 export * from '@feature/deals/pages/deals-list/deals-list.page';
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+Found 1 error in src/app/alias-deep-test.ts:1
+
+TSC_EXIT=2
+POS_EXIT=0
+
+C:\Projects\sages-angular-adv-1126\src\app\shared\alias-negative-test.ts
+  1:1  error  module \src\app\shared cannot access \src\app\core. Tag shared has no clearance for tags core  @softarc/sheriff/dependency-rule
+
+✖ 1 problem (1 error, 0 warnings)
+
+NEG_EXIT=1
+DEEP_EXIT=0
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+Results after the explicit mapping:
+
+- The valid alias import passes Sheriff.
+-  importing `@core` is blocked by Sheriff's `dependency-rule`.
+- The deep import through `@feature/deals/...` is blocked by TypeScript (TS2307). Sheriff does not flag it, because it does not resolve that alias.
+
+Next I'll delete the temporary files, format `tsconfig.json`, and confirm that the type-check is clean.        
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="run_in_terminal"><details>
+<summary>Tool use: **run_in_terminal**</summary>
+
+Running ` rm src/app/alias-positive-test.ts src/app/alias-deep-test.ts src/app/shared/...`
+
+Remove the temporary alias test files, format tsconfig.json, and recheck types and git status
+
+```bash
+rm src/app/alias-positive-test.ts src/app/alias-deep-test.ts src/app/shared/alias-negative-test.ts && npx prettier --write tsconfig.json && npx tsc --noEmit -p tsconfig.app.json; echo "TSC_EXIT=$?"; git status --short
+```
+
+**Result:**
+
+```
+TSC_EXIT=0
+ M docs/ai-sessions/2026-11-05_07-39-50Z-architecture-boundaries-planning.md
+ M docs/ai-sessions/2026-11-05_08-15-28Z-extract-shared-master-detail.md
+ M tsconfig.json
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+Path aliases are added to `tsconfig.json`. Type-check passes, and Sheriff still enforces boundaries through the aliases.
+
+```json
+"paths": {
+  "@core": ["./src/app/core/index.ts"],
+  "@shared": ["./src/app/shared/index.ts"],
+  "@feature/deals": ["./src/app/features/deals/index.ts"]
+}
+```
+
+- **`@feature/*` is not a wildcard.** Sheriff rejects wildcard mappings with SH-001 on every file, so I mapped `@feature/deals` explicitly. Each new feature needs its own line.
+- **Deep imports are blocked by TypeScript, not Sheriff.** `@feature/deals/pages/...` fails with TS2307. Sheriff does not flag it because it does not resolve that alias.
+- **Verified:** `@core`, `@shared`, and `@feature/deals` resolve.  importing `@core` is blocked by Sheriff's `dependency-rule`.
+- **Not done:** existing relative imports are unchanged, and the change is not committed. Tell me if you want existing imports switched to aliases, and I can commit this as its own change.
+- **Not touched:** `ai-sessions` files show as modified from session logging. I did not stage them.
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="task" data-tool-name="manage_todo_list"><details>
+<summary>Tool use: **manage_todo_list**</summary>
+
+Completed: *Add TypeScript path aliases* (1/2)
+</details></tool-use>
+
+---
+
+_**User (2026-11-05 09:16:50Z)**_
+
+update AI instructions:
+- aliases names / patterns 
+- avoid relative imports from outside feature, relative inside is ok
+- code geenration - new feature must add new alias
+
+---
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+I'll read the current architecture instruction file and the module-boundaries skill before editing them, since prettier may have reformatted them.  
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="read" data-tool-name="read_file"><details>
+<summary>Tool use: **read_file**</summary>
+
+Read `architecture.instructions.md`
+
+**Input:**
+
+- endLine: `40`
+- filePath: `c:\Projects\sages-angular-adv-1126\.github\instructions\architecture.instructions.md`
+- startLine: `1`
+
+**Result:**
+
+```
+---
+description: 'Use when adding or changing imports, routes, or files under src/app. Covers module layers (app, core, shared, features), allowed dependency directions, the index.ts public-API rule, and Sheriff enforcement.'
+applyTo: 'src/app/**/*.ts'
+---
+
+# Architecture Rules
+
+## Dependency Directions
+
+- `app` may import from `core`, `shared`, and `features`.
+- `core` may import from `shared` only.
+- `features/<name>` may import from `shared` only, and from another feature only through that feature's `index.ts`.
+- `shared` imports from no other layer in `src/app`.
+- Forbidden: `features` to `core`, `core` to `features`, `shared` to `core` or `features`.
+
+## Public API
+
+- Import a module only through its `index.ts`. Do not import deep files such as `features/deals/pages/...` from outside the module.
+- Inside one feature, files may import each other directly.
+- Routes of a feature are lazy-loaded with `loadChildren` through `features/<name>/index.ts` (ADR-0004).
+
+## Placement
+
+- Business code goes to `features/<name>/`.
+- App-wide infrastructure and app-level pages go to `core/`.
+- Domain-independent reusable code goes to `shared/`.
+
+## Enforcement
+
+- Boundaries are enforced by Sheriff through `sheriff.config.ts` and ESLint (ADR-0003). Do not disable these rules.
+- Do not change `sheriff.config.ts` without the user's approval.
+- Before changing these rules, read [docs/adr/index.md](../../docs/adr/index.md). Read an individual ADR only after the user approves it.
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="read" data-tool-name="read_file"><details>
+<summary>Tool use: **read_file**</summary>
+
+Read skill `module-boundaries`
+
+**Input:**
+
+- endLine: `30`
+- filePath: `c:\Projects\sages-angular-adv-1126\.github\skills\module-boundaries\SKILL.md`
+- startLine: `1`
+
+**Result:**
+
+```
+---
+name: module-boundaries
+description: 'Check changed TypeScript files under src/app against module boundaries and fix violations. Use when the user asks to verify architecture, check imports, fix a boundary or deep-import error, or run Sheriff. Runs ESLint with Sheriff rules on changed files only.'
+---
+
+# Module Boundaries
+
+Procedure for checking and fixing module boundary violations. The dependency rules are defined in [architecture.instructions.md](../../instructions/architecture.instructions.md) and [sheriff.config.ts](../../../sheriff.config.ts). Do not restate them here.
+
+## Steps
+
+1. List changed files under `src/app`: `git diff --name-only HEAD -- src/app` (include staged and unstaged changes).
+2. Run ESLint on those files only: `npx eslint <files>`. Sheriff reports two rules:
+   - `@softarc/sheriff/encapsulation`: deep import into a module.
+   - `@softarc/sheriff/dependency-rule`: import direction is not allowed.
+3. Fix each violation:
+   - Encapsulation: import the module's `index.ts` instead. If the symbol is not exported there, export it from `index.ts`. Do not import internal files directly.
+   - Dependency rule: move the shared code to `shared/`, or remove the import. Do not add a rule to `sheriff.config.ts` without the user's approval.
+4. Fix only violations in changed files. Report pre-existing errors in unchanged files without fixing them.
+5. Re-run `npx eslint <files>` on the same files, then run `npx tsc --noEmit -p tsconfig.app.json`.
+6. Report each fixed violation with its file and line.
+
+## When to Stop and Ask
+
+- The fix needs a change to `sheriff.config.ts` or to an ADR.
+- The violation comes from a design decision, not from a wrong import.
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+The file still describes `index.ts` imports without aliases, so I'll update both files: the architecture instruction gets the alias table, the naming and no-wildcard rules, the relative-import rule, and the new-feature rule. The skill gets the matching fix steps. 
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **architecture.instructions.md**</summary>
+
+@@ lines 18-20 @@
+
+```
+, using its alias. Never import a deep file such as `features/deals/pages/...`.
+- Inside one module, relative imports are allowed.
+- Lazy routes load a feature through its alias, for example `import('@feature/deals')` (ADR-0004).
+
+## Path Aliases
+
+Defined in the `paths` of `tsconfig.json`.
+
+| Alias | Target |
+| --- | --- |
+| `@core` | `src/app/core/index.ts` |
+| `@shared` | `src/app/shared/index.ts` |
+| `@feature/<name>` | `src/app/features/<name>/index.ts` |
+
+- Alias names are fixed: `@core`, `@shared`, and `@feature/<name>`, where `<name>` is the feature folder name in kebab-case. Do not invent other aliases without the user's approval.
+- Do not use wildcard mappings such as `@feature/*`. Sheriff reports them as SH-001 errors, so each feature has its own explicit entry.
+- Across a module boundary, use the alias. Do not use `../` paths. For example, from `features/deals/` to shared code, use `@shared`, not `../../../shared`.
+- Relative imports are allowed only inside the same module: the same `core`, the same `shared`, or the same `features/<name>` folder.
+
+## Code Generation
+
+- When creating a feature `<name>`, make both changes in the same edit:
+  - Create `src/app/features/<name>/index.ts` as the public API.
+  - Add `"@feature/<name>": ["./src/app/features/<name>/index.ts"]` to `paths` in `tsconfig.json`.
+- Ask the user before changing `sheriff.config.ts` for the new feature.
+- Generated imports use the aliases above. Do not write relative paths across modules
+```
+
+@@ lines 2-2 @@
+
+```
+path aliases (@core, @shared, @feature/<name>), the index.ts public-API rule, new-feature setup
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+
+```
+
+```
+
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **SKILL.md**</summary>
+
+@@ lines 16-17 @@
+
+```
+   Sheriff does not flag deep imports through aliases such as `@feature/deals/pages/...`. TypeScript reports them (step 5).
+3. Fix each violation:
+   - Encapsulation: import the module's alias (`@core`, `@shared`, `@feature/<name>`) instead of a deep path. If the symbol is not exported from `index.ts`, export it there.
+   - Relative import across modules: replace it with the module's alias from `tsconfig.json` `paths`
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+Both files are updated. Next I'll format them and check which existing imports break the new relative-import rule, so I can report them.    
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="run_in_terminal"><details>
+<summary>Tool use: **run_in_terminal**</summary>
+
+Running ` npx prettier --write .github/instructions/architecture.instructions.md .gith...`
+
+Format the two updated instruction files and list relative imports in src/app to find existing rule violations
+
+```bash
+npx prettier --write .github/instructions/architecture.instructions.md .github/skills/module-boundaries/SKILL.md && echo "--- relative imports in src/app:" && grep -rnE "from '\.\.?/|import\('\.\.?/" src/app --include=*.ts
+```
+
+**Result:**
+
+```
+.github/instructions/architecture.instructions.md 109ms
+.github/skills/module-boundaries/SKILL.md 21ms
+--- relative imports in src/app:
+src/app/app.config.server.ts:3:import { appConfig } from './app.config';
+src/app/app.config.server.ts:4:import { serverRoutes } from './app.routes.server';
+src/app/app.config.ts:7:import { routes } from './app.routes';
+src/app/app.routes.ts:15:    loadChildren: () => import('./features/deals').then((m) => m.dealsRoutes),
+src/app/app.routes.ts:19:    loadComponent: () => import('./core').then((m) => m.PageNotFound),
+src/app/app.ts:3:import { SharedUI } from './shared';
+src/app/core/index.ts:1:export { PageNotFound } from './pages/page-not-found/page-not-found';
+src/app/core/pages/page-not-found/page-not-found.ts:3:import { SharedUI } from '../../../shared';
+src/app/features/deals/deals.routes.ts:6:    loadComponent: () => import('./pages/deals-list/deals-list.page').then((m) => m.DealsPage),
+src/app/features/deals/index.ts:1:export { default as dealsRoutes } from './deals.routes';
+src/app/features/deals/pages/deals-list/deals-list.page.ts:2:import { MasterDetailLayout, SharedImports } from '../../../../shared';
+src/app/shared/index.ts:1:export * from './shared-module';
+src/app/shared/index.ts:2:export * from './layouts/master-detail-layout/master-detail-layout';
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+The AI instructions now cover the alias names and patterns, the relative-import rule, and the new-feature alias rule. Nothing is committed.
+
+**Updated:**
+- `.github/instructions/architecture.instructions.md`: alias table (`@core`, `@shared`, `@feature/<name>`), no invented aliases, no wildcard mappings (Sheriff SH-001), relative imports only inside the same module, and a Code Generation section. A new feature needs its `index.ts` and its explicit `paths` entry in `tsconfig.json`.
+- module-boundaries SKILL.md: fix steps now use aliases. It also notes that TypeScript, not Sheriff, catches deep alias imports.
+
+**Existing code that breaks the new rule** (I did not change code, since you asked only for instructions):
+- `src/app/app.routes.ts#L15` and `src/app/app.routes.ts#L19`: `./features/deals`, `./core`
+- `src/app/app.ts#L3`: `./shared`
+- `src/app/core/pages/page-not-found/page-not-found.ts#L3`: `../../../shared`
+- `src/app/features/deals/pages/deals-list/deals-list.page.ts#L2`: `../../../../shared`
+
+Should I migrate these to aliases?
+
+**Open question:** the new-feature rule requires a Sheriff module entry, but `sheriff.config.ts` is protected by an existing rule. Without an entry, Sheriff does not enforce boundaries for the new feature. Should the rule allow generated feature code to add its Sheriff entry in the same change?
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="task" data-tool-name="manage_todo_list"><details>
+<summary>Tool use: **manage_todo_list**</summary>
+
+Created 3 todos
+</details></tool-use>
+
+---
+
+_**User (2026-11-05 09:18:50Z)**_
+
+allow only generated new feature code to add its Sheriff entry in the same change
+
+---
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+I'll read the current instruction file first, since it was edited outside this session, and the Sheriff config it refers to.  
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="read" data-tool-name="read_file"><details>
+<summary>Tool use: **read_file**</summary>
+
+Read `architecture.instructions.md`
+
+**Input:**
+
+- endLine: `200`
+- filePath: `c:\Projects\sages-angular-adv-1126\.github\instructions\architecture.instructions.md`
+- startLine: `1`
+
+**Result:**
+
+```
+---
+description: 'Use when adding or changing imports, routes, or files under src/app. Covers module layers (app, core, shared, features), allowed dependency directions, path aliases (@core, @shared, @feature/<name>), the index.ts public-API rule, new-feature setup, and Sheriff enforcement.'
+applyTo: 'src/app/**/*.ts'
+---
+
+# Architecture Rules
+
+## Dependency Directions
+
+- `app` may import from `core`, `shared`, and `features`.
+- `core` may import from `shared` only.
+- `features/<name>` may import from `shared` only, and from another feature only through that feature's `index.ts`.
+- `shared` imports from no other layer in `src/app`.
+- Forbidden: `features` to `core`, `core` to `features`, `shared` to `core` or `features`.
+
+## Public API
+
+- Import a module only through its `index.ts`, using its alias. Never import a deep file such as `features/deals/pages/...`.
+- Inside one module, relative imports are allowed.
+- Lazy routes load a feature through its alias, for example `import('@feature/deals')` (ADR-0004).
+
+## Path Aliases
+
+Defined in the `paths` of `tsconfig.json`.
+
+| Alias             | Target                             |
+| ----------------- | ---------------------------------- |
+| `@core`           | `src/app/core/index.ts`            |
+| `@shared`         | `src/app/shared/index.ts`          |
+| `@feature/<name>` | `src/app/features/<name>/index.ts` |
+
+- Alias names are fixed: `@core`, `@shared`, and `@feature/<name>`, where `<name>` is the feature folder name in kebab-case. Do not invent other aliases without the user's approval.
+- Do not use wildcard mappings such as `@feature/*`. Sheriff reports them as SH-001 errors, so each feature has its own explicit entry.
+- Across a module boundary, use the alias. Do not use `../` paths. For example, from `features/deals/` to shared code, use `@shared`, not `../../../shared`.
+- Relative imports are allowed only inside the same module: the same `core`, the same `shared`, or the same `features/<name>` folder.
+
+## Code Ge
+… (output truncated)
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="read" data-tool-name="read_file"><details>
+<summary>Tool use: **read_file**</summary>
+
+Read `sheriff.config.ts`
+
+**Input:**
+
+- endLine: `200`
+- filePath: `c:\Projects\sages-angular-adv-1126\sheriff.config.ts`
+- startLine: `1`
+
+**Result:**
+
+```
+import type { SheriffConfig } from '@softarc/sheriff-core';
+
+export const config: SheriffConfig = {
+  modules: {
+    'src/app/core': 'core',
+    'src/app/shared': 'shared',
+    'src/app/features/deals': 'feature:deals',
+  },
+  depRules: {
+    root: ['root', 'core', 'shared', 'feature:*'],
+    core: 'shared',
+    shared: null,
+    'feature:*': ['shared', 'feature:*'],
+  },
+};
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+The file still says to ask before touching `sheriff.config.ts`, and the Enforcement section forbids any change to it. I'll check whether the skill file repeats that rule. 
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="search" data-tool-name="grep_search"><details>
+<summary>Tool use: **grep_search**</summary>
+
+Searched for regex `sheriff.config|approval|approve|ask` (`**/.github/**`), 17 results
+
+**Input:**
+
+- includePattern: `.github/**`
+- isRegexp: `true`
+- query: `sheriff.config|approval|approve|ask`
+
+**Result:**
+
+```
+Found 17 matches in 4 files for "sheriff.config|approval|approve|ask"
+
+.github/instructions/architecture.instructions.md
+32:- Alias names are fixed: `@core`, `@shared`, and `@feature/<name>`, where `<name>` is the feature folder name in kebab-case. Do not invent other aliases without the user's approval.
+42:- Ask the user before changing `sheriff.config.ts` for the new feature.
+53:- Boundaries are enforced by Sheriff through `sheriff.config.ts` and ESLint (ADR-0003). Do not disable these rules.
+54:- Do not change `sheriff.config.ts` without the user's approval.
+55:- Before changing these rules, read [docs/adr/index.md](../../docs/adr/index.md). Read an individual ADR only after the user approves it.
+
+.github/instructions/workflow.instructions.md
+2:description: "Use when generating Angular files with ng g schematics, finishing Angular or template changes, verifying a feature, running prettier, tsc, eslint, the ng serve dev server, or browser checks. Covers schematic generation, verification order, scope of fixes, and asking before browser tools."
+11:- Do not change schematic flags unless the user asks. Let defaults come from `angular.json`.
+19:- Use the running `ng serve` session to check the build. Do not run `ng build` unless asked. If no session is running, ask before starting one.
+25:- Ask before using `open_browser_page`, `click_element`, or any other browser tool to verify, debug, or fix.
+29:- Template-only requests: do not add logic beyond the `imports` array unless the user approves.
+
+.github/prompts/adr.prompt.md
+11:2. Read [docs/adr/template.md](../../docs/adr/template.md). It is the template, not an ADR, so it may be read without asking.
+18:5. If the context, drivers, or options are not provided, ask the user. Do not guess. Leave the unknown sections as placeholders.
+
+.github/skills/module-boundaries/SKILL.md
+3:description: 'Check changed TypeScript files under src/app against module boundaries and fix violations. Use when the user asks to verify architect
+… (output truncated)
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+The skill's "When to Stop and Ask" list also says a `sheriff.config.ts` change needs a stop. I'll read that section so the wording matches. 
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="read" data-tool-name="read_file"><details>
+<summary>Tool use: **read_file**</summary>
+
+Read skill `module-boundaries`, lines 18 to 29
+
+**Input:**
+
+- endLine: `30`
+- filePath: `c:\Projects\sages-angular-adv-1126\.github\skills\module-boundaries\SKILL.md`
+- startLine: `18`
+
+**Result:**
+
+```
+   - Encapsulation: import the module's alias (`@core`, `@shared`, `@feature/<name>`) instead of a deep path. If the symbol is not exported from `index.ts`, export it there.
+   - Relative import across modules: replace it with the module's alias from `tsconfig.json` `paths`.
+   - Dependency rule: move the shared code to `shared/`, or remove the import. Do not add a rule to `sheriff.config.ts` without the user's approval.
+4. Fix only violations in changed files. Report pre-existing errors in unchanged files without fixing them.
+5. Re-run `npx eslint <files>` on the same files, then run `npx tsc --noEmit -p tsconfig.app.json`.
+6. Report each fixed violation with its file and line.
+
+## When to Stop and Ask
+
+- The fix needs a change to `sheriff.config.ts` or to an ADR.
+- The violation comes from a design decision, not from a wrong import.
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+I'll make the three edits: the Code Generation step, the Enforcement exception, and the skill's stop condition.  
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **architecture.instructions.md**</summary>
+
+@@ lines 54-54 @@
+
+```
+, except for the `modules` entry of a new feature (see Code Generation)
+```
+
+@@ lines 39-42 @@
+
+```
+all three changes in the same edit:
+  - Create `src/app/features/<name>/index.ts` as the public API.
+  - Add `"@feature/<name>": ["./src/app/features/<name>/index.ts"]` to `paths` in `tsconfig.json`.
+  - Add `'src/app/features/<name>': 'feature:<name>'` to `modules` in `sheriff.config.ts`. Do not change `depRules`
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+
+```
+
+```
+
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **SKILL.md**</summary>
+
+@@ lines 27-27 @@
+
+```
+(other than a new feature's `modules` entry) 
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+Now I'll format the two files and confirm the final wording.   
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="run_in_terminal"><details>
+<summary>Tool use: **run_in_terminal**</summary>
+
+Running ` npx prettier --write .github/instructions/architecture.instructions.md .gith...`
+
+Format the edited instruction and skill files and list the sheriff.config references to confirm the wording
+
+```bash
+npx prettier --write .github/instructions/architecture.instructions.md .github/skills/module-boundaries/SKILL.md && grep -n "sheriff.config" .github/instructions/architecture.instructions.md .github/skills/module-boundaries/SKILL.md
+```
+
+**Result:**
+
+```
+.github/instructions/architecture.instructions.md 122ms (unchanged)
+.github/skills/module-boundaries/SKILL.md 28ms (unchanged)
+.github/instructions/architecture.instructions.md:42:  - Add `'src/app/features/<name>': 'feature:<name>'` to `modules` in `sheriff.config.ts`. Do not change `depRules`.
+.github/instructions/architecture.instructions.md:53:- Boundaries are enforced by Sheriff through `sheriff.config.ts` and ESLint (ADR-0003). Do not disable these rules.
+.github/instructions/architecture.instructions.md:54:- Do not change `sheriff.config.ts` without the user's approval, except for the `modules` entry of a new feature (see Code Generation).
+.github/skills/module-boundaries/SKILL.md:8:Procedure for checking and fixing module boundary violations. The dependency rules are defined in [architecture.instructions.md](../../instructions/architecture.instructions.md) and [sheriff.config.ts](../../../sheriff.config.ts). Do not restate them here.
+.github/skills/module-boundaries/SKILL.md:20:   - Dependency rule: move the shared code to `shared/`, or remove the import. Do not add a rule to `sheriff.config.ts` without the user's approval.
+.github/skills/module-boundaries/SKILL.md:27:- The fix needs a change to `sheriff.config.ts` (other than a new feature's `modules` entry) or to an ADR.
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+The instructions now let generated new-feature code add its Sheriff  entry in the same change as the feature.
+
+Changes in `.github/instructions/architecture.instructions.md` and `.github/skills/module-boundaries/SKILL.md`:
+- **Code Generation:** creating feature `<name>` now also adds `'src/app/features/<name>': 'feature:<name>'` to  in `sheriff.config.ts`, in the same edit. It states that  must not change. The "ask first" line is removed.
+- **Enforcement:** the approval rule now excepts only the new feature's  entry.
+- **Module-boundaries skill:** the stop-and-ask condition excepts the same entry.
+
+Prettier reports no formatting changes. Nothing is committed, and I did not edit `sheriff.config.ts` itself or any code under `app`.
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="task" data-tool-name="manage_todo_list"><details>
+<summary>Tool use: **manage_todo_list**</summary>
+
+Created 2 todos
+</details></tool-use>
+
+---
+
+_**User (2026-11-05 09:19:49Z)**_
+
+commit all 
+
+---
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<think><details><summary>Thought Process</summary>
+I'll check the working tree before committing, since the lessons from earlier say not to stage `docs/ai-sessions/`. 
+
+The three changed files are the aliases and instruction updates. The two `docs/ai-sessions/` logs are session logs that the project rules say not to commit. I'll check the `tsconfig.json` diff before committing.
+</details></think>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+I'll check the working tree before committing, since the lessons from earlier say not to stage `ai-sessions`. 
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="run_in_terminal"><details>
+<summary>Tool use: **run_in_terminal**</summary>
+
+Running ` git status --short && echo "--- branch:" && git branch --show-current && ech...`
+
+Show working tree status, current branch, and recent commits
+
+```bash
+git status --short && echo "--- branch:" && git branch --show-current && echo "--- recent:" && git log --oneline -6
+```
+
+**Result:**
+
+````
+ M .github/instructions/architecture.instructions.md
+ M .github/skills/module-boundaries/SKILL.md
+ M docs/ai-sessions/2026-11-05_07-39-50Z-architecture-boundaries-planning.md
+ M docs/ai-sessions/2026-11-05_08-15-28Z-extract-shared-master-detail.md
+ M tsconfig.json
+--- branch:
+main
+--- recent:
+2186a15 (HEAD -> main, origin/main, origin/HEAD) Add master-detail snippets, gitignore exception, layout JSDoc and deals page mockup
+3c1d8ba @JSDoc block with descr. + short rationale + useage @example ```html blocks  - "Component Marketing" + DevEXP
+2868e96 Leassons learned -> docs + ai instructions
+01cece9 master detail layout
+80a519a <div class="grid grid-cols-[minmax(200px,1fr)_3fr] gap-5 py-5">
+f8454c8 CSS Grid + Flex + Emmet / ZenCoding + Tailwind
+````
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+The three changed files are the aliases and instruction updates. The two `ai-sessions` logs are session logs that the project rules say not to commit. I'll check the `tsconfig.json` diff before committing.  
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="run_in_terminal"><details>
+<summary>Tool use: **run_in_terminal**</summary>
+
+Running ` git --no-pager diff -- tsconfig.json`
+
+Review the tsconfig.json diff before committing
+
+```bash
+git --no-pager diff -- tsconfig.json
+```
+
+**Result:**
+
+```
+warning: in the working copy of 'tsconfig.json', LF will be replaced by CRLF the next time Git touches it
+diff --git a/tsconfig.json b/tsconfig.json
+index 30d64ce..c6ad021 100644
+--- a/tsconfig.json
++++ b/tsconfig.json
+@@ -12,7 +12,12 @@
+     "experimentalDecorators": true,
+     "importHelpers": true,
+     "target": "ES2022",
+-    "module": "preserve"
++    "module": "preserve",
++    "paths": {
++      "@core": ["./src/app/core/index.ts"],
++      "@shared": ["./src/app/shared/index.ts"],
++      "@feature/deals": ["./src/app/features/deals/index.ts"]
++    }
+   },
+   "angularCompilerOptions": {
+     "enableI18nLegacyMessageIdFormat": false,
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+The diff is the expected path aliases. I'll stage the three files explicitly, leave the session logs out, and commit.   
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="run_in_terminal"><details>
+<summary>Tool use: **run_in_terminal**</summary>
+
+Running ` git add tsconfig.json .github/instructions/architecture.instructions.md .git...`
+
+Stage the alias config and instruction files explicitly, commit them, and show the remaining status
+
+```bash
+git add tsconfig.json .github/instructions/architecture.instructions.md .github/skills/module-boundaries/SKILL.md && git commit -m "Add path aliases and alias rules for AI instructions" && git status --short
+```
+
+**Result:**
+
+```
+warning: in the working copy of '.github/instructions/architecture.instructions.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of '.github/skills/module-boundaries/SKILL.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tsconfig.json', LF will be replaced by CRLF the next time Git touches it
+[main d7c55d7] Add path aliases and alias rules for AI instructions
+ 3 files changed, 38 insertions(+), 8 deletions(-)
+ M docs/ai-sessions/2026-11-05_07-39-50Z-architecture-boundaries-planning.md
+ M docs/ai-sessions/2026-11-05_08-15-28Z-extract-shared-master-detail.md
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+I committed the alias config and instruction updates as `d7c55d7` on `main`. This covers `tsconfig.json`, `architecture.instructions.md`, and `SKILL.md`, which include the Sheriff  rule.
+
+I did not commit the two `ai-sessions` files. The project rules say not to commit them, so they remain modified in the working tree. If you want them committed anyway, tell me and I will add them.
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="task" data-tool-name="manage_todo_list"><details>
+<summary>Tool use: **manage_todo_list**</summary>
+
+Created 2 todos
+</details></tool-use>
