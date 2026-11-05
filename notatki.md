@@ -78,6 +78,8 @@ https://css-tricks.com/specifics-on-css-specificity/
 - Lifecyle 
     - When it is created, changes state and destoryed
     - How often it changes state
+    - Rate of change (how often it changes, together with what)
+    - Staleness budget, invaidation etc..
 
 
 
