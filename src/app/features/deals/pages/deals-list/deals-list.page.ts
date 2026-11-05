@@ -1,5 +1,5 @@
 import { Component, computed, inject, signal } from '@angular/core';
-import { MasterDetailLayout } from '@shared';
+import { MasterDetailLayout, SharedModule } from '@shared';
 import { DealsStore } from '../../data/deals.store';
 import { Deal } from '../../model/deal.model';
 import { TaskPriority } from '../../model/deal-task.model';
@@ -7,24 +7,50 @@ import { DealDetailsCard } from '../../ui/deal-details-card/deal-details-card';
 import { DealEditor } from '../../ui/deal-editor/deal-editor';
 import { DealMasterList } from '../../ui/deal-master-list/deal-master-list';
 import { DealTasksCard } from '../../ui/deal-tasks-card/deal-tasks-card';
+import { DealListItem } from '../../ui/deal-list-item/deal-list-item';
 
 type DealViewMode = 'details' | 'editor' | 'creator';
 
 @Component({
   selector: 'app-deals-page',
-  imports: [MasterDetailLayout, DealMasterList, DealDetailsCard, DealTasksCard, DealEditor],
+  imports: [
+    MasterDetailLayout,
+    DealMasterList,
+    DealDetailsCard,
+    DealTasksCard,
+    DealEditor,
+    SharedModule,
+    DealListItem,
+  ],
   template: `
     <main class="bg-surface text-on-surface">
       <app-master-detail-layout>
+        <app-deal-master-list appMasterDetailList [deals]="filteredDeals()">
+          <!-- ng-template - parent prepares, child is creating with context -->
+          <ng-template #listItem let-deal let-monkey="banana">
+            <app-deal-list-item
+              [deal]="deal"
+              [selected]="deal.id === selectedDeal()?.id"
+              (dealSelected)="onSelectDeal($event)"
+            />
+          </ng-template>
 
-        <app-deal-master-list
-          appMasterDetailList
-          [deals]="filteredDeals()"
-          [selectedId]="selectedDeal()?.id ?? null"
-          [(filterText)]="filterText"
-          (dealSelected)="onSelectDeal($event)"
-          (createRequested)="onCreateDeal()"
-        />
+          <!-- ng-content - parent creates, child presents -->
+          <ng-container app-master-list-header>
+            <mat-form-field class="w-full">
+              <mat-label>Filter deals</mat-label>
+              <input
+                matInput
+                type="search"
+                #filterInput
+                (input)="filterText.set(filterInput.value)"
+              />
+              <mat-icon matSuffix aria-hidden="true">search</mat-icon>
+            </mat-form-field>
+
+            <button matButton="outlined" type="button" (click)="onCreateDeal()">Create new</button>
+          </ng-container>
+        </app-deal-master-list>
 
         @if (viewMode() === 'details') {
           @if (selectedDeal(); as deal) {
@@ -56,12 +82,12 @@ type DealViewMode = 'details' | 'editor' | 'creator';
   providers: [DealsStore], // Components (Type) lifecycle
 })
 export class DealsPage {
-onSaveNewDeal() {
-throw new Error('Method not implemented.');
-}
+  onSaveNewDeal() {
+    throw new Error('Method not implemented.');
+  }
   // private readonly store = new DealsStore(new DealsAPI( new DealsConfig() )); // Concrete Coupling
   private readonly store = inject(DealsStore); // Abstract Dependency
-  
+
   protected readonly viewMode = signal<DealViewMode>('details');
 
   protected readonly filterText = signal('');

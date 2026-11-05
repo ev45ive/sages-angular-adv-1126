@@ -1,4 +1,13 @@
-import { Component, input, model, output } from '@angular/core';
+import {
+  Component,
+  computed,
+  contentChild,
+  input,
+  model,
+  output,
+  TemplateRef,
+  viewChild,
+} from '@angular/core';
 import { SharedImports } from '@shared';
 import { Deal } from '../../model/deal.model';
 import { DealListItem } from '../deal-list-item/deal-list-item';
@@ -12,33 +21,44 @@ import { DealListItem } from '../deal-list-item/deal-list-item';
     }
   `,
   template: `
-    <mat-form-field class="w-full">
-      <mat-label>Filter deals</mat-label>
-      <input matInput type="search" #filterInput (input)="filterText.set(filterInput.value)" />
-      <mat-icon matSuffix aria-hidden="true">search</mat-icon>
-    </mat-form-field>
-
-    <button matButton="outlined" type="button" (click)="createRequested.emit()">Create new</button>
+    <ng-content select="[app-master-list-header]"> Deals List </ng-content>
 
     <mat-list class="mt-3">
       @for (deal of deals(); track deal.id) {
-        <app-deal-list-item
-          [deal]="deal"
-          [selected]="deal.id === selectedId()"
-          (dealSelected)="dealSelected.emit($event)"
-        />
+        <ng-container
+          *ngTemplateOutlet="
+            itemTpl();
+            context: {
+              $implicit: deal,
+              banana: true,
+            }
+          "
+        ></ng-container>
       } @empty {
         <mat-list-item>
           <span matListItemTitle>No deals match the filter</span>
         </mat-list-item>
       }
     </mat-list>
+
+    <!-- <ng-template #listDeafultItem let-deal>
+      <app-deal-list-item [deal]="deal" />
+    </ng-template> -->
+
+    <ng-content select="[app-master-list-footer]"> </ng-content>
   `,
 })
 export class DealMasterList {
   readonly deals = input.required<Deal[]>();
-  readonly selectedId = input<string | null>(null);
-  readonly filterText = model('');
-  readonly dealSelected = output<string>();
-  readonly createRequested = output<void>();
+
+  // listDeafultItem = viewChild('listDeafultItem');
+  // tpl = computed(() => this.itemTpl() ?? this.listDeafultItem());
+
+
+  itemTpl = contentChild<
+    TemplateRef<{
+      $implicit: Deal;
+      banana: boolean;
+    }>
+  >('listItem');
 }
