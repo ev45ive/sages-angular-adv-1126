@@ -12,10 +12,11 @@ export const routes: Routes = [
     // component : DealsPage,
 
     // lazy loading:
-    loadComponent: () => import('./deals-page/deals-page').then((m) => m.DealsPage),
+    loadChildren: () => import('./features/deals').then((m) => m.dealsRoutes),
   },
   {
     path: '**',
-    loadComponent: () => import('./page-not-found/page-not-found').then((m) => m.PageNotFound),
+    loadComponent: () =>
+      import('./core/pages/page-not-found/page-not-found').then((m) => m.PageNotFound),
   },
 ];

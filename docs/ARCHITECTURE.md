@@ -60,7 +60,7 @@ Allowed directions. Enforced by Sheriff (ADR-0003).
 - `core` → `shared`
 - `features/<name>` → `shared`
 - `features/<name>` → another feature only via `features/<other>/index.ts` (ADR-0002)
-- `app.routes.ts` → `features/<name>/<name>.routes.ts` via `loadChildren` (ADR-0004)
+- `app.routes.ts` → `features/<name>/index.ts` via `loadChildren`, which re-exports the feature routes (ADR-0004)
 
 Forbidden:
 

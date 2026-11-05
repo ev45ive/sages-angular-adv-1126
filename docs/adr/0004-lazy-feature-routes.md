@@ -16,11 +16,12 @@
 ## Considered Options
 
 - `loadComponent` in `app.routes.ts` pointing at a page file
-- `loadChildren` in `app.routes.ts` pointing at `features/<name>/<name>.routes.ts`, which has a default export
+- `loadChildren` in `app.routes.ts` pointing at `features/<name>/<name>.routes.ts` directly
+- `loadChildren` in `app.routes.ts` pointing at `features/<name>/index.ts`, which re-exports the routes
 
 ## Decision Outcome
 
-Chosen option: "`loadChildren` to `<name>.routes.ts`", because the feature owns its routes and the root file only lists features.
+Chosen option: "`loadChildren` through `features/<name>/index.ts`", because the feature owns its routes, the root file only lists features, and `app` imports stay within the public API (ADR-0002).
 
 ### Consequences
 

@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { SharedImports, SharedModule } from '../shared/shared-module';
+import { SharedImports } from '../../../../shared/shared-module';
 
 @Component({
   selector: 'app-deals-page',
