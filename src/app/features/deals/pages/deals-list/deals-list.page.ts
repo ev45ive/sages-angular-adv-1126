@@ -1,157 +1,54 @@
 import { Component, computed, inject, signal } from '@angular/core';
-import { form, FormField } from '@angular/forms/signals';
-import { MasterDetailLayout, SharedImports } from '../../../../shared';
+import { MasterDetailLayout } from '@shared';
 import { DealsStore } from '../../data/deals.store';
-import { Deal, DEAL_STAGE_LABELS } from '../../model/deal.model';
-import { TASK_PRIORITY_LABELS, TaskPriority } from '../../model/deal-task.model';
-import { AccountNamePipe } from '../../ui/pipes/account-name-pipe';
-import { ContactNamePipe } from '../../ui/pipes/contact-name-pipe';
+import { Deal } from '../../model/deal.model';
+import { TaskPriority } from '../../model/deal-task.model';
+import { DealDetailsCard } from '../../ui/deal-details-card/deal-details-card';
+import { DealEditor } from '../../ui/deal-editor/deal-editor';
+import { DealMasterList } from '../../ui/deal-master-list/deal-master-list';
+import { DealTasksCard } from '../../ui/deal-tasks-card/deal-tasks-card';
 
-interface NewTaskDraft {
-  title: string;
-  priority: TaskPriority;
-}
-
-const emptyTask = (): NewTaskDraft => ({ title: '', priority: 'medium' });
+type DealViewMode = 'details' | 'editor' | 'creator';
 
 @Component({
   selector: 'app-deals-page',
-  imports: [
-    // SharedModule,
-    SharedImports,
-    MasterDetailLayout,
-    FormField,
-    AccountNamePipe,
-    ContactNamePipe,
-  ],
-  styles: [
-    `
-      mat-chip-set {
-        display: flex !important;
-      }
-    `,
-  ],
+  imports: [MasterDetailLayout, DealMasterList, DealDetailsCard, DealTasksCard, DealEditor],
   template: `
     <main class="bg-surface text-on-surface">
       <app-master-detail-layout>
-        <aside appMasterDetailList>
-          <mat-form-field class="w-full">
-            <mat-label>Filter deals</mat-label>
-            <input
-              matInput
-              type="search"
-              #filterInput
-              (input)="filterText.set(filterInput.value)"
-            />
-            <mat-icon matSuffix aria-hidden="true">search</mat-icon>
-          </mat-form-field>
 
-          <mat-list class="mt-3">
-            @for (deal of filteredDeals(); track deal.id) {
-              <button
-                mat-list-item
-                type="button"
-                [attr.aria-current]="deal.id === selectedDeal()?.id ? 'true' : null"
-                [activated]="deal.id === selectedDeal()?.id"
-                (click)="selectedDealId.set(deal.id)"
-              >
-                <span matListItemTitle>{{ deal.title }} — {{ deal.accountId | accountName }}</span>
-                <span matListItemLine>
-                  {{ deal.value.amount | currency: deal.value.currency : 'symbol' : '1.0-0' }}
-                </span>
-                <mat-chip-set matListItemMeta>
-                  <mat-chip>{{ stageLabels[deal.stage] }}</mat-chip>
-                </mat-chip-set>
-              </button>
-            }
-          </mat-list>
-        </aside>
+        <app-deal-master-list
+          appMasterDetailList
+          [deals]="filteredDeals()"
+          [selectedId]="selectedDeal()?.id ?? null"
+          [(filterText)]="filterText"
+          (dealSelected)="onSelectDeal($event)"
+          (createRequested)="onCreateDeal()"
+        />
 
-        @if (selectedDeal(); as deal) {
-          <div>
-            <mat-card appearance="outlined">
-              <mat-card-header>
-                <mat-card-title
-                  >{{ deal.title }} — {{ deal.accountId | accountName }}</mat-card-title
-                >
-                <mat-card-subtitle>{{ deal.summary }}</mat-card-subtitle>
-              </mat-card-header>
-              <mat-card-content>
-                <mat-chip-set class="special-chip-override">
-                  <mat-chip>{{ stageLabels[deal.stage] }}</mat-chip>
-                </mat-chip-set>
-                <dl class="mt-4 grid grid-cols-3 gap-4 text-body-md">
-                  <div>
-                    <dt class="meta">Value</dt>
-                    <dd class="mt-1 text-title-sm">
-                      {{ deal.value.amount | currency: deal.value.currency : 'symbol' : '1.0-0' }}
-                    </dd>
-                  </div>
-                  <div>
-                    <dt class="meta">Contact</dt>
-                    <dd class="mt-1 text-title-sm">{{ deal.contactId | contactName }}</dd>
-                  </div>
-                  <div>
-                    <dt class="meta">Public</dt>
-                    <dd class="mt-1 text-title-sm">{{ deal.isPublic ? 'Yes' : 'No' }}</dd>
-                  </div>
-                </dl>
-              </mat-card-content>
-              <mat-card-actions align="end">
-                <button matButton="outlined" type="button">Edit</button>
-              </mat-card-actions>
-            </mat-card>
-
-            <mat-card appearance="outlined" class="mt-4">
-              <mat-card-header>
-                <mat-card-title>Tasks</mat-card-title>
-              </mat-card-header>
-              <mat-card-content>
-                <div class="flex items-end gap-3">
-                  <mat-form-field class="flex-1">
-                    <mat-label>New task</mat-label>
-                    <input matInput type="text" [formField]="taskForm.title" />
-                  </mat-form-field>
-                  <mat-form-field class="w-36">
-                    <mat-label>Priority</mat-label>
-                    <mat-select [formField]="taskForm.priority">
-                      @for (priority of priorities; track priority) {
-                        <mat-option [value]="priority">{{ priorityLabels[priority] }}</mat-option>
-                      }
-                    </mat-select>
-                  </mat-form-field>
-                  <button matButton="filled" type="button" (click)="addTask(deal.id)">Add</button>
-                </div>
-
-                <mat-list class="mt-4">
-                  @for (task of selectedTasks(); track task.id) {
-                    <mat-list-item>
-                      <mat-checkbox
-                        matListItemIcon
-                        [checked]="task.done"
-                        (change)="toggleTask(task.id)"
-                        [attr.aria-label]="
-                          'Mark ' + task.title + (task.done ? ' as not done' : ' as done')
-                        "
-                      />
-                      <span matListItemTitle [class.line-through]="task.done">{{
-                        task.title
-                      }}</span>
-                      @if (task.dueDate) {
-                        <span matListItemLine>Due: {{ task.dueDate }}</span>
-                      }
-                      <mat-chip-set matListItemMeta>
-                        <mat-chip>{{ priorityLabels[task.priority] }}</mat-chip>
-                      </mat-chip-set>
-                    </mat-list-item>
-                  }
-                </mat-list>
-              </mat-card-content>
-              <mat-card-actions align="end">
-                <button matButton="text" type="button">Archive completed</button>
-              </mat-card-actions>
-            </mat-card>
-          </div>
+        @if (viewMode() === 'details') {
+          @if (selectedDeal(); as deal) {
+            <div>
+              <app-deal-details-card [deal]="deal" (editRequested)="onEditDeal()" />
+              <app-deal-tasks-card
+                class="mt-4"
+                [tasks]="selectedTasks()"
+                (taskAdded)="addTask(deal.id, $event)"
+                (taskToggled)="toggleTask($event)"
+                (archiveCompletedRequested)="onArchiveCompleted()"
+              />
+            </div>
+          } @else {
+            <p>Select a deal</p>
+          }
+        } @else if (viewMode() === 'editor') {
+          <app-deal-editor
+            [deal]="selectedDeal()"
+            (saved)="onSaveDeal()"
+            (cancelled)="onCancelEdit()"
+          />
+        } @else if (viewMode() === 'creator') {
+          <app-deal-editor (saved)="onSaveNewDeal()" (cancelled)="onCancelEdit()" />
         }
       </app-master-detail-layout>
     </main>
@@ -159,12 +56,13 @@ const emptyTask = (): NewTaskDraft => ({ title: '', priority: 'medium' });
   providers: [DealsStore], // Components (Type) lifecycle
 })
 export class DealsPage {
+onSaveNewDeal() {
+throw new Error('Method not implemented.');
+}
   // private readonly store = new DealsStore(new DealsAPI( new DealsConfig() )); // Concrete Coupling
   private readonly store = inject(DealsStore); // Abstract Dependency
-
-  protected readonly stageLabels = DEAL_STAGE_LABELS;
-  protected readonly priorityLabels = TASK_PRIORITY_LABELS;
-  protected readonly priorities = Object.keys(TASK_PRIORITY_LABELS) as TaskPriority[];
+  
+  protected readonly viewMode = signal<DealViewMode>('details');
 
   protected readonly filterText = signal('');
   protected readonly selectedDealId = signal<string | null>(null);
@@ -173,24 +71,42 @@ export class DealsPage {
     return this.store.filterDeals(this.filterText());
   });
 
-  protected readonly selectedDeal = computed<Deal | undefined>(
-    () =>
-      this.filteredDeals().find((deal) => deal.id === this.selectedDealId()) ??
-      this.filteredDeals()[0], // TODO: Decide about this
+  protected readonly selectedDeal = computed<Deal | undefined>(() =>
+    this.filteredDeals().find((deal) => deal.id === this.selectedDealId()),
   );
   protected readonly selectedTasks = computed(() => {
     const deal = this.selectedDeal();
     return deal ? this.store.getTasksForDeal(deal.id) : [];
   });
 
-  protected readonly taskDraft = signal<NewTaskDraft>(emptyTask());
-  protected readonly taskForm = form(this.taskDraft);
+  protected onSelectDeal(dealId: string): void {
+    this.selectedDealId.set(dealId);
+    this.viewMode.set('details');
+  }
 
-  protected addTask(dealId: string): void {
-    const { title, priority } = this.taskDraft();
-    if (!title.trim()) return;
-    this.store.addTask(dealId, title.trim(), priority);
-    this.taskDraft.set(emptyTask());
+  protected onCreateDeal(): void {
+    this.viewMode.set('creator');
+  }
+
+  protected onEditDeal(): void {
+    this.viewMode.set('editor');
+  }
+
+  protected onCancelEdit(): void {
+    this.viewMode.set('details');
+  }
+
+  protected onSaveDeal(): void {
+    // TODO: persist the saved deal
+    this.viewMode.set('details');
+  }
+
+  protected onArchiveCompleted(): void {
+    // TODO: archive completed tasks
+  }
+
+  protected addTask(dealId: string, task: { title: string; priority: TaskPriority }): void {
+    this.store.addTask(dealId, task.title, task.priority);
   }
 
   protected toggleTask(taskId: string): void {

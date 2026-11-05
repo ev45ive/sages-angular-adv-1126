@@ -261,28 +261,166 @@ add note on https://immerjs.github.io/immer/
 
 _**Agent (copilot/claude-haiku-5.5)**_
 
-<tool-use data-tool-type="generic" data-tool-name="vscode_fetchWebPage_internal"><details>
-<summary>Tool use: **vscode_fetchWebPage_internal**</summary>
+<tool-use data-tool-type="generic" data-tool-name="fetch_webpage"><details>
+<summary>Tool use: **fetch_webpage**</summary>
 
 Fetched https://immerjs.github.io/immer/
+
+**Input:**
+
+- query: `What is Immer, produce function, structural sharing, auto-freeze, drafts, Angular or signals usage, bundle size, and key API`
+- urls: `["https://immerjs.github.io/immer/"]`
 
 **Result:**
 
 ```
-/immer/
+Here is some relevant context from the web page https://immerjs.github.io/immer/:
+...
+# Introduction to Immer
+
+  [Sponsored: EthicalAds](https://server.ethicalads.io/proxy/click/8173/01a1ab8e-ae8c-7343-bc5f-88eea2cd1762/) [EthicalAds is a GDPR-compliant ad network for devs No cookie banners, and only
+dev-focused ads.](https://server.ethicalads.io/proxy/click/8173/01a1ab8e-ae8c-7343-bc5f-88eea2cd1762/) www.ethicalads.io [Ads by EthicalAds](https://www.ethicalads.io/advertisers/topics/frontend-web/?ref=ea-image)![Image](https://immerjs.github.io/immer/img/immer-logo.svg)
+
+
+...
+...
+# Immer
+...
+### Immer simplifies handling immutable data structuresDirect link to Immer simplifies handling immutable data structures
+
+
+Immer can be used in any context in which immutable data structures need to be
+used. For example in combination with React state, React or Redux reducers, or
+configuration management. Immutable data structures allow for (efficient) change
+detection: if the reference to an object didn't change, the object itself did not
+change. In addition, it makes cloning relatively cheap: Unchanged parts of a
+data tree don't need to be copied and are shared in memory with older versions of
+the same state.
+
+
+Generally speaking, these benefits can be achieved by making sure you never
+change any property of an object, array or map, but by always creating an altered
+copy instead. In practice this can result in code that is quite cumbersome to
+write, and it is easy to accidentally violate those constraints. Immer will help you
+to follow the immutable data paradigm by addressing these pain points:
+
+
+1. Immer will detect accidental mutations and throw an error.
+...
+...
+# Immer
+...
+### Immer simplifies handling immutable data structuresDirect link to Immer simplifies handling immutable data structures
+...
+2. Immer will remove the need for the typical boilerplate code that is needed when
+creating deep updates to immutable objects: Without Immer, object copies need to
+be made by han
+… (output truncated)
 ```
 </details></tool-use>
 
 _**Agent (copilot/claude-haiku-5.5)**_
 
-<tool-use data-tool-type="generic" data-tool-name="vscode_fetchWebPage_internal"><details>
-<summary>Tool use: **vscode_fetchWebPage_internal**</summary>
+<tool-use data-tool-type="generic" data-tool-name="fetch_webpage"><details>
+<summary>Tool use: **fetch_webpage**</summary>
 
 Fetched https://immerjs.github.io/immer/produce
+
+**Input:**
+
+- query: `produce returns same reference when no changes made, auto freeze, recipe returns, curried produce`
+- urls: `["https://immerjs.github.io/immer/produce"]`
 
 **Result:**
 
 ```
-/immer/produce
+Here is some relevant context from the web page https://immerjs.github.io/immer/produce:
+...
+# Using produce
+...
+## Example[Direct link to Example](https://immerjs.github.io/immer/produce/#example)
+...
+### Terminology[Direct link to Terminology](https://immerjs.github.io/immer/produce/#terminology)
+
+
+• `(base)state`, the immutable state passed to `produce`
+• `recipe`: the second argument of `produce`, that captures how the base state should be "mutated".
+• `draft`: the first argument of any `recipe`, which is a proxy to the original base state that can be safely mutated.
+• `producer`. A function that uses `produce` and is generally of the form `(baseState, ...arguments) => resultState`
+
+
+Note that it isn't strictly necessary to name the first argument of the recipe `draft`. You can name it anything you want, for example `users`. Using `draft` as a name is just a convention to signal: "mutation is OK here".
+
+ [Edit this page](https://github.com/immerjs/immer/edit/main/website/docs/produce.mdx) Copyright © 2026 Michel Weststrate
+
+...
+...
+# Using produce
+...
+## Example[Direct link to Example](https://immerjs.github.io/immer/produce/#example)
+
+  `import` `{`produce`}` `from` `"immer"` `const` baseState `=` `[`    `{`        `title`:` `
+"Learn TypeScript"`,`        `done`:` `true`    `}`,`    `{`        `title`:` `"Try Immer"`,`        `done`:` `false`    `
+}`]` `const` nextState `=` `produce`(`baseState`,` `draftState` `=>` `{`    draftState`.`push`(`{`title`
+:` `"Tweet about it"`}`)`    draftState`[`1`]`.`done` `=` `true`}`)`   `// the new item is only added to the next state,`// base state is unmodified`
+expect`(`baseState`.`length`)`.`toBe`(`2`)`expect`(`nextState`.`length`)`.`toBe`(`3`)` `
+...
+...
+# Using produce
+...
+## Example[Direct link to Example](https://immerjs.github.io/immer/produce/#example)
+...
+// same for the changed 'done' prop`expect`(`baseState`[`1`]`.`done`)`.`toBe`(`false`)`expect`(`nextState`[`1`]`.`done`)`.`toBe`(`true`)` `
+// unchanged data is str
+… (output truncated)
 ```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **immutability-change-detection.md**</summary>
+
+@@ lines 38-38 @@
+
+````
+Immer
+
+[Immer](https://immerjs.github.io/immer/) (about 3 KB gzipped) writes immutable updates as mutations on a draft.
+
+- `produce(base, recipe)` returns `nextState`. `base` is never changed.
+- The `draft` is a Proxy. Normal mutations (`push`, `splice`, `x.done = true`) are recorded and turned into copies.
+- Structural sharing: unchanged branches keep the same reference (`next[0] === base[0]`).
+- Changed branches get new references, so `===` change detection still works.
+- Freezes produced data, and reports accidental mutations.
+- Pure function, so it fits inside `signal.update()`.
+
+```ts
+import { produce } from 'immer';
+
+this.tasksState.update((tasks) =>
+  produce(tasks, (draft) => {
+    const task = draft.find((t) => t.id === taskId);
+    if (task) task.done = !task.done;
+  }),
+);
+```
+
+- Use Immer for deep or nested updates.
+- Use plain spread for small, flat updates. It adds no dependency.
+
+## 
+````
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+I added an "Immer" section to `docs/immutability-change-detection.md`, before "Pitfalls". It covers what Immer does (per the [introduction](https://immerjs.github.io/immer/) and [produce](https://immerjs.github.io/immer/produce) pages), a `signal.update()` example, and when to use it versus plain spread.
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="task" data-tool-name="manage_todo_list"><details>
+<summary>Tool use: **manage_todo_list**</summary>
+
+Created 3 todos
 </details></tool-use>

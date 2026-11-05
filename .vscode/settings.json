@@ -39,6 +39,7 @@
     "npx tsc": true,
     "npx eslint": true,
     "ng g": true,
-    "npx ng": true
+    "npx ng": true,
+    "npx ngc": true
   }
 }
