@@ -1,11 +1,12 @@
 import { Component } from '@angular/core';
-import { SharedImports } from '../../../../shared';
+import { MasterDetailLayout, SharedImports } from '../../../../shared';
 
 @Component({
   selector: 'app-deals-page',
   imports: [
     // SharedModule,
     SharedImports,
+    MasterDetailLayout,
   ],
   styles: [
     `
@@ -14,30 +15,16 @@ import { SharedImports } from '../../../../shared';
       }
     `,
   ],
-  template: ` 
-
-
-
-    <!-- .grid.grid-cols-2.my-5>div*3{Column $$$} -->
-    <div class="grid grid-cols-[minmax(200px,1fr)_3fr] gap-5 py-5">
-      <div>Column 001</div>
-      <div>Column 002</div>
-    </div>
-    
-
-    <!-- <div class="min-h-screen bg-surface text-on-surface">
-      <mat-toolbar class="border-b border-outline-variant">
-        <span class="text-title-md">CRM System</span>
-      </mat-toolbar>
-
-      <main class="mx-auto max-w-5xl p-6">
+  template: `
+    <div class="bg-surface text-on-surface">
+      <main class="">
         <div class="mb-4 flex items-center justify-between">
           <h1 class="text-headline-sm">Deals</h1>
           <button matButton="filled" type="button">New Deal</button>
         </div>
 
-        <div class="grid grid-cols-[260px_1fr] items-start gap-4">
-          <aside>
+        <app-master-detail-layout>
+          <aside appMasterDetailList>
             <mat-form-field class="w-full">
               <mat-label>Filter deals</mat-label>
               <input matInput type="search" />
@@ -157,9 +144,9 @@ import { SharedImports } from '../../../../shared';
               </mat-card-actions>
             </mat-card>
           </div>
-        </div>
+        </app-master-detail-layout>
       </main>
-    </div> -->
+    </div>
   `,
 })
 export class DealsPage {}

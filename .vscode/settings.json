@@ -38,6 +38,7 @@
     "npx prettier": true,
     "npx tsc": true,
     "npx eslint": true,
-    "ng g": true
+    "ng g": true,
+    "npx ng": true
   }
 }

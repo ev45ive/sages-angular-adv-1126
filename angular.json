@@ -14,7 +14,8 @@
         "@schematics/angular:component": {
           "inlineTemplate": true,
           "inlineStyle": true,
-          "skipTests": true
+          "skipTests": true,
+          "displayBlock": true
         },
         "@schematics/angular:class": {
           "skipTests": true

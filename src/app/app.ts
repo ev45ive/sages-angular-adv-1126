@@ -8,11 +8,10 @@ import { SharedUI } from './shared';
   styles: [],
   template: `
     <div class="mx-auto container grid gap-5 py-5">
-      <div class="flex justify-between gap-5">
-        <h1 class="text-2xl">CRM</h1>
-
+      <mat-toolbar class="border-b border-outline-variant flex justify-between gap-5">
+        <span class="text-title-md">CRM System</span>
         <button mat-raised-button="">Login</button>
-      </div>
+      </mat-toolbar>
 
       <router-outlet />
     </div>
