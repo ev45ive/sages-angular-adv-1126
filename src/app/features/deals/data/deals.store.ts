@@ -1,4 +1,4 @@
-import { Injectable, Service, signal } from '@angular/core';
+import { Service, signal } from '@angular/core';
 import { Account } from '../model/account.model';
 import { Contact } from '../model/contact.model';
 import { Deal } from '../model/deal.model';
@@ -9,7 +9,6 @@ import { SEED_ACCOUNTS, SEED_CONTACTS, SEED_DEALS, SEED_TASKS } from './deals-se
 
 @Service()
 export class DealsStore {
-
   // Read-Write Side - Private to Owner (my wallet!)
   private readonly dealsState = signal<Deal[]>(SEED_DEALS);
   private readonly tasksState = signal<DealTask[]>(SEED_TASKS);
@@ -46,11 +45,11 @@ export class DealsStore {
     );
   }
 
-  private accountName(id: string): string {
+  accountName(id: string): string {
     return this.accountsState().find((account) => account.id === id)?.name ?? '';
   }
 
-  private contactName(id: string): string {
+  contactName(id: string): string {
     return this.contactsState().find((contact) => contact.id === id)?.fullName ?? '';
   }
 }

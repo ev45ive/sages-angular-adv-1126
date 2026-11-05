@@ -4,6 +4,8 @@ import { MasterDetailLayout, SharedImports } from '../../../../shared';
 import { DealsStore } from '../../data/deals.store';
 import { Deal, DEAL_STAGE_LABELS } from '../../model/deal.model';
 import { TASK_PRIORITY_LABELS, TaskPriority } from '../../model/deal-task.model';
+import { AccountNamePipe } from '../../ui/pipes/account-name-pipe';
+import { ContactNamePipe } from '../../ui/pipes/contact-name-pipe';
 
 interface NewTaskDraft {
   title: string;
@@ -19,6 +21,8 @@ const emptyTask = (): NewTaskDraft => ({ title: '', priority: 'medium' });
     SharedImports,
     MasterDetailLayout,
     FormField,
+    AccountNamePipe,
+    ContactNamePipe,
   ],
   styles: [
     `
@@ -51,7 +55,7 @@ const emptyTask = (): NewTaskDraft => ({ title: '', priority: 'medium' });
                 [activated]="deal.id === selectedDeal()?.id"
                 (click)="selectedDealId.set(deal.id)"
               >
-                <span matListItemTitle>{{ deal.title }} — {{ accountName(deal.accountId) }}</span>
+                <span matListItemTitle>{{ deal.title }} — {{ deal.accountId | accountName }}</span>
                 <span matListItemLine>
                   {{ deal.value.amount | currency: deal.value.currency : 'symbol' : '1.0-0' }}
                 </span>
@@ -68,7 +72,7 @@ const emptyTask = (): NewTaskDraft => ({ title: '', priority: 'medium' });
             <mat-card appearance="outlined">
               <mat-card-header>
                 <mat-card-title
-                  >{{ deal.title }} — {{ accountName(deal.accountId) }}</mat-card-title
+                  >{{ deal.title }} — {{ deal.accountId | accountName }}</mat-card-title
                 >
                 <mat-card-subtitle>{{ deal.summary }}</mat-card-subtitle>
               </mat-card-header>
@@ -85,7 +89,7 @@ const emptyTask = (): NewTaskDraft => ({ title: '', priority: 'medium' });
                   </div>
                   <div>
                     <dt class="meta">Contact</dt>
-                    <dd class="mt-1 text-title-sm">{{ contactName(deal.contactId) }}</dd>
+                    <dd class="mt-1 text-title-sm">{{ deal.contactId | contactName }}</dd>
                   </div>
                   <div>
                     <dt class="meta">Public</dt>
@@ -181,14 +185,6 @@ export class DealsPage {
 
   protected readonly taskDraft = signal<NewTaskDraft>(emptyTask());
   protected readonly taskForm = form(this.taskDraft);
-
-  protected accountName(id: string): string {
-    return this.store.accounts().find((account) => account.id === id)?.name ?? '';
-  }
-
-  protected contactName(id: string): string {
-    return this.store.contacts().find((contact) => contact.id === id)?.fullName ?? '';
-  }
 
   protected addTask(dealId: string): void {
     const { title, priority } = this.taskDraft();
