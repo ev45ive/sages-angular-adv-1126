@@ -23,6 +23,12 @@ npm i -g @angular/cli@22.2.5
 
 ng new sages --directory "." -s -t --skip-tests --routing --ssr true --standalone true --style tailwind --zoneless false
 
+# npm + semver + package-lock.json
+https://semver.org/
+https://semver.npmjs.com/
+
+npm i  // package.json upgrade
+npm ci // package-lock.json exact
 
 
 # Material
