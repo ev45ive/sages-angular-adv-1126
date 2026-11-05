@@ -2,6 +2,11 @@
 
 @import 'tailwindcss';
 
+:root {
+  --mat-sys-corner-medium: 8px;
+  --mat-button-outlined-container-shape: var(--mat-sys-corner-medium);
+}
+
 @import './design/material-tokens.css';
 
 /* 
