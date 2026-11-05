@@ -160,15 +160,55 @@ export class DealsPage {
   protected readonly priorityLabels = TASK_PRIORITY_LABELS;
   protected readonly priorities = Object.keys(TASK_PRIORITY_LABELS) as TaskPriority[];
 
+  /* 
+    getter - signalA()
+    setter - signalA.set(v)
+
+    signal.__subscribers = new Set() // O(1)
+    
+    We want to avoid this:
+    signalA.subscribe(fn) -> .unsubscribe(fn)
+
+  
+    ## Reactive Context - effect()/computed()/template()/...
+    {
+      this.__prevSubscribers = new Set()
+      this.__currentSubscribers = new Set()
+
+      SIGNALS.__currentContext = this; // singleton
+      {
+        signalA() // get 
+          //  -> signalA.__subscribers.set( SIGNALS.__currentContext ) // start tracking!
+          //  -> this.__currentSubscribers.set( signalAt ) // touched signals
+
+        if(signalX()) signalB() // tracking + auto-untracking if not used
+
+        untracked(() => signalC() ) // no-tracking
+      }
+        
+      // Auto unsubscribe
+      SIGNALS.__currentContext = null
+      this.__prevSubscribers = this.__prevSubscribers.intersection(this.__currentSubscribers) // what was not touched
+    }
+
+    // Updates
+    signalA.set(v) // signalA.update(fn)
+
+    // Schechdule BATCH updates
+    signalA.__subscribers.forEach( sub => SIGNALS.__dirtyEffectsScheduledForCheck.add(sub); scheduleCheck() )
+
+  */
+
   protected readonly filterText = signal('');
   protected readonly selectedDealId = signal<string | null>(null);
 
   protected readonly filteredDeals = computed(() => {
-    const filterText = this.filterText();
+
+    const filterText = 1 > 2 ? this.filterText() : '';
 
     return this.store.filterDeals(filterText);
   });
-  
+
   protected readonly selectedDeal = computed<Deal | undefined>(
     () =>
       this.filteredDeals().find((deal) => deal.id === this.selectedDealId()) ??
