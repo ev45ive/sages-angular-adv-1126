@@ -5,9 +5,11 @@ import { Deal } from '../../model/deal.model';
 import { TaskPriority } from '../../model/deal-task.model';
 import { DealDetailsCard } from '../../ui/deal-details-card/deal-details-card';
 import { DealEditor } from '../../ui/deal-editor/deal-editor';
-import { DealMasterList, DealListItemTpl } from '../../ui/deal-master-list/deal-master-list';
-import { DealTasksCard } from '../../ui/deal-tasks-card/deal-tasks-card';
+import { DealItemTpl } from '../../ui/deal-item-tpl/deal-item-tpl';
 import { DealListItem } from '../../ui/deal-list-item/deal-list-item';
+import { DealMasterList } from '../../ui/deal-master-list/deal-master-list';
+import { DealTasksCard } from '../../ui/deal-tasks-card/deal-tasks-card';
+import { DealsFilter } from '../../ui/deals-filter/deals-filter';
 
 type DealViewMode = 'details' | 'editor' | 'creator';
 
@@ -16,39 +18,32 @@ type DealViewMode = 'details' | 'editor' | 'creator';
   imports: [
     MasterDetailLayout,
     DealMasterList,
+    DealListItem,
+    DealItemTpl,
     DealDetailsCard,
     DealTasksCard,
     DealEditor,
+    DealsFilter,
     SharedModule,
-    DealListItem,
-    DealListItemTpl,
   ],
   template: `
     <main class="bg-surface text-on-surface">
       <app-master-detail-layout>
-        <app-deal-master-list appMasterDetailList [deals]="filteredDeals()">
-          <!-- ng-template - parent prepares, child is creating with context -->
-          <!-- <ng-template appDealListItemTpl let-deal let-monkey="banana"> -->
-          
+        <app-deal-master-list
+          appMasterDetailList
+          [deals]="filteredDeals()"
+          [selectedId]="selectedDeal()?.id ?? null"
+          (dealSelected)="onSelectDeal($event)"
+        >
           <app-deal-list-item
-            *appDealListItemTpl="let deal; banana as monkey"
+            *appDealItemTpl="let deal; let isSelected = selected"
             [deal]="deal"
-            [selected]="deal.id === selectedDeal()?.id"
-            (dealSelected)="onSelectDeal($event)"
+            [selected]="isSelected"
           />
 
           <!-- ng-content - parent creates, child presents -->
           <ng-container app-master-list-header>
-            <mat-form-field class="w-full">
-              <mat-label>Filter deals</mat-label>
-              <input
-                matInput
-                type="search"
-                #filterInput
-                (input)="filterText.set(filterInput.value)"
-              />
-              <mat-icon matSuffix aria-hidden="true">search</mat-icon>
-            </mat-form-field>
+            <app-deals-filter [(value)]="filterText" />
 
             <button matButton="outlined" type="button" (click)="onCreateDeal()">Create new</button>
           </ng-container>

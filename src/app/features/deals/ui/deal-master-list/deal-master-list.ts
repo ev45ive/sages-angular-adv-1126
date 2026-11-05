@@ -1,41 +1,12 @@
-import {
-  Component,
-  computed,
-  contentChild,
-  Directive,
-  inject,
-  input,
-  model,
-  output,
-  TemplateRef,
-  viewChild,
-} from '@angular/core';
-import { SharedImports } from '@shared';
+import { Component, computed, contentChild, input, output } from '@angular/core';
+import { NgTemplateOutlet } from '@angular/common';
+import { Listbox, Option } from '@angular/aria/listbox';
 import { Deal } from '../../model/deal.model';
-import { DealListItem } from '../deal-list-item/deal-list-item';
-
-@Directive({
-  selector: '[appDealListItemTpl]',
-})
-export class DealListItemTpl {
-  readonly tpl = inject<
-    TemplateRef<{
-      $implicit: Deal;
-      banana: boolean;
-    }>
-  >(TemplateRef);
-
-  static ngTemplateContextGuard(
-    _dir: DealListItemTpl,
-    ctx: unknown,
-  ): ctx is { $implicit: Deal; banana: boolean } {
-    return ctx !== null;
-  }
-}
+import { DealItemTpl } from '../deal-item-tpl/deal-item-tpl';
 
 @Component({
   selector: 'app-deal-master-list',
-  imports: [SharedImports, DealListItem],
+  imports: [Listbox, Option, NgTemplateOutlet],
   styles: `
     :host {
       display: block;
@@ -44,36 +15,48 @@ export class DealListItemTpl {
   template: `
     <ng-content select="[app-master-list-header]"> Deals List </ng-content>
 
-    <mat-list class="mt-3">
+    <div
+      ngListbox
+      aria-label="Deals"
+      selectionMode="follow"
+      class="mt-3 flex flex-col gap-1"
+      [value]="selectedValue()"
+      (valueChange)="onValueChange($event)"
+    >
       @for (deal of deals(); track deal.id) {
-        <ng-container
-          *ngTemplateOutlet="
-            itemTpl()?.tpl;
-            context: {
-              $implicit: deal,
-              banana: true,
-            }
-          "
-        ></ng-container>
-      } @empty {
-        <mat-list-item>
-          <span matListItemTitle>No deals match the filter</span>
-        </mat-list-item>
+        <div
+          ngOption
+          [value]="deal.id"
+          class="min-w-0 cursor-pointer rounded-md p-3 outline-none hover:bg-surface-container-high aria-selected:bg-secondary-container aria-selected:text-on-secondary-container data-[active=true]:outline-2 data-[active=true]:outline-primary"
+        >
+          <ng-container
+            [ngTemplateOutlet]="itemTpl().templateRef"
+            [ngTemplateOutletContext]="{ $implicit: deal, selected: deal.id === selectedId() }"
+          />
+        </div>
       }
-    </mat-list>
+    </div>
 
-    <!-- <ng-template #listDeafultItem let-deal>
-      <app-deal-list-item [deal]="deal" />
-    </ng-template> -->
+    @if (deals().length === 0) {
+      <p class="mt-3 px-3 text-body-md text-on-surface-variant">No deals match the filter</p>
+    }
 
     <ng-content select="[app-master-list-footer]"> </ng-content>
   `,
 })
 export class DealMasterList {
   readonly deals = input.required<Deal[]>();
+  readonly itemTpl = contentChild.required(DealItemTpl);
+  readonly selectedId = input<string | null>(null);
+  readonly dealSelected = output<string>();
 
-  // listDeafultItem = viewChild('listDeafultItem');
-  // tpl = computed(() => this.itemTpl() ?? this.listDeafultItem());
+  protected readonly selectedValue = computed(() => {
+    const id = this.selectedId();
+    return id ? [id] : [];
+  });
 
-  itemTpl = contentChild(DealListItemTpl);
+  protected onValueChange(ids: string[]): void {
+    const [id] = ids;
+    if (id) this.dealSelected.emit(id);
+  }
 }
