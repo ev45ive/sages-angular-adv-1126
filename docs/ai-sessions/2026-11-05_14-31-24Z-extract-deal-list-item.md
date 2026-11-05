@@ -616,3 +616,132 @@ _**Agent (copilot/claude-haiku-5.5)**_
 
 Created 5 todos
 </details></tool-use>
+
+---
+
+_**User (2026-11-05 14:53:46Z)**_
+
+add $implicit context type guard
+
+---
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="copilot_findTextInFiles"><details>
+<summary>Tool use: **copilot_findTextInFiles**</summary>
+
+Searched for regex `TemplateRef|ngTemplateContextGuard|ngTemplate|\$implicit|structural directive` (`**/src/**`), 6 results
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="copilot_readFile"><details>
+<summary>Tool use: **copilot_readFile**</summary>
+
+Read `deal-master-list.ts`
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+The user has added a  directive whose  context is `{ $implicit: Deal; banana: boolean }`. I'll add a static `ngTemplateContextGuard` so the template context is type-checked for `*appDealListItemTpl` consumers. 
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **deal-master-list.ts**</summary>
+
+@@ lines 27-27 @@
+
+```
+
+  static ngTemplateContextGuard(
+    _dir: DealListItemTpl,
+    ctx: unknown,
+  ): ctx is { $implicit: Deal; banana: boolean } {
+    return true;
+  }
+
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="run_in_terminal"><details>
+<summary>Tool use: **run_in_terminal**</summary>
+
+Running ` npx prettier --write src/app/features/deals/ui/deal-master-list/deal-master-...`
+
+**Result:**
+
+```
+src/app/features/deals/ui/deal-master-list/deal-master-list.ts 249ms
+
+C:\Projects\sages-angular-adv-1126\src\app\features\deals\ui\deal-master-list\deal-master-list.ts
+   3:3  error  'computed' is defined but never used      @typescript-eslint/no-unused-vars
+   8:3  error  'model' is defined but never used         @typescript-eslint/no-unused-vars
+   9:3  error  'output' is defined but never used        @typescript-eslint/no-unused-vars
+  11:3  error  'viewChild' is defined but never used     @typescript-eslint/no-unused-vars
+  30:5  error  'ctx' is defined but only used as a type  @typescript-eslint/no-unused-vars
+
+✖ 5 problems (5 errors, 0 warnings)
+
+Command exited with code 1
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+The guard's  parameter trips the lint rule because it is only used in the type predicate. The other four unused-import errors come from the user's in-progress edits (, , ,  are used only in commented-out code), so I'll leave those alone. 
+
+ 
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="run_in_terminal"><details>
+<summary>Tool use: **run_in_terminal**</summary>
+
+Running ` npx tsc --noEmit -p tsconfig.app.json; npx eslint src/app/features/deals/ui/...`
+
+**Result:**
+
+```
+
+C:\Projects\sages-angular-adv-1126\src\app\features\deals\ui\deal-master-list\deal-master-list.ts
+   3:3  error  'computed' is defined but never used       @typescript-eslint/no-unused-vars
+   8:3  error  'model' is defined but never used          @typescript-eslint/no-unused-vars
+   9:3  error  'output' is defined but never used         @typescript-eslint/no-unused-vars
+  11:3  error  'viewChild' is defined but never used      @typescript-eslint/no-unused-vars
+  30:5  error  '_ctx' is defined but only used as a type  @typescript-eslint/no-unused-vars
+
+✖ 5 problems (5 errors, 0 warnings)
+
+Command exited with code 1
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **deal-master-list.ts**</summary>
+
+@@ lines 30-31 @@
+
+```
+_ctx: unknown,
+  ): _
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+Renaming didn't help, because the rule flags any parameter that is used only in the type predicate. I'll reference  in the return value. The guard is type-only and Angular never calls it at runtime, so the return value does not affect behavior. 
+
+ 
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="run_in_terminal"><details>
+<summary>Tool use: **run_in_terminal**</summary>
+
+Running ` npx tsc --noEmit -p tsconfig.app.json; npx eslint src/app/features/deals/ui/...`
+</details></tool-use>

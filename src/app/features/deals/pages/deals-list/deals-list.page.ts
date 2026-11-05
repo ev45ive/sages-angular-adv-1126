@@ -5,7 +5,7 @@ import { Deal } from '../../model/deal.model';
 import { TaskPriority } from '../../model/deal-task.model';
 import { DealDetailsCard } from '../../ui/deal-details-card/deal-details-card';
 import { DealEditor } from '../../ui/deal-editor/deal-editor';
-import { DealMasterList } from '../../ui/deal-master-list/deal-master-list';
+import { DealMasterList, DealListItemTpl } from '../../ui/deal-master-list/deal-master-list';
 import { DealTasksCard } from '../../ui/deal-tasks-card/deal-tasks-card';
 import { DealListItem } from '../../ui/deal-list-item/deal-list-item';
 
@@ -21,19 +21,21 @@ type DealViewMode = 'details' | 'editor' | 'creator';
     DealEditor,
     SharedModule,
     DealListItem,
+    DealListItemTpl,
   ],
   template: `
     <main class="bg-surface text-on-surface">
       <app-master-detail-layout>
         <app-deal-master-list appMasterDetailList [deals]="filteredDeals()">
           <!-- ng-template - parent prepares, child is creating with context -->
-          <ng-template #listItem let-deal let-monkey="banana">
-            <app-deal-list-item
-              [deal]="deal"
-              [selected]="deal.id === selectedDeal()?.id"
-              (dealSelected)="onSelectDeal($event)"
-            />
-          </ng-template>
+          <!-- <ng-template appDealListItemTpl let-deal let-monkey="banana"> -->
+          
+          <app-deal-list-item
+            *appDealListItemTpl="let deal; banana as monkey"
+            [deal]="deal"
+            [selected]="deal.id === selectedDeal()?.id"
+            (dealSelected)="onSelectDeal($event)"
+          />
 
           <!-- ng-content - parent creates, child presents -->
           <ng-container app-master-list-header>

@@ -2,6 +2,8 @@ import {
   Component,
   computed,
   contentChild,
+  Directive,
+  inject,
   input,
   model,
   output,
@@ -11,6 +13,25 @@ import {
 import { SharedImports } from '@shared';
 import { Deal } from '../../model/deal.model';
 import { DealListItem } from '../deal-list-item/deal-list-item';
+
+@Directive({
+  selector: '[appDealListItemTpl]',
+})
+export class DealListItemTpl {
+  readonly tpl = inject<
+    TemplateRef<{
+      $implicit: Deal;
+      banana: boolean;
+    }>
+  >(TemplateRef);
+
+  static ngTemplateContextGuard(
+    _dir: DealListItemTpl,
+    ctx: unknown,
+  ): ctx is { $implicit: Deal; banana: boolean } {
+    return ctx !== null;
+  }
+}
 
 @Component({
   selector: 'app-deal-master-list',
@@ -27,7 +48,7 @@ import { DealListItem } from '../deal-list-item/deal-list-item';
       @for (deal of deals(); track deal.id) {
         <ng-container
           *ngTemplateOutlet="
-            itemTpl();
+            itemTpl()?.tpl;
             context: {
               $implicit: deal,
               banana: true,
@@ -54,11 +75,5 @@ export class DealMasterList {
   // listDeafultItem = viewChild('listDeafultItem');
   // tpl = computed(() => this.itemTpl() ?? this.listDeafultItem());
 
-
-  itemTpl = contentChild<
-    TemplateRef<{
-      $implicit: Deal;
-      banana: boolean;
-    }>
-  >('listItem');
+  itemTpl = contentChild(DealListItemTpl);
 }
