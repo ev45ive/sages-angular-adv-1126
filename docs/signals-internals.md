@@ -1,0 +1,453 @@
+# Angular Signals: Internal Workings
+
+A short, intuitive guide to how signals, `computed()` and `effect()` work inside Angular.
+The pseudo code is simplified. Names follow the real implementation where possible.
+
+Source reference: `node_modules/@angular/core/fesm2022/_effect-chunk.mjs` (Angular 22.2.4, this repo).
+
+---
+
+## 1. Mental model
+
+Two ideas make the whole system work:
+
+| Idea | Meaning | Where it happens |
+| --- | --- | --- |
+| **Push "dirty"** | A write tells dependents "you might be stale". Nothing is computed. | `signal.set()` |
+| **Pull "value"** | A value is recomputed only when someone reads it and it is actually stale. | `computed()` read |
+
+Effects are the exception: they are pushed into a queue and run later.
+
+Result: the graph is **lazy** (no work nobody needs), **memoized** (no recompute if nothing changed), and **glitch-free** (each `computed` runs at most once per change).
+
+---
+
+## 2. The graph
+
+Every signal, computed and effect is a **node**. Edges point from a **producer** (dependency) to a **consumer** (dependent).
+
+```mermaid
+flowchart TD
+    a["signal a"] --> b["computed b = a * 2"]
+    a --> c["computed c = a + 1"]
+    b --> d["computed d = b + c"]
+    c --> d
+    d --> e["effect: log d"]
+```
+
+Each edge is a `Link` object. A link is stored in **two lists at once**:
+
+- the consumer's `producers` list (what I depend on)
+- the producer's `consumers` list (who depends on me, only while I am live)
+
+```ts
+// One edge. Stored in two linked lists at the same time.
+interface Link {
+  producer: ReactiveNode;
+  consumer: ReactiveNode;
+  lastReadVersion: number;      // producer.version the consumer last saw
+  nextProducer?: Link;          // consumer's list of dependencies
+  nextConsumer?: Link;          // producer's list of live dependents
+  prevConsumer?: Link;          // doubly linked, so removal is O(1)
+}
+```
+
+---
+
+## 3. Node state
+
+```ts
+interface ReactiveNode {
+  version: number;        // bumped only when the VALUE really changes
+  dirty: boolean;         // "my inputs may have changed, verify before use"
+  lastCleanEpoch: number; // global epoch at which I was last verified
+  producers?: Link;       // my dependencies
+  consumers?: Link;       // my live dependents (empty = not live)
+  recomputing: boolean;   // true while my computation is running
+}
+```
+
+Globals (module-level singletons):
+
+```ts
+let activeConsumer: ReactiveNode | null = null; // who is currently running; target for tracking
+let epoch = 1;                                   // global counter, bumped on every real signal change
+```
+
+`epoch` is a cheap "did anything change anywhere?" check. If a computed was verified at the current epoch, nothing in the whole app changed since, so it can skip all checks.
+
+---
+
+## 4. Creating a signal
+
+```ts
+function signal<T>(initial: T, equal = Object.is) {
+  const node = { value: initial, version: 0, consumers: undefined, dirty: false, equal };
+
+  const read = () => {
+    trackRead(node);          // register dependency with whoever is reading
+    return node.value;
+  };
+
+  const set = (next: T) => {
+    if (node.equal(node.value, next)) return; // same value: do nothing at all
+
+    node.value = next;
+    node.version++;           // consumers compare this against their lastReadVersion
+    epoch++;                  // "something changed" marker for the fast path
+    markConsumersDirty(node); // push phase, see section 6
+  };
+
+  return [read, set] as const;
+}
+```
+
+`update(fn)` is just `set(fn(node.value))`.
+
+---
+
+## 5. Tracking: how reads register dependencies
+
+Auto-tracking has no explicit subscribe call. A read simply records itself on the currently running consumer.
+
+```ts
+function trackRead(producer: ReactiveNode): void {
+  const consumer = activeConsumer;
+  if (consumer === null) return;        // read outside a reactive context: plain getter
+
+  // Same signal read twice in a row in the same run: already linked, skip.
+  if (consumer.lastLinkedProducer === producer) return;
+
+  // Reuse the link from the previous run if it lines up (fast path),
+  // otherwise create a new one.
+  const link = findOrCreateLink(consumer, producer);
+  link.lastReadVersion = producer.version;   // remember what value I saw
+
+  // Only live consumers need to be reachable from the producer for push notifications.
+  if (isLive(consumer)) addToProducerConsumers(producer, link);
+}
+```
+
+Key point: the dependency list is **rebuilt on every run**. A signal read in one branch of an `if` and not in the other is tracked only when that branch runs.
+
+---
+
+## 6. Writing: push dirty flags
+
+```ts
+function markConsumersDirty(producer: ReactiveNode): void {
+  for (const link of producer.consumers ?? []) {   // only LIVE consumers are in this list
+    const consumer = link.consumer;
+
+    // Already dirty -> its consumers were already notified. Stop here.
+    if (consumer.dirty) continue;
+
+    consumer.dirty = true;
+    markConsumersDirty(consumer);   // propagate down the graph (flags only, no compute)
+    consumer.onDirty?.(consumer);   // effects queue themselves, views schedule CD
+  }
+}
+```
+
+Writes never run a `computed` and never run an effect synchronously. They only flip flags and queue work.
+
+---
+
+## 7. Reading a computed: pull and verify
+
+This is the core of memoization.
+
+```ts
+function readComputed<T>(node: ComputedNode<T>): T {
+  refresh(node);            // make sure my value is current
+  trackRead(node);          // then register myself with the reader
+  if (node.error) throw node.error;
+  return node.value;
+}
+
+function refresh(node: ComputedNode<unknown>): void {
+  // Fast path 1: I am live and not dirty. Push notifications guarantee I am current.
+  if (isLive(node) && !node.dirty) return;
+
+  // Fast path 2: not dirty, and nothing changed ANYWHERE since I last checked.
+  if (!node.dirty && node.lastCleanEpoch === epoch) return;
+
+  // Slow path: I need to know whether one of my inputs really changed.
+  const neverComputed = node.value === UNSET;
+  if (neverComputed || anyProducerChanged(node)) {
+    recompute(node);
+  }
+
+  node.dirty = false;
+  node.lastCleanEpoch = epoch;   // verified at this epoch
+}
+
+function anyProducerChanged(node: ReactiveNode): boolean {
+  for (const link of node.producers ?? []) {
+    // Already changed since I last read it?
+    if (link.lastReadVersion !== link.producer.version) return true;
+
+    // Bring the producer up to date first. This is what makes the pull recursive.
+    refresh(link.producer);
+
+    // Did refreshing it actually change its value?
+    if (link.lastReadVersion !== link.producer.version) return true;
+  }
+  return false;
+}
+```
+
+`anyProducerChanged` compares **versions**, not values. That is why `version` exists: it is cheap to compare and tells you whether a value was replaced.
+
+---
+
+## 8. Recomputing with tracking
+
+```ts
+function recompute(node: ComputedNode<unknown>): void {
+  const prevConsumer = activeConsumer;
+  activeConsumer = node;          // start tracking reads into this node
+  node.recomputing = true;
+
+  let next;
+  try {
+    next = node.computation();    // user code; every signal read here gets linked
+  } catch (err) {
+    next = ERRORED;
+    node.error = err;
+  } finally {
+    activeConsumer = prevConsumer; // stop tracking
+    node.recomputing = false;
+    dropUnusedProducers(node);     // links not touched in this run are removed
+  }
+
+  // "Equal" check: same value -> keep the OLD version.
+  // Downstream sees no version change and can skip its own recomputation.
+  if (node.equal(node.value, next)) return;
+
+  node.value = next;
+  node.version++;
+}
+```
+
+The `equal` short-circuit is the reason a computed like `isEven = () => count() % 2 === 0` can stop a chain: if the boolean did not change, nothing downstream re-runs.
+
+---
+
+## 9. Effects: scheduled, then verified
+
+```ts
+function effect(fn: () => void) {
+  const node = { version: 0, dirty: true, alwaysLive: true, producers: undefined };
+
+  node.onDirty = () => scheduler.schedule(node); // push: only queue
+  scheduler.schedule(node);                      // first run is always queued
+  return { destroy: () => destroyNode(node) };
+}
+
+function runEffect(node: EffectNode): void {
+  node.dirty = false;
+
+  // After the first run, only run if an input really changed.
+  // This skips effects whose computed dependencies were dirty but returned the same value.
+  if (node.version > 0 && !anyProducerChanged(node)) return;
+
+  node.version++;
+  runCleanup();                   // previous onCleanup callback
+  runWithTracking(node, fn);      // same tracking as computed, result discarded
+}
+```
+
+Effects are pure consumers. Nothing reads their value, so they exist only to produce side effects.
+
+---
+
+## 10. Live vs non-live consumers
+
+| | Live | Not live |
+| --- | --- | --- |
+| Who | An effect, a template, or a computed that is read by a live consumer | A computed read from a plain method or top-level code |
+| In producer's `consumers` list? | Yes | No |
+| Gets push notifications? | Yes | No |
+| On read | Checks `dirty` flag, then fast paths | Always does the epoch / version check |
+
+Being live is what makes a node **push-capable**. Without a live consumer, a computed does not subscribe to anything and stays cheap. It is only verified on read.
+
+When the first live consumer attaches to a non-live node, the node links itself into its own producers. When the last one leaves, it unlinks again. This keeps memory and notification work proportional to what is actually watched.
+
+---
+
+## 11. Cleanup of stale dependencies
+
+After each run, links that were not read during that run are removed:
+
+```ts
+function dropUnusedProducers(node: ReactiveNode): void {
+  // Any link from the previous run that was not revisited is stale.
+  for (const link of unvisitedLinks(node)) {
+    removeLinkFromProducerConsumers(link); // O(1) thanks to the doubly linked list
+  }
+}
+```
+
+This is what makes conditional reads work automatically:
+
+```ts
+const showDetails = signal(false);
+const name = signal('Ann');
+const label = computed(() => (showDetails() ? name() : '-'));
+// showDetails = false  -> label depends only on showDetails
+// showDetails = true   -> label depends on showDetails AND name
+// When showDetails flips back to false, the link to name is dropped.
+```
+
+---
+
+## 12. untracked()
+
+```ts
+function untracked<T>(fn: () => T): T {
+  const prev = activeConsumer;
+  activeConsumer = null;   // reads inside fn are not linked
+  try { return fn(); }
+  finally { activeConsumer = prev; }
+}
+```
+
+Use it when you want to read a signal inside an effect or computed without depending on it.
+
+---
+
+## 13. Worked example: the diamond
+
+```ts
+const a = signal(1);
+const b = computed(() => a() * 2);
+const c = computed(() => a() + 1);
+const d = computed(() => b() + c());
+effect(() => console.log(d()));
+
+a.set(2);
+```
+
+What happens on `a.set(2)`:
+
+```mermaid
+sequenceDiagram
+    participant Code as Caller
+    participant A as signal a
+    participant B as computed b
+    participant C as computed c
+    participant D as computed d
+    participant E as effect
+    participant S as Scheduler
+
+    Code->>A: set(2)
+    A->>A: version++, epoch++
+    A->>B: markDirty (push)
+    A->>C: markDirty (push)
+    B->>D: markDirty (push)
+    C->>D: already dirty, stop
+    D->>E: markDirty (push)
+    E->>S: schedule
+    Note over S: later, outside the write
+    S->>E: runEffect
+    E->>D: poll, refresh
+    D->>B: poll, refresh
+    B->>A: version changed, recompute
+    D->>C: poll, refresh
+    C->>A: version changed, recompute
+    D->>D: recompute once, sum changed
+    E->>E: run user fn with new d
+```
+
+Notes:
+
+- `b`, `c` and `d` are each recomputed **once**, even though `d` depends on both `b` and `c`. That is the glitch-free guarantee.
+- The effect runs once, after the write, not in the middle of the propagation.
+
+---
+
+## 14. State of a computed
+
+```mermaid
+stateDiagram-v2
+    [*] --> Dirty: created, never computed
+    Dirty --> Clean: read, recomputed only if a producer changed
+    Clean --> Dirty: a producer was written (push)
+    Clean --> Clean: read, epoch unchanged (fast path)
+```
+
+---
+
+## 15. Decision flow when reading a computed
+
+```mermaid
+flowchart TD
+    R["read computed x()"] --> L{"live and clean?"}
+    L -- yes --> T["return cached value"]
+    L -- no --> EP{"clean and epoch unchanged?"}
+    EP -- yes --> T
+    EP -- no --> P{"any producer version changed?"}
+    P -- "yes or never computed" --> RC["recompute and track deps"]
+    P -- no --> M["mark clean"]
+    RC --> EQ{"new value equal to old?"}
+    EQ -- no --> V["version++"]
+    EQ -- yes --> K["keep old version"]
+    V --> M
+    K --> M
+    M --> T
+```
+
+---
+
+## 16. Effect flow
+
+```mermaid
+flowchart LR
+    W["signal.set"] --> N["push dirty to consumers"]
+    N --> Q["effect marked dirty, queued"]
+    Q --> F["scheduler flush"]
+    F --> PL{"any producer changed?"}
+    PL -- no --> SKIP["skip run"]
+    PL -- yes --> RUN["run fn with tracking"]
+```
+
+---
+
+## 17. Summary
+
+- **Writes** are cheap: set a value, bump `version` and `epoch`, flag dependents dirty.
+- **Reads of computed** are lazy: verify, recompute only if an input's version changed, otherwise reuse the cache.
+- **Effects** are scheduled and verified before running, so unchanged inputs do not trigger side effects.
+- **Dependencies** are discovered by reading during execution and rebuilt on every run.
+- **Glitch-free**: a computed never sees a half-updated graph, because it is only evaluated on pull, after all dirty flags are set.
+
+---
+
+## 18. Differences from a naive "subscribers Set" model
+
+A simple model often shown for signals stores `signal.subscribers = new Set()` and calls each subscriber on write. Angular differs in these ways:
+
+- Edges are **linked lists of `Link` objects**, not `Set`s. Links are reused between runs and removed in O(1). No allocation on every recompute.
+- Writes **do not call** subscribers. They only set `dirty` flags. Real work happens on pull (computed) or in the scheduler (effects).
+- A `computed` is pull-based, so it has **no subscription at all** unless a live consumer needs it.
+- The `epoch` counter gives a global fast path that a per-node Set model does not have.
+- Dependencies are **recorded from actual reads**, so conditional reads are handled automatically.
+
+Simplified names above map to real Angular code like this:
+
+| Pseudo code | Angular (`_effect-chunk.mjs`) |
+| --- | --- |
+| `activeConsumer` | `activeConsumer` |
+| `epoch` | `epoch` |
+| `trackRead` | `producerAccessed` |
+| `markConsumersDirty` | `producerNotifyConsumers` / `consumerMarkDirty` |
+| `refresh` | `producerUpdateValueVersion` |
+| `anyProducerChanged` | `consumerPollProducersForChange` |
+| `recompute` | `producerRecomputeValue` |
+| `runEffect` | `runEffect` |
+| `Link` | `ReactiveLink` (`producer`, `consumer`, `lastReadVersion`, ...) |
+| `consumer.onDirty` | `consumerMarkedDirty` (root effects call the scheduler, view effects mark CD) |
+
+Internal names belong to Angular and may change between versions. The behavior described here is the stable part.

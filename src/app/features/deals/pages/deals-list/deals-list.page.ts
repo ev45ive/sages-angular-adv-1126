@@ -170,7 +170,7 @@ export class DealsPage {
     signalA.subscribe(fn) -> .unsubscribe(fn)
 
   
-    ## Reactive Context - effect()/computed()/template()/...
+    ## Reactive Context - effect()/computed()/inject()/template()/...
     {
       this.__prevSubscribers = new Set()
       this.__currentSubscribers = new Set()
@@ -189,6 +189,10 @@ export class DealsPage {
       // Auto unsubscribe
       SIGNALS.__currentContext = null
       this.__prevSubscribers = this.__prevSubscribers.intersection(this.__currentSubscribers) // what was not touched
+
+      // onDestory
+      inject(DestorRef) - when closest parent context  is destroyed
+      .onDestory( () => unsubscribe all )
     }
 
     // Updates
