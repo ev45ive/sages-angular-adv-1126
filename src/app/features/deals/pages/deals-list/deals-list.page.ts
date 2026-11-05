@@ -14,9 +14,24 @@ import { SharedImports } from '../../../../shared';
       }
     `,
   ],
-  //   .banana[_ngcontent-ng-c398410595]
-  template: `
-    <div class="min-h-screen bg-surface text-on-surface">
+  template: ` 
+
+    <!-- .flex.min-h-svh>.flex-1*2{Column $$$} -->
+    <div class="flex my-5">
+      <div class="flex-1">Column 001</div>
+      <div class="flex-2">Column 002</div>
+      <div class="flex-2">Column 002</div>
+    </div>
+
+    <!-- .grid.grid-cols-2.my-5>div*3{Column $$$} -->
+    <div class="grid grid-cols-2 my-5">
+      <div>Column 001</div>
+      <div>Column 002</div>
+      <div>Column 003</div>
+    </div>
+    
+
+    <!-- <div class="min-h-screen bg-surface text-on-surface">
       <mat-toolbar class="border-b border-outline-variant">
         <span class="text-title-md">CRM System</span>
       </mat-toolbar>
@@ -150,7 +165,7 @@ import { SharedImports } from '../../../../shared';
           </div>
         </div>
       </main>
-    </div>
+    </div> -->
   `,
 })
 export class DealsPage {}

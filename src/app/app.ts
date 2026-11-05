@@ -6,12 +6,14 @@ import { RouterOutlet } from '@angular/router';
   selector: 'app-root',
   styles: [],
   template: `
-    <div class="mx-auto p-banana">
-      <h1 class="text-2xl text-primary ">Hello, {{ title().toUpperCase() }}</h1>
+    <div class="mx-auto container">
+      <h1 class="text-2xl ">Hello, {{ title().toUpperCase() }}</h1>
     </div>
 
     <!-- <app-deals-page/> -->
-    <router-outlet />
+    <div class="mx-auto container">
+      <router-outlet />
+    </div>
   `,
 })
 export class App {
