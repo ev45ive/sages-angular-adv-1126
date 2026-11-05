@@ -29,24 +29,20 @@ type DealViewMode = 'details' | 'editor' | 'creator';
   template: `
     <main class="bg-surface text-on-surface">
       <app-master-detail-layout>
+        <!-- --- -->
         <app-deal-master-list
           appMasterDetailList
           [deals]="filteredDeals()"
           [selectedId]="selectedDeal()?.id ?? null"
           (dealSelected)="onSelectDeal($event)"
         >
-          <app-deal-list-item
-            *appDealItemTpl="let deal; let isSelected = selected"
-            [deal]="deal"
-            [selected]="isSelected"
-          />
-
-          <!-- ng-content - parent creates, child presents -->
-          <ng-container app-master-list-header>
-            <app-deals-filter [(value)]="filterText" />
-
-            <button matButton="outlined" type="button" (click)="onCreateDeal()">Create new</button>
+          <ng-container *appDealItemTpl="let deal; let isSelected = selected">
+            <app-deal-list-item [deal]="deal" [selected]="isSelected" />
           </ng-container>
+
+          <app-deals-filter app-master-list-header [(value)]="filterText" />
+
+          <button matButton="outlined" type="button" (click)="onCreateDeal()">Create new</button>
         </app-deal-master-list>
 
         @if (viewMode() === 'details') {
@@ -102,7 +98,7 @@ export class DealsPage {
     return deal ? this.store.getTasksForDeal(deal.id) : [];
   });
 
-  protected onSelectDeal(dealId: string): void {
+  protected onSelectDeal(dealId: string | null): void {
     this.selectedDealId.set(dealId);
     this.viewMode.set('details');
   }

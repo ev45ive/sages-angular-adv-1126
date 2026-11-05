@@ -7798,3 +7798,74 @@ _**Agent (copilot/claude-haiku-5.5)**_
 
 Created 4 todos
 </details></tool-use>
+
+---
+
+_**User (2026-11-05 16:07:27Z)**_
+
+can this be streamlined somehow?
+
+---
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="run_in_terminal"><details>
+<summary>Tool use: **run_in_terminal**</summary>
+
+Running ` npx prettier --check src/app/features/deals/ui/deal-master-list/deal-master-...`
+
+Check formatting, types, and lint after the edit
+
+```bash
+npx prettier --check src/app/features/deals/ui/deal-master-list/deal-master-list.ts && npx tsc --noEmit -p tsconfig.app.json; echo "tsc exit $?"; npx eslint src/app/features/deals/ui/deal-master-list/deal-master-list.ts; echo "eslint exit $?"
+```
+
+**Result:**
+
+```
+Checking formatting...
+All matched files use Prettier code style!
+tsc exit 0
+eslint exit 0
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **deal-master-list.ts**</summary>
+
+@@ lines 58-59 @@
+
+```
+[id]: string[]): void {
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+I destructured the parameter in `onValueChange`, which removes the intermediate `const` line. Prettier, `tsc`, and ESLint pass.
+
+```typescript
+protected onValueChange([id]: string[]): void {
+  if (id) this.dealSelected.emit(id);
+}
+```
+
+I kept `selectedValue` as a `computed`. Inlining it in the template (`[value]="selectedId() ? [selectedId()] : []"`) would create a new array on every change detection, and the type narrowing would not carry over.
+
+---
+
+_**User (2026-11-05 16:09:58Z)**_
+
+[this.selectedId()] would create [undefined] ? is that ok?
+
+---
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+No, it would not produce `[undefined]` at runtime. The ternary checks `selectedId()` first, so `[selectedId()]` only runs when the id is truthy. Without the check, an empty selection would give `[null]`, because the input defaults to `null`, not `undefined`.
+
+The real issue is the type. TypeScript does not narrow a function call result, so `[selectedId()]` is typed `(string | null)[]`, and the template would not type-check against `string[]`. That is why the `computed` `selectedValue` is worth keeping. It narrows once and gives a `string[]`.
+
+Your edit to `onValueChange` has a related gap. If the listbox emits an empty array, `id` is `undefined` and `dealSelected.emit(undefined)` runs. The `string` type from the destructured parameter hides this, since `tsc` does not flag it. I can restore the guard, or leave it if the listbox never emits an empty value in `follow` mode.

@@ -48,15 +48,13 @@ export class DealMasterList {
   readonly deals = input.required<Deal[]>();
   readonly itemTpl = contentChild.required(DealItemTpl);
   readonly selectedId = input<string | null>(null);
-  readonly dealSelected = output<string>();
+  readonly dealSelected = output<string | null>();
 
   protected readonly selectedValue = computed(() => {
-    const id = this.selectedId();
-    return id ? [id] : [];
+    return [this.selectedId()];
   });
 
-  protected onValueChange(ids: string[]): void {
-    const [id] = ids;
-    if (id) this.dealSelected.emit(id);
+  protected onValueChange([id]: (string | null)[]): void {
+    this.dealSelected.emit(id);
   }
 }
