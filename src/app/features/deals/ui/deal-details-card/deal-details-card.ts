@@ -1,20 +1,17 @@
 import { CurrencyPipe } from '@angular/common';
 import { Component, input, output } from '@angular/core';
 import { SharedImports } from '@shared';
-import { Deal, DEAL_STAGE_LABELS } from '../../model/deal.model';
+import { Deal } from '../../model/deal.model';
 import { AccountNamePipe } from '../pipes/account-name-pipe';
+import { DealStageBadge } from '../deal-stage-badge/deal-stage-badge';
 import { ContactNamePipe } from '../pipes/contact-name-pipe';
 
 @Component({
   selector: 'app-deal-details-card',
-  imports: [SharedImports, AccountNamePipe, ContactNamePipe, CurrencyPipe],
+  imports: [SharedImports, AccountNamePipe, ContactNamePipe, CurrencyPipe, DealStageBadge],
   styles: `
     :host {
       display: block;
-    }
-
-    mat-chip-set {
-      display: flex;
     }
   `,
   template: `
@@ -24,9 +21,7 @@ import { ContactNamePipe } from '../pipes/contact-name-pipe';
         <mat-card-subtitle>{{ deal().summary }}</mat-card-subtitle>
       </mat-card-header>
       <mat-card-content>
-        <mat-chip-set>
-          <mat-chip>{{ stageLabels[deal().stage] }}</mat-chip>
-        </mat-chip-set>
+        <app-deal-stage-badge [stage]="deal().stage" />
         <dl class="mt-4 grid grid-cols-3 gap-4 text-body-md">
           <div>
             <dt class="meta">Value</dt>
@@ -53,6 +48,4 @@ import { ContactNamePipe } from '../pipes/contact-name-pipe';
 export class DealDetailsCard {
   readonly deal = input.required<Deal>();
   readonly editRequested = output<void>();
-
-  protected readonly stageLabels = DEAL_STAGE_LABELS;
 }

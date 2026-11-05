@@ -1,11 +1,12 @@
 import { Component, input, output } from '@angular/core';
 import { SharedImports } from '@shared';
-import { DealTask, TASK_PRIORITY_LABELS, TaskPriority } from '../../model/deal-task.model';
+import { DealTask, TaskPriority } from '../../model/deal-task.model';
 import { DealTaskComposer } from '../deal-task-composer/deal-task-composer';
+import { TaskPriorityBadge } from '../task-priority-badge/task-priority-badge';
 
 @Component({
   selector: 'app-deal-tasks-card',
-  imports: [SharedImports, DealTaskComposer],
+  imports: [SharedImports, DealTaskComposer, TaskPriorityBadge],
   styles: `
     :host {
       display: block;
@@ -32,9 +33,7 @@ import { DealTaskComposer } from '../deal-task-composer/deal-task-composer';
               @if (task.dueDate) {
                 <span matListItemLine>Due: {{ task.dueDate }}</span>
               }
-              <mat-chip-set matListItemMeta>
-                <mat-chip>{{ priorityLabels[task.priority] }}</mat-chip>
-              </mat-chip-set>
+              <app-task-priority-badge matListItemMeta [priority]="task.priority" />
             </mat-list-item>
           } @empty {
             <mat-list-item>
@@ -56,6 +55,4 @@ export class DealTasksCard {
   readonly taskAdded = output<{ title: string; priority: TaskPriority }>();
   readonly taskToggled = output<string>();
   readonly archiveCompletedRequested = output<void>();
-
-  protected readonly priorityLabels = TASK_PRIORITY_LABELS;
 }
