@@ -533,3 +533,957 @@ _**Agent (copilot/claude-haiku-5.5)**_
 
 Created 4 todos
 </details></tool-use>
+
+---
+
+_**User (2026-11-05 14:11:58Z)**_
+
+change tone classes to  [attr.data-deal-stage] DOM reflected input, and match selectors
+
+---
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="get_errors"><details>
+<summary>Tool use: **get_errors**</summary>
+
+Checked `deal-stage-badge.ts`, no problems found
+
+**Input:**
+
+- filePaths:
+
+```
+[
+  "c:\\Projects\\sages-angular-adv-1126\\src\\app\\features\\deals\\ui\\deal-stage-badge\\deal-stage-badge.ts"
+]
+```
+
+
+**Result:**
+
+```
+<errors path="c:\\Projects\\sages-angular-adv-1126\\src\\app\\features\\deals\\ui\\deal-stage-badge\\deal-stage-badge.ts">
+No errors found
+</errors>
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **deal-stage-badge.ts**</summary>
+
+@@ lines 56-57 @@ (deleted)
+
+@@ lines 48-48 @@
+
+```
+attr.data-deal-stage]': 'stag
+```
+
+@@ lines 21-41 @@
+
+```
+:host([data-deal-stage='new']) {
+      --badge-bg: #dbeafe;
+      --badge-fg: #1e3a8a;
+    }
+
+    :host([data-deal-stage='proposal']) {
+      --badge-bg: #ede9fe;
+      --badge-fg: #5b21b6;
+    }
+
+    :host([data-deal-stage='negotiation']) {
+      --badge-bg: #fef3c7;
+      --badge-fg: #78350f;
+    }
+
+    :host([data-deal-stage='closed-won']) {
+      --badge-bg: #dcfce7;
+      --badge-fg: #14532d;
+    }
+
+    :host([data-deal-stage='closed-lost'])
+```
+
+@@ lines 5-13 @@ (deleted)
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+The badge now reflects its stage as `data-deal-stage` on the host, and the five tone rules are `:host([data-deal-stage='…'])` selectors. The `STAGE_TONE` map and the `tone` computed are removed. The file has no errors.
+
+The change is in `src/app/features/deals/ui/deal-stage-badge/deal-stage-badge.ts`.
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="task" data-tool-name="manage_todo_list"><details>
+<summary>Tool use: **manage_todo_list**</summary>
+
+Created 2 todos
+</details></tool-use>
+
+---
+
+_**User (2026-11-05 14:15:50Z)**_
+
+add defailt --badge-* vars if no deal-stage matches 
+
+---
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="read" data-tool-name="read_file"><details>
+<summary>Tool use: **read_file**</summary>
+
+Read `deal-stage-badge.ts`
+
+**Input:**
+
+- endLine: `80`
+- filePath: `c:\Projects\sages-angular-adv-1126\src\app\features\deals\ui\deal-stage-badge\deal-stage-badge.ts`
+- startLine: `1`
+
+**Result:**
+
+```
+import { Component, computed, input } from '@angular/core';
+import { Badge } from '@shared';
+import { DEAL_STAGE_LABELS, DealStage } from '../../model/deal.model';
+
+@Component({
+  selector: 'app-deal-stage-badge',
+  imports: [Badge],
+  styles: `
+    :host([data-deal-stage='new']) {
+      --badge-bg: #dbeafe;
+      --badge-fg: #1e3a8a;
+    }
+
+    :host([data-deal-stage='proposal']) {
+      --badge-bg: #ede9fe;
+      --badge-fg: #5b21b6;
+    }
+
+    :host([data-deal-stage='negotiation']) {
+      --badge-bg: #fef3c7;
+      --badge-fg: #78350f;
+    }
+
+    :host([data-deal-stage='closed-won']) {
+      --badge-bg: #dcfce7;
+      --badge-fg: #14532d;
+    }
+
+    :host([data-deal-stage='closed-lost']) {
+      --badge-bg: #fee2e2;
+      --badge-fg: #7f1d1d;
+    }
+  `,
+  template: ` <app-badge>{{ label() }}</app-badge> `,
+  host: {
+    class: 'block',
+    '[attr.data-deal-stage]': 'stage()',
+  },
+})
+export class DealStageBadge {
+  readonly stage = input.required<DealStage>();
+
+  // TODO: DealConfigurationService() .dealStageLabels()
+
+  protected readonly label = computed(() => DEAL_STAGE_LABELS[this.stage()]);
+}
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="get_errors"><details>
+<summary>Tool use: **get_errors**</summary>
+
+Checked `deal-stage-badge.ts`, no problems found
+
+**Input:**
+
+- filePaths:
+
+```
+[
+  "c:\\Projects\\sages-angular-adv-1126\\src\\app\\features\\deals\\ui\\deal-stage-badge\\deal-stage-badge.ts"
+]
+```
+
+
+**Result:**
+
+```
+<errors path="c:\\Projects\\sages-angular-adv-1126\\src\\app\\features\\deals\\ui\\deal-stage-badge\\deal-stage-badge.ts">
+No errors found
+</errors>
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **deal-stage-badge.ts**</summary>
+
+@@ lines 9-9 @@
+
+```
+ {
+      --badge-bg: #e5e7eb;
+      --badge-fg: #374151;
+    }
+
+    :host
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+I added a default `:host` rule with neutral gray `--badge-bg` and `--badge-fg` values to `src/app/features/deals/ui/deal-stage-badge/deal-stage-badge.ts`. The stage-specific `:host([data-deal-stage=…])` rules have higher specificity, so they still override the defaults. The file has no errors.
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="task" data-tool-name="manage_todo_list"><details>
+<summary>Tool use: **manage_todo_list**</summary>
+
+Created 3 todos
+</details></tool-use>
+
+---
+
+_**User (2026-11-05 14:16:52Z)**_
+
+add rule to #file:angular.instructions.md that means
+expose visual variant dimensions as literal union inputs reflected to DOM attributes, with :host chaing component  
+
+---
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="read" data-tool-name="read_file"><details>
+<summary>Tool use: **read_file**</summary>
+
+Read `angular.instructions.md`, lines 30 to 45
+
+**Input:**
+
+- endLine: `45`
+- filePath: `c:\Projects\sages-angular-adv-1126\.github\instructions\angular.instructions.md`
+- startLine: `30`
+
+**Result:**
+
+```
+
+- Keep components small and focused on a single responsibility
+- Use `input()` and `output()` functions instead of decorators
+- Use `model()` for two-way bound properties with `[(prop)]` syntax instead of pairing `input()` with `output()`
+- Use `computed()` for derived state
+- Use `linkedSignal()` for state derived from multiple reactive sources that must stay synchronized
+- Prefer inline templates for small components
+- Prefer Signal Forms (`@angular/forms/signals`) for new forms. They are stable in Angular v22+ and provide signal-based state, type-safe field access, and schema-based validation
+- When not using Signal Forms, prefer Reactive forms instead of Template-driven ones
+- Do NOT use `ngClass`, use `class` bindings instead
+- Do NOT use `ngStyle`, use `style` bindings instead
+- Do NOT import `CommonModule`, import only the directives and pipes the template uses, such as `AsyncPipe` or `DatePipe`
+- When using external templates/styles, use paths relative to the component TS file.
+
+## State Management
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **angular.instructions.md**</summary>
+
+@@ lines 36-36 @@
+
+```
+Expose visual variant dimensions as literal union inputs (for example `input<'new' | 'won'>()`) reflected to the DOM with `[attr.data-<name>]` in the `host` object
+- Style variants with `:host([data-<name>='value'])` selectors instead of class bindings, and define default values on `:host`
+- 
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+I added two bullets to the Components section of `.github/instructions/angular.instructions.md`. They cover literal union inputs reflected with `[attr.data-<name>]` in , and `:host([data-<name>='value'])` styling with defaults on `:host`.
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="task" data-tool-name="manage_todo_list"><details>
+<summary>Tool use: **manage_todo_list**</summary>
+
+Created 1 todo
+</details></tool-use>
+
+---
+
+_**User (2026-11-05 14:19:21Z)**_
+
+add rule with :host mapping css vars to selectors, and variants only change css vars
+
+show me here example of how those rules will be applied on other example components
+
+---
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="read" data-tool-name="read_file"><details>
+<summary>Tool use: **read_file**</summary>
+
+Read `angular.instructions.md`, lines 25 to 60
+
+**Input:**
+
+- endLine: `60`
+- filePath: `c:\Projects\sages-angular-adv-1126\.github\instructions\angular.instructions.md`
+- startLine: `25`
+
+**Result:**
+
+```
+
+- It MUST pass all AXE checks.
+- It MUST follow all WCAG AA minimums, including focus management, color contrast, and ARIA attributes.
+
+## Components
+
+- Keep components small and focused on a single responsibility
+- Use `input()` and `output()` functions instead of decorators
+- Use `model()` for two-way bound properties with `[(prop)]` syntax instead of pairing `input()` with `output()`
+- Use `computed()` for derived state
+- Use `linkedSignal()` for state derived from multiple reactive sources that must stay synchronized
+- Expose visual variant dimensions as literal union inputs (for example `input<'new' | 'won'>()`) reflected to the DOM with `[attr.data-<name>]` in the `host` in @Component() 
+- Style variants with `:host([data-<name>='value'])` selectors instead of class bindings, and define default values on `:host`
+- Prefer inline templates for small components
+- Prefer Signal Forms (`@angular/forms/signals`) for new forms. They are stable in Angular v22+ and provide signal-based state, type-safe field access, and schema-based validation
+- When not using Signal Forms, prefer Reactive forms instead of Template-driven ones
+- Do NOT use `ngClass`, use `class` bindings instead
+- Do NOT use `ngStyle`, use `style` bindings instead
+- Do NOT import `CommonModule`, import only the directives and pipes the template uses, such as `AsyncPipe` or `DatePipe`
+- When using external templates/styles, use paths relative to the component TS file.
+
+## State Management
+
+- Use signals for local component state
+- Use `computed()` for derived state
+- Keep state transformations pure and predictable
+- Do NOT use `mutate` on signals, use `update` or `set` instead
+
+## Templates
+
+- Keep templates simple and avoid complex logic
+- Use native control flow (`@if`, `@for`, `@switch`) instead of `*ngIf`, `*ngFor`, `*ngSwitch`
+- Use the async pipe to handle observables
+- Do not assume globals like (`new Date()`) are available.
+
+## Services
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **angular.instructions.md**</summary>
+
+@@ lines 38-38 @@
+
+```
+- In `:host`, map CSS variables to selectors. Variant selectors only change CSS variables, never layout or other properties
+
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+I added the rule to `.github/instructions/angular.instructions.md`: `:host` maps CSS variables to selectors, and variant selectors only change CSS variables.
+
+Examples of how it applies to other components:
+
+**Status tag** (`app-status-tag`), with `tone` input:
+- Host: `'[attr.data-tone]': 'tone()'`
+- `:host { --tag-bg: #e5e7eb; --tag-fg: #374151; }` (defaults)
+- `:host([data-tone='success']) { --tag-bg: #dcfce7; --tag-fg: #14532d; }`
+- `:host([data-tone='danger']) { --tag-bg: #fee2e2; --tag-fg: #7f1d1d; }`
+- Template uses `var(--tag-bg)` and `var(--tag-fg)`. Layout stays in the base rule, not in the variants.
+
+**Action button** (`app-action-button`), with `variant` input (`'primary' | 'ghost'`):
+- Host: `'[attr.data-variant]': 'variant()'`
+- `:host { --btn-bg: #2563eb; --btn-fg: #ffffff; padding: 0.5rem 1rem; }` (defaults and layout)
+- `:host([data-variant='ghost']) { --btn-bg: transparent; --btn-fg: #2563eb; }`
+- Variants change only `--btn-bg` and `--btn-fg`. Padding is not repeated in the variant rule.
+
+**Deal card** (`app-deal-card`), with  input:
+- Host: `'[attr.data-deal-stage]': 'stage()'`
+- `:host([data-deal-stage='won']) { --card-border: #16a34a; }`
+- `:host([data-deal-stage='lost']) { --card-border: #dc2626; }`
+- Template: `border: 1px solid var(--card-border, #d1d5db)`. The fallback in `var()` covers the case where no stage matches.
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="task" data-tool-name="manage_todo_list"><details>
+<summary>Tool use: **manage_todo_list**</summary>
+
+Created 2 todos
+</details></tool-use>
+
+---
+
+_**User (2026-11-05 14:20:11Z)**_
+
+what if component html is nested structure and we need child selectors - example:
+
+---
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+Your message ends at "example:", so the example didn't come through. Please paste the template and styles you have in mind.
+
+In the meantime, the rule for nested markup:
+
+- **Inherit, don't select.** CSS custom properties inherit into the DOM, so inner elements can read `var(--btn-bg)` without any child selector. The variant rule stays on `:host`.
+- **Inner parts read vars.** If an inner element needs its own value, it gets a variable of its own, set in the base `:host` rule or on the inner element, e.g. `--label-fg: var(--btn-fg)`. Variants then only change the root variable.
+- **Child selectors are a last resort.** A rule like `:host([data-variant='ghost']) .label { ... }` changes a property directly, which breaks the "variants only change CSS vars" rule. Avoid it unless there is no other way.
+- **Projected content is out of reach.** Content passed through `<ng-content>` is styled by the parent component, not by the child's `:host` rules, so it can only be reached through inherited variables.
+
+---
+
+_**User (2026-11-05 14:20:49Z)**_
+
+show more complex example - component styles and template 
+
+---
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+Here is a deal card with a nested badge, a header, a projected action slot, and variant vars that inherit into the children.
+
+```ts
+// deal-card.ts
+import { Component, input } from '@angular/core';
+import { DealStageBadge } from '../deal-stage-badge/deal-stage-badge';
+
+export type DealCardStage = 'new' | 'won' | 'lost';
+
+@Component({
+  selector: 'app-deal-card',
+  imports: [DealStageBadge],
+  host: {
+    '[attr.data-deal-stage]': 'stage()',
+  },
+  styles: `
+    :host {
+      --card-bg: #ffffff;
+      --card-fg: #111827;
+      --card-muted: #6b7280;
+      --card-border: #d1d5db;
+      --card-accent: var(--card-border);
+
+      display: block;
+    }
+
+    :host([data-deal-stage='won']) {
+      --card-accent: #16a34a;
+    }
+
+    :host([data-deal-stage='lost']) {
+      --card-accent: #dc2626;
+      --card-muted: #9ca3af;
+    }
+
+    .card {
+      display: grid;
+      gap: 0.5rem;
+      padding: 1rem;
+      border: 1px solid var(--card-border);
+      border-left: 4px solid var(--card-accent);
+      border-radius: 0.5rem;
+      background: var(--card-bg);
+      color: var(--card-fg);
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+    }
+
+    .meta {
+      margin: 0;
+      color: var(--card-muted);
+      font-size: 0.875rem;
+    }
+
+    .actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.5rem;
+    }
+  `,
+  template: `
+    <article class="card">
+      <header class="header">
+        <h3>{{ title() }}</h3>
+        <app-deal-stage-badge [stage]="stage()" />
+      </header>
+
+      <p class="meta">{{ meta() }}</p>
+
+      <div class="actions">
+        <ng-content select="[card-actions]" />
+      </div>
+    </article>
+  `,
+})
+export class DealCard {
+  readonly title = input.required<string>();
+  readonly meta = input<string>('');
+  readonly stage = input.required<DealCardStage>();
+}
+```
+
+Consumer that projects its own content:
+
+```ts
+// deal-list-item.ts (consumer)
+@Component({
+  selector: 'app-deal-list-item',
+  imports: [DealCard],
+  styles: `
+    .open {
+      color: var(--card-accent);
+      border: 1px solid var(--card-accent);
+      background: transparent;
+      border-radius: 0.375rem;
+      padding: 0.25rem 0.75rem;
+    }
+  `,
+  template: `
+    <app-deal-card [title]="'Acme renewal'" [meta]="'Owner: Anna'" [stage]="'won'">
+      <button card-actions class="open" type="button">Open</button>
+    </app-deal-card>
+  `,
+})
+export class DealListItem {}
+```
+
+Key points:
+
+- The card's `:host` rules change only CSS variables. `.card`, `.header`, `.meta`, and `.actions` read those variables with `var()`, so nested markup needs no child selectors.
+- The badge sets its own `--badge-*` values on its host, so the card's variables do not leak into it. The badge styles stay in the badge component.
+- The projected button reads `var(--card-accent)` from the consumer's styles. Inherited custom properties reach it without a selector into the card.
+- `ng-content select="[card-actions]"` keeps the slot explicit, so the card controls where projected content lands.
+- The example uses a local `DealCardStage` type. The existing  in the deals model has different values, so the card's type would need to match it in a real project.
+
+---
+
+_**User (2026-11-05 14:23:17Z)**_
+
+show me example with inline tailwind using css vars and groups instead of separate css selectors
+
+---
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+This example uses Tailwind v4 syntax, which I haven't verified against the project's installed version. The card sets its variables as arbitrary properties on the host, and the data-attribute variant changes them without a stylesheet. Children read the variables through arbitrary values. The consumer uses `group-data-*` to react to the card's stage.
+
+```ts
+// deal-card.ts
+import { Component, input } from '@angular/core';
+import { DealStageBadge } from '../deal-stage-badge/deal-stage-badge';
+
+export type DealCardStage = 'new' | 'won' | 'lost';
+
+@Component({
+  selector: 'app-deal-card',
+  imports: [DealStageBadge],
+  host: {
+    '[attr.data-deal-stage]': 'stage()',
+    class: `group block
+      [--card-bg:#ffffff] [--card-fg:#111827] [--card-muted:#6b7280]
+      [--card-border:#d1d5db] [--card-accent:var(--card-border)]
+      data-[deal-stage=won]:[--card-accent:#16a34a]
+      data-[deal-stage=lost]:[--card-accent:#dc2626]
+      data-[deal-stage=lost]:[--card-muted:#9ca3af]`,
+  },
+  template: `
+    <article
+      class="grid gap-2 p-4 rounded-lg border border-[color:var(--card-border)] border-l-4 border-l-[color:var(--card-accent)] bg-[var(--card-bg)] text-[var(--card-fg)]"
+    >
+      <header class="flex items-center justify-between gap-2">
+        <h3>{{ title() }}</h3>
+        <app-deal-stage-badge [stage]="stage()" />
+      </header>
+
+      <p class="m-0 text-sm text-[var(--card-muted)]">{{ meta() }}</p>
+
+      <div class="flex justify-end gap-2">
+        <ng-content select="[card-actions]" />
+      </div>
+    </article>
+  `,
+})
+export class DealCard {
+  readonly title = input.required<string>();
+  readonly meta = input<string>('');
+  readonly stage = input.required<DealCardStage>();
+}
+```
+
+Consumer with a projected button that reacts to the card's stage through the group:
+
+```ts
+// deal-list-item.ts
+@Component({
+  selector: 'app-deal-list-item',
+  imports: [DealCard],
+  template: `
+    <app-deal-card [title]="'Acme renewal'" [meta]="'Owner: Anna'" [stage]="'lost'">
+      <button
+        card-actions
+        type="button"
+        class="rounded-md border px-3 py-1 text-[var(--card-accent)] border-[color:var(--card-accent)] group-data-[deal-stage=lost]:opacity-60 group-data-[deal-stage=lost]:pointer-events-none"
+      >
+        Open
+      </button>
+    </app-deal-card>
+  `,
+})
+export class DealListItem {}
+```
+
+Key points:
+
+- The host `group` class makes every descendant, including projected content, eligible for `group-data-[...]` variants.
+- The host's `data-[deal-stage=…]:[--var:…]` variants change only CSS variables, which matches the existing rule.
+- There is no  block, so no separate selectors exist. Layout and color come from utilities on the elements.
+- `[color:…]` and `[var(…)]` hints keep Tailwind from guessing whether `border-l-…` is a width or a color.
+
+---
+
+_**User (2026-11-05 14:24:21Z)**_
+
+keep variants and css vars values in 'styles', just tailwind usage inside template 
+
+---
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+Variants and CSS variable values now live in . The template keeps only utility classes. The `group` class moves to the `article` in the template, since it is still an ancestor of the projected content.
+
+```ts
+// deal-card.ts
+import { Component, input } from '@angular/core';
+import { DealStageBadge } from '../deal-stage-badge/deal-stage-badge';
+
+export type DealCardStage = 'new' | 'won' | 'lost';
+
+@Component({
+  selector: 'app-deal-card',
+  imports: [DealStageBadge],
+  host: {
+    '[attr.data-deal-stage]': 'stage()',
+  },
+  styles: `
+    :host {
+      --card-bg: #ffffff;
+      --card-fg: #111827;
+      --card-muted: #6b7280;
+      --card-border: #d1d5db;
+      --card-accent: var(--card-border);
+
+      display: block;
+    }
+
+    :host([data-deal-stage='won']) {
+      --card-accent: #16a34a;
+    }
+
+    :host([data-deal-stage='lost']) {
+      --card-accent: #dc2626;
+      --card-muted: #9ca3af;
+    }
+  `,
+  template: `
+    <article
+      class="group grid gap-2 p-4 rounded-lg border border-[color:var(--card-border)] border-l-4 border-l-[color:var(--card-accent)] bg-[var(--card-bg)] text-[var(--card-fg)]"
+    >
+      <header class="flex items-center justify-between gap-2">
+        <h3>{{ title() }}</h3>
+        <app-deal-stage-badge [stage]="stage()" />
+      </header>
+
+      <p class="m-0 text-sm text-[var(--card-muted)]">{{ meta() }}</p>
+
+      <div class="flex justify-end gap-2">
+        <ng-content select="[card-actions]" />
+      </div>
+    </article>
+  `,
+})
+export class DealCard {
+  readonly title = input.required<string>();
+  readonly meta = input<string>('');
+  readonly stage = input.required<DealCardStage>();
+}
+```
+
+The consumer's template is unchanged. Its `group-data-[deal-stage=lost]:` utilities still work, because the `group` ancestor is now the `article` inside the card.
+
+---
+
+_**User (2026-11-05 14:27:32Z)**_
+
+save those rules and example usages in separate .md in docs
+
+---
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="search" data-tool-name="grep_search"><details>
+<summary>Tool use: **grep_search**</summary>
+
+Searched for regex `data-<name>|:host|CSS variables|host.class` (`**/.github/instructions/angular.instructions.md`), 5 results
+
+**Input:**
+
+- includePattern: `.github/instructions/angular.instructions.md`
+- isRegexp: `true`
+- query: `data-<name>|:host|CSS variables|host.class`
+
+**Result:**
+
+```
+Found 5 matches in 1 file for "data-<name>|:host|CSS variables|host.class"
+
+.github/instructions/angular.instructions.md
+36:- Expose visual variant dimensions as literal union inputs (for example `input<'new' | 'won'>()`) reflected to the DOM with `[attr.data-<name>]` in the `host` in @Component()
+37:- Style variants with `:host([data-<name>='value'])` selectors instead of class bindings, and define default values on `:host`
+38:- In `:host`, map CSS variables to selectors. Variant selectors only change CSS variables, never layout or other properties
+81:- Avoid `::ng-deep` and `!important`. Prefer CSS variables and tokens. If an override is unavoidable, use a named class such as `.fix-<name>-override`.
+82:- Put layout classes of a reusable component in its `host.class` so consumers do not need to add them.
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="create_file"><details>
+<summary>Tool use: **create_file**</summary>
+
+Created `css-variant-theming.md`
+
+**Input:**
+
+- content:
+
+```
+# Component Variants with CSS Variables
+
+How to expose visual variants as inputs, reflect them to the DOM, and style them through CSS variables.
+
+## Rules
+
+Source: [angular.instructions.md](../.github/instructions/angular.instructions.md) (Components section).
+
+- Expose visual variant dimensions as literal union inputs (for example `input<'new' | 'won'>()`).
+- Reflect each variant input to the DOM with `[attr.data-<name>]` in the `host` object of `@Component()`.
+- Style variants with `:host([data-<name>='value'])` selectors instead of class bindings. Define default values on `:host`.
+- In `:host`, map CSS variables to selectors. Variant selectors only change CSS variables, never layout or other properties.
+- Nested markup reads inherited CSS variables with `var()`. Avoid child selectors that change properties per variant.
+- Projected content (`ng-content`) is styled by its parent, so it reaches component variables only through inheritance.
+- Put layout classes of a reusable component in its `host.class` so consumers do not need to add them.
+
+## Why
+
+- Variant values stay in one place (`:host`), which keeps variants easy to review.
+- Consumers change look by setting an input. They do not write selectors.
+- Child elements inherit variables, so nested markup needs no per-variant rules.
+- Default values in `:host` keep the component usable when no variant matches.
+
+## Example: Basic Variant
+
+Component `app-status-tag` with a `tone` input.
+
+- Host: `[attr.data-tone]` bound to `tone()`.
+- `:host` sets default `--tag-bg` and `--tag-fg` values.
+- `:host([data-tone='success'])` sets green values.
+- `:host([data-tone='danger'])` sets red values.
+- Template uses `var(--tag-bg)` and `var(--tag-fg)`. Layout stays in the base `:host` rule.
+
+## Example: Button with Layout and Variant
+
+Component `app-action-button` with a `variant` input (`'primary' | 'ghost'`).
+
+- Host: `[attr.data-variant]` bound to `variant()`.
+- `:host` sets defaults for `--btn-bg`, `--btn-fg`, padding, and layout.
+- `:host([data-variant='ghost'])` changes only `--btn-bg` and `--btn-fg`.
+- Padding is not repeated in the variant rule.
+
+## Example: Nested Structure (Deal Card)
+
+Component `app-deal-card` with a `stage` input, a nested `app-deal-stage-badge`, and a projected action slot.
+
+Card styles (`styles`):
+
+- `:host` sets defaults: `--card-bg`, `--card-fg`, `--card-muted`, `--card-border`, and `--card-accent` (defaults to `--card-border`). It also sets `display: block`.
+- `:host([data-deal-stage='won'])` changes `--card-accent` to green.
+- `:host([data-deal-stage='lost'])` changes `--card-accent` to red and `--card-muted` to a lighter gray.
+
+Card template (Tailwind utilities only):
+
+- The `article` has the `group` class. It is an ancestor of the projected content, so `group-data-[...]` variants work there.
+- The `article` reads `var(--card-border)`, `var(--card-accent)`, `var(--card-bg)`, and `var(--card-fg)`.
+- The meta paragraph reads `var(--card-muted)`.
+- The `ng-content` slot is `select="[card-actions]"`.
+
+Consumer (projects a button):
+
+- The button uses `text-[var(--card-accent)]` and `border-[color:var(--card-accent)]`, which inherit from the card.
+- `group-data-[deal-stage=lost]:opacity-60` and `group-data-[deal-stage=lost]:pointer-events-none` react to the card's stage without a selector.
+
+Notes:
+
+- The nested badge sets its own `--badge-*` values on its host, so card variables do not leak into it.
+- The card's type (`DealCardStage`) must match the stage type used by the deals model in a real project.
+
+## Anti-Patterns
+
+- Setting `class` bindings per variant instead of `[attr.data-*]` with `:host` selectors.
+- Repeating layout properties in every variant rule.
+- Child selectors such as `:host([data-variant='ghost']) .label` that change properties directly.
+- Using `::ng-deep` to reach nested markup or projected content.
+- Hardcoding colors in child elements instead of reading CSS variables.
+
+## Tailwind Usage
+
+- Keep variant values and CSS variable values in `styles`.
+- Use Tailwind utilities in the template only. Read variables with arbitrary values such as `bg-[var(--card-bg)]`.
+- Use `[color:...]` hints for arbitrary color values such as `border-l-[color:var(--card-accent)]`, so Tailwind does not treat them as widths.
+- Use `group` on an ancestor and `group-data-[...]` variants to react to a parent's data attribute from nested elements.
+
+```
+
+- filePath: `c:\Projects\sages-angular-adv-1126\docs\css-variant-theming.md`
+
+**Result:**
+
+```
+The following files were successfully edited:
+c:\Projects\sages-angular-adv-1126\docs\css-variant-theming.md
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **css-variant-theming.md**</summary>
+
+@@ lines 1-1 @@
+
+```
+# Component Variants with CSS Variables
+
+How to expose visual variants as inputs, reflect them to the DOM, and style them through CSS variables.
+
+## Rules
+
+Source: [angular.instructions.md](../.github/instructions/angular.instructions.md) (Components section).
+
+- Expose visual variant dimensions as literal union inputs (for example `input<'new' | 'won'>()`).
+- Reflect each variant input to the DOM with `[attr.data-<name>]` in the `host` object of `@Component()`.
+- Style variants with `:host([data-<name>='value'])` selectors instead of class bindings. Define default values on `:host`.
+- In `:host`, map CSS variables to selectors. Variant selectors only change CSS variables, never layout or other properties.
+- Nested markup reads inherited CSS variables with `var()`. Avoid child selectors that change properties per variant.
+- Projected content (`ng-content`) is styled by its parent, so it reaches component variables only through inheritance.
+- Put layout classes of a reusable component in its `host.class` so consumers do not need to add them.
+
+## Why
+
+- Variant values stay in one place (`:host`), which keeps variants easy to review.
+- Consumers change look by setting an input. They do not write selectors.
+- Child elements inherit variables, so nested markup needs no per-variant rules.
+- Default values in `:host` keep the component usable when no variant matches.
+
+## Example: Basic Variant
+
+Component `app-status-tag` with a `tone` input.
+
+- Host: `[attr.data-tone]` bound to `tone()`.
+- `:host` sets default `--tag-bg` and `--tag-fg` values.
+- `:host([data-tone='success'])` sets green values.
+- `:host([data-tone='danger'])` sets red values.
+- Template uses `var(--tag-bg)` and `var(--tag-fg)`. Layout stays in the base `:host` rule.
+
+## Example: Button with Layout and Variant
+
+Component `app-action-button` with a `variant` input (`'primary' | 'ghost'`).
+
+- Host: `[attr.data-variant]` bound to `variant()`.
+- `:host` sets defaults for `--btn-bg`, `--btn-fg`, padding, and layout.
+- `:host([data-variant='ghost'])` changes only `--btn-bg` and `--btn-fg`.
+- Padding is not repeated in the variant rule.
+
+## Example: Nested Structure (Deal Card)
+
+Component `app-deal-card` with a `stage` input, a nested `app-deal-stage-badge`, and a projected action slot.
+
+Card styles (`styles`):
+
+- `:host` sets defaults: `--card-bg`, `--card-fg`, `--card-muted`, `--card-border`, and `--card-accent` (defaults to `--card-border`). It also sets `display: block`.
+- `:host([data-deal-stage='won'])` changes `--card-accent` to green.
+- `:host([data-deal-stage='lost'])` changes `--card-accent` to red and `--card-muted` to a lighter gray.
+
+Card template (Tailwind utilities only):
+
+- The `article` has the `group` class. It is an ancestor of the projected content, so `group-data-[...]` variants work there.
+- The `article` reads `var(--card-border)`, `var(--card-accent)`, `var(--card-bg)`, and `var(--card-fg)`.
+- The meta paragraph reads `var(--card-muted)`.
+- The `ng-content` slot is `select="[card-actions]"`.
+
+Consumer (projects a button):
+
+- The button uses `text-[var(--card-accent)]` and `border-[color:var(--card-accent)]`, which inherit from the card.
+- `group-data-[deal-stage=lost]:opacity-60` and `group-data-[deal-stage=lost]:pointer-events-none` react to the card's stage without a selector.
+
+Notes:
+
+- The nested badge sets its own `--badge-*` values on its host, so card variables do not leak into it.
+- The card's type (`DealCardStage`) must match the stage type used by the deals model in a real project.
+
+## Anti-Patterns
+
+- Setting `class` bindings per variant instead of `[attr.data-*]` with `:host` selectors.
+- Repeating layout properties in every variant rule.
+- Child selectors such as `:host([data-variant='ghost']) .label` that change properties directly.
+- Using `::ng-deep` to reach nested markup or projected content.
+- Hardcoding colors in child elements instead of reading CSS variables.
+
+## Tailwind Usage
+
+- Keep variant values and CSS variable values in `styles`.
+- Use Tailwind utilities in the template only. Read variables with arbitrary values such as `bg-[var(--card-bg)]`.
+- Use `[color:...]` hints for arbitrary color values such as `border-l-[color:var(--card-accent)]`, so Tailwind does not treat them as widths.
+- Use `group` on an ancestor and `group-data-[...]` variants to react to a parent's data attribute from nested elements.
+
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+I saved the rules and examples to `docs/css-variant-theming.md`. The file links back to the Components section of `.github/instructions/angular.instructions.md` and covers the status tag, action button, and deal card examples. It also includes the Tailwind usage notes and anti-patterns.
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="task" data-tool-name="manage_todo_list"><details>
+<summary>Tool use: **manage_todo_list**</summary>
+
+Created 3 todos
+</details></tool-use>

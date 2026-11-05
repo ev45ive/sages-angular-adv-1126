@@ -1,13 +1,11 @@
-import { CurrencyPipe } from '@angular/common';
 import { Component, input, model, output } from '@angular/core';
 import { SharedImports } from '@shared';
 import { Deal } from '../../model/deal.model';
-import { AccountNamePipe } from '../pipes/account-name-pipe';
-import { DealStageBadge } from '../deal-stage-badge/deal-stage-badge';
+import { DealListItem } from '../deal-list-item/deal-list-item';
 
 @Component({
   selector: 'app-deal-master-list',
-  imports: [SharedImports, AccountNamePipe, CurrencyPipe, DealStageBadge],
+  imports: [SharedImports, DealListItem],
   styles: `
     :host {
       display: block;
@@ -24,19 +22,11 @@ import { DealStageBadge } from '../deal-stage-badge/deal-stage-badge';
 
     <mat-list class="mt-3">
       @for (deal of deals(); track deal.id) {
-        <button
-          mat-list-item
-          type="button"
-          [attr.aria-current]="deal.id === selectedId() ? 'true' : null"
-          [activated]="deal.id === selectedId()"
-          (click)="dealSelected.emit(deal.id)"
-        >
-          <span matListItemTitle>{{ deal.title }} — {{ deal.accountId | accountName }}</span>
-          <span matListItemLine>
-            {{ deal.value.amount | currency: deal.value.currency : 'symbol' : '1.0-0' }}
-          </span>
-          <app-deal-stage-badge matListItemMeta [stage]="deal.stage" />
-        </button>
+        <app-deal-list-item
+          [deal]="deal"
+          [selected]="deal.id === selectedId()"
+          (dealSelected)="dealSelected.emit($event)"
+        />
       } @empty {
         <mat-list-item>
           <span matListItemTitle>No deals match the filter</span>
