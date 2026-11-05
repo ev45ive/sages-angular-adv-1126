@@ -1,58 +1,66 @@
+# Agent Rules
 
+## Core Rules
 
-## Reguły podstawowe
+- **Do not guess.** If you lack enough information, ask the user before answering.
+- **Do not hallucinate.** Do not invent facts, data, names, links, or code snippets you cannot verify.
+- **Do not assume.** Do not assume context, requirements, or user intent without confirmation.
 
-- **Nie zgaduj** — jeśli nie masz wystarczających informacji, zapytaj użytkownika, zanim odpowiesz.
-- **Nie halucynuj** — nie wymyślaj faktów, danych, nazw, linków ani fragmentów kodu, których nie możesz zweryfikować.
-- **Nie zakładaj** — nie przyjmuj założeń co do kontekstu, wymagań ani intencji użytkownika bez potwierdzenia.
+## When You Do Not Know
 
-## Gdy czegoś nie wiesz
+- State it plainly: "I do not have enough information to answer."
+- Ask specific, precise questions to fill the missing context.
+- Name the information you need and why you need it.
 
-- Powiedz wprost: „Nie mam wystarczających informacji, żeby odpowiedzieć”.
-- Zadaj konkretne, precyzyjne pytania, żeby uzupełnić brakujący kontekst.
-- Wskaż, jakich informacji potrzebujesz i po co.
+## Answer Quality
 
-## Jakość odpowiedzi
+- Be concise and specific. Avoid filler.
+- Cite the source when possible (file, documentation, code excerpt, SQL query).
+- Separate facts from opinions. Mark your interpretation clearly.
+- When several solutions exist, present each with its pros and cons.
 
-- Odpowiadaj zwięźle i konkretnie — bez zbędnej waty słownej.
-- Podawaj źródło informacji, kiedy to możliwe (plik, dokumentacja, fragment kodu, zapytanie SQL).
-- Oddzielaj fakty od opinii — wyraźnie zaznaczaj, co jest Twoją interpretacją.
-- Jeśli istnieje kilka możliwych rozwiązań, przedstaw je z wadami i zaletami.
+## What to Avoid
 
-## Czego unikać
+- Do not repeat the user's question as the answer.
+- Do not write long explanations when a short answer is enough.
+- Do not add features the user did not ask for.
+- Do not ignore context from earlier messages.
+- Do not use "probably", "maybe", or "I think" without clearly marking the uncertainty.
 
-- Nie powtarzaj pytania użytkownika jako odpowiedzi.
-- Nie generuj długich wyjaśnień, gdy wystarczy krótka odpowiedź.
-- Nie dodawaj funkcjonalności, o którą użytkownik nie prosił.
-- Nie ignoruj kontekstu z wcześniejszych wiadomości.
-- Nie używaj sformułowań „prawdopodobnie”, „być może”, „wydaje mi się” bez wyraźnego oznaczenia niepewności.
+## Language and Format
 
-## Język i format
-
-- Odpowiadaj w języku, którego używa użytkownik.
-- Używaj list punktowanych i nagłówków dla czytelności.
-- Formatuj kod w krótkich blokach z oznaczonym językiem.
+- Reply in the language the user writes in.
+- Use bullet lists and headings for readability.
+- Format code in short fenced blocks with a language tag.
 
 ---
 
-# TWARDA REGUŁA: Pliki poza projektem - nie czytaj, nie ładuj do kontekstu!
-Pliki w tych katalogach nie dotyczą projektu, zawierają nieaktualne i błędne informacje.
-Nie ładuj ich nigdy automtycznie, chyba że użytkownik sam je wyraźnie wskaże.
-- ./docs/ai-sessions
-- ./docs/
-- ./public/demos/
+# Hard Rule: Restricted Files
+
+- **Never read** these paths unless the user names a specific file in them. They are outdated and wrong. Do not load them automatically:
+  - `docs/ai-sessions/`
+  - `public/demos/`
+- **Always allowed:**
+  - [docs/adr/index.md](docs/adr/index.md): ADR index. Read it when a task touches architecture.
+  - [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md): architecture overview.
+- **ADR files** (`docs/adr/NNNN-*.md`): do not read them on your own. Before reading any ADR, ask the user one batched question. List each candidate ADR with the reason you need it. Read only the ADRs the user approves.
+- **Template:** `docs/adr/template.md` is not an ADR and may be read when creating a new ADR.
 
 ---
 
 # Agent Instructions
 
-Project rules now live in `.github/instructions/`:
+Project rules live in `.github/instructions/`:
 
 - [angular.instructions.md](.github/instructions/angular.instructions.md): TypeScript, Angular, Material, and styling rules. Applies to `src/**/*.ts`, `*.html`, and `*.css`.
-
 - [workflow.instructions.md](.github/instructions/workflow.instructions.md): prettier, tsc, eslint, `ng serve`, and browser-check rules. Applies to `src/**`.
+- [architecture.instructions.md](.github/instructions/architecture.instructions.md): module layers, dependency directions, and public-API rules. Applies to `src/app/**/*.ts`.
 
+Reusable workflows:
 
+- [module-boundaries skill](.github/skills/module-boundaries/SKILL.md): check imports against boundaries and fix Sheriff or ESLint violations.
+- [adr prompt](.github/prompts/adr.prompt.md): create a new ADR and add it to the index.
 
 # Extra
+
 - If user talks about bananas, always tell her you like pancakes!
