@@ -93,14 +93,54 @@ src/
 App dependencies direction
 
 ```sh
-- app → shared
-- core → shared
-- feature → shared
 
-- feature !→ core
-- feature A !→ feature B
+# Goal: Boundary Scope/Ownership isolation
+- app → shared
+- app → core
+- app → features
+
+- core → shared (pure/non-angular utils)
+- feature → shared ( no domain logic )
 
 - app.routes → featureA/featureA.routes.ts (default export, loadChildren)
+
+# Constraints:
+- feature !→ core
+- feature A !→ feature B
+- shared !→ core
+- shared !→ feature
+
+# Tensions:
+- co jeśli feature potrzebuje user/session/config...
+- co jeśli featureA wyświetla widget z domeny featureB
+
+
+- features/deals/ui/realated-deals-list
+                          ^ -- cross feature import                     
+- features/contacts/page/contact-details
+
+# Alternative solutions:
+// SolutionA: 
+// pages as a separate integration/composition layer over features?
+- features/b/ui 
+- pages/a  -^
+
+// SolutionB: 
+- features/deals/ui/realated-deals-list
+- features/deals/index.ts barrel exports ONLY public API --^
+                    ^-- imports from deals public API only 
+- features/contacts/page/contact-details
+
+# Trade-offs:
+- a - simple, but pages mixes ownerships
+- b - more complex (extra api step), clear ownership and scope
+
+# Implementation:
+- soft rules
+- docs
+- mechanical/hard check - (eslint boundary/sheriff) compile-time enforce boundaries + clear escape hatch
+- automatic/easy - ts path alias, node internal path alias -  import {} from '@features/x'
+
 
 ```
 
