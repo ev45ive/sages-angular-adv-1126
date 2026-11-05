@@ -152,9 +152,10 @@ const emptyTask = (): NewTaskDraft => ({ title: '', priority: 'medium' });
       </app-master-detail-layout>
     </main>
   `,
+  providers: [DealsStore], // Components (Type) lifecycle
 })
 export class DealsPage {
-  // private readonly store = new DealsStore(new DealsAPI( new DealsConfig() )); // Concrete Coupling 
+  // private readonly store = new DealsStore(new DealsAPI( new DealsConfig() )); // Concrete Coupling
   private readonly store = inject(DealsStore); // Abstract Dependency
 
   protected readonly stageLabels = DEAL_STAGE_LABELS;

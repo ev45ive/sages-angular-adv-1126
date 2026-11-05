@@ -1,17 +1,22 @@
-import { Service, signal } from '@angular/core';
+import { Injectable, Service, signal } from '@angular/core';
 import { Account } from '../model/account.model';
 import { Contact } from '../model/contact.model';
 import { Deal } from '../model/deal.model';
 import { DealTask, TaskPriority } from '../model/deal-task.model';
 import { SEED_ACCOUNTS, SEED_CONTACTS, SEED_DEALS, SEED_TASKS } from './deals-seed';
 
+// @Injectable({providedIn:'root'}) // default o root lifecycle if non other available
+
 @Service()
 export class DealsStore {
+
+  // Read-Write Side - Private to Owner (my wallet!)
   private readonly dealsState = signal<Deal[]>(SEED_DEALS);
   private readonly tasksState = signal<DealTask[]>(SEED_TASKS);
   private readonly accountsState = signal<Account[]>(SEED_ACCOUNTS);
   private readonly contactsState = signal<Contact[]>(SEED_CONTACTS);
 
+  // Read-Side: Public API
   readonly accounts = this.accountsState.asReadonly();
   readonly contacts = this.contactsState.asReadonly();
 
