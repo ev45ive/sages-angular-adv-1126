@@ -13,8 +13,10 @@ Procedure for checking and fixing module boundary violations. The dependency rul
 2. Run ESLint on those files only: `npx eslint <files>`. Sheriff reports two rules:
    - `@softarc/sheriff/encapsulation`: deep import into a module.
    - `@softarc/sheriff/dependency-rule`: import direction is not allowed.
+     Sheriff does not flag deep imports through aliases such as `@feature/deals/pages/...`. TypeScript reports them (step 5).
 3. Fix each violation:
-   - Encapsulation: import the module's `index.ts` instead. If the symbol is not exported there, export it from `index.ts`. Do not import internal files directly.
+   - Encapsulation: import the module's alias (`@core`, `@shared`, `@feature/<name>`) instead of a deep path. If the symbol is not exported from `index.ts`, export it there.
+   - Relative import across modules: replace it with the module's alias from `tsconfig.json` `paths`.
    - Dependency rule: move the shared code to `shared/`, or remove the import. Do not add a rule to `sheriff.config.ts` without the user's approval.
 4. Fix only violations in changed files. Report pre-existing errors in unchanged files without fixing them.
 5. Re-run `npx eslint <files>` on the same files, then run `npx tsc --noEmit -p tsconfig.app.json`.
@@ -22,5 +24,5 @@ Procedure for checking and fixing module boundary violations. The dependency rul
 
 ## When to Stop and Ask
 
-- The fix needs a change to `sheriff.config.ts` or to an ADR.
+- The fix needs a change to `sheriff.config.ts` (other than a new feature's `modules` entry) or to an ADR.
 - The violation comes from a design decision, not from a wrong import.

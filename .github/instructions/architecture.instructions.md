@@ -1,5 +1,5 @@
 ---
-description: 'Use when adding or changing imports, routes, or files under src/app. Covers module layers (app, core, shared, features), allowed dependency directions, the index.ts public-API rule, and Sheriff enforcement.'
+description: 'Use when adding or changing imports, routes, or files under src/app. Covers module layers (app, core, shared, features), allowed dependency directions, path aliases (@core, @shared, @feature/<name>), the index.ts public-API rule, new-feature setup, and Sheriff enforcement.'
 applyTo: 'src/app/**/*.ts'
 ---
 
@@ -15,9 +15,32 @@ applyTo: 'src/app/**/*.ts'
 
 ## Public API
 
-- Import a module only through its `index.ts`. Do not import deep files such as `features/deals/pages/...` from outside the module.
-- Inside one feature, files may import each other directly.
-- Routes of a feature are lazy-loaded with `loadChildren` through `features/<name>/index.ts` (ADR-0004).
+- Import a module only through its `index.ts`, using its alias. Never import a deep file such as `features/deals/pages/...`.
+- Inside one module, relative imports are allowed.
+- Lazy routes load a feature through its alias, for example `import('@feature/deals')` (ADR-0004).
+
+## Path Aliases
+
+Defined in the `paths` of `tsconfig.json`.
+
+| Alias             | Target                             |
+| ----------------- | ---------------------------------- |
+| `@core`           | `src/app/core/index.ts`            |
+| `@shared`         | `src/app/shared/index.ts`          |
+| `@feature/<name>` | `src/app/features/<name>/index.ts` |
+
+- Alias names are fixed: `@core`, `@shared`, and `@feature/<name>`, where `<name>` is the feature folder name in kebab-case. Do not invent other aliases without the user's approval.
+- Do not use wildcard mappings such as `@feature/*`. Sheriff reports them as SH-001 errors, so each feature has its own explicit entry.
+- Across a module boundary, use the alias. Do not use `../` paths. For example, from `features/deals/` to shared code, use `@shared`, not `../../../shared`.
+- Relative imports are allowed only inside the same module: the same `core`, the same `shared`, or the same `features/<name>` folder.
+
+## Code Generation
+
+- When creating a feature `<name>`, make all three changes in the same edit:
+  - Create `src/app/features/<name>/index.ts` as the public API.
+  - Add `"@feature/<name>": ["./src/app/features/<name>/index.ts"]` to `paths` in `tsconfig.json`.
+  - Add `'src/app/features/<name>': 'feature:<name>'` to `modules` in `sheriff.config.ts`. Do not change `depRules`.
+- Generated imports use the aliases above. Do not write relative paths across modules.
 
 ## Placement
 
@@ -28,5 +51,5 @@ applyTo: 'src/app/**/*.ts'
 ## Enforcement
 
 - Boundaries are enforced by Sheriff through `sheriff.config.ts` and ESLint (ADR-0003). Do not disable these rules.
-- Do not change `sheriff.config.ts` without the user's approval.
+- Do not change `sheriff.config.ts` without the user's approval, except for the `modules` entry of a new feature (see Code Generation).
 - Before changing these rules, read [docs/adr/index.md](../../docs/adr/index.md). Read an individual ADR only after the user approves it.
