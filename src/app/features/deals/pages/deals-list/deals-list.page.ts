@@ -16,18 +16,12 @@ import { SharedImports } from '../../../../shared';
   ],
   template: ` 
 
-    <!-- .flex.min-h-svh>.flex-1*2{Column $$$} -->
-    <div class="flex my-5">
-      <div class="flex-1">Column 001</div>
-      <div class="flex-2">Column 002</div>
-      <div class="flex-2">Column 002</div>
-    </div>
+
 
     <!-- .grid.grid-cols-2.my-5>div*3{Column $$$} -->
-    <div class="grid grid-cols-2 my-5">
+    <div class="grid grid-cols-[minmax(200px,1fr)_3fr] gap-5 py-5">
       <div>Column 001</div>
       <div>Column 002</div>
-      <div>Column 003</div>
     </div>
     
 

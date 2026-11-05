@@ -1,17 +1,19 @@
 import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { SharedUI } from './shared';
 
 @Component({
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, SharedUI],
   selector: 'app-root',
   styles: [],
   template: `
-    <div class="mx-auto container">
-      <h1 class="text-2xl ">Hello, {{ title().toUpperCase() }}</h1>
-    </div>
+    <div class="mx-auto container grid gap-5 py-5">
+      <div class="flex justify-between gap-5">
+        <h1 class="text-2xl">CRM</h1>
 
-    <!-- <app-deals-page/> -->
-    <div class="mx-auto container">
+        <button mat-raised-button="">Login</button>
+      </div>
+
       <router-outlet />
     </div>
   `,
