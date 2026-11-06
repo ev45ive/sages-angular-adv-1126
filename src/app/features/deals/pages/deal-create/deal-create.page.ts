@@ -14,9 +14,6 @@ import { DealEditor, DealEditorValue, toDealDraft } from '../../ui/deal-editor/d
   imports: [DealEditor],
   selector: 'app-deal-create-page',
   template: `
-    @if (error(); as message) {
-      <p role="alert" class="mb-2 text-body-md text-error">{{ message }}</p>
-    }
     <app-deal-editor
       heading="New Deal"
       [showTasks]="false"
@@ -36,7 +33,6 @@ export class DealCreatePage implements HasUnsavedChanges {
   private readonly editor = viewChild(DealEditor);
 
   protected readonly creating = this.source.creating;
-  protected readonly error = this.source.selectError;
   protected readonly contact = injectContactLookup(() => undefined);
 
   hasUnsavedChanges(): boolean {

@@ -30,7 +30,6 @@ export interface DealListSource {
  * - **Why:** read-only plus `loadDeal`; the page cannot update or create deals.
  */
 export interface DealDetailsSource {
-  readonly selectError: Signal<string | null>;
   readonly selectDealById: Selector<Deal | undefined>;
   readonly selectLoadingById: Selector<boolean>;
   readonly selectRevalidating: Selector<boolean>;
@@ -42,7 +41,6 @@ export interface DealDetailsSource {
  * - **Why:** adds `updateDeal` to the read slice; creation is a separate port.
  */
 export interface DealEditSource {
-  readonly selectError: Signal<string | null>;
   readonly selectDealById: Selector<Deal | undefined>;
   readonly selectLoadingById: Selector<boolean>;
   readonly loadDeal: RxMethod<string | undefined>;
@@ -54,7 +52,6 @@ export interface DealEditSource {
  * - **Why:** a new deal has no id yet, so it exposes a `creating` flag instead of id-based selectors.
  */
 export interface DealCreateSource {
-  readonly selectError: Signal<string | null>;
   readonly creating: Signal<boolean>;
   readonly createDeal: RxMethod<CreateDealCommand>;
 }

@@ -11,14 +11,16 @@ import { CONTACT_DIRECTORY } from './contact-directory.port';
 export function injectContactLookup(selectedId: () => string | undefined) {
   const directory = inject(CONTACT_DIRECTORY);
   const query = signal('');
+  // A computed compares by value, so the effect below skips re-emitted deal objects with the same contact
+  const contactId = computed(() => selectedId());
 
   const selected = computed(() => {
-    const id = selectedId();
+    const id = contactId();
     return id ? directory.optionsById()[id] : undefined;
   });
 
   effect(() => {
-    const id = selectedId();
+    const id = contactId();
     if (id) untracked(() => directory.load(id));
   });
 

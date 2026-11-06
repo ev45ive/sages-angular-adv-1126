@@ -13,9 +13,6 @@ import { DealDetailsCard } from '../../ui/deal-details-card/deal-details-card';
   imports: [DealDetailsCard, RouterOutlet],
   selector: 'app-deal-details-page',
   template: `
-    @if (error(); as message) {
-      <p role="alert" class="mb-2 text-body-md text-error">{{ message }}</p>
-    }
     @if (loading()) {
       <p class="mb-2 text-body-md">Loading ...</p>
     }
@@ -41,7 +38,6 @@ export class DealDetailsPage {
 
   protected readonly deal = this.source.selectDealById(this.dealId);
   protected readonly loading = this.source.selectLoadingById(this.dealId);
-  protected readonly error = this.source.selectError;
   protected readonly contact = injectContactLookup(() => this.deal()?.contactId);
 
   constructor() {

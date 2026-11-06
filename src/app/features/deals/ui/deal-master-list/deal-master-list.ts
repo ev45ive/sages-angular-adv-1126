@@ -3,7 +3,6 @@ import {
   computed,
   contentChild,
   input,
-  model,
   output,
   TemplateRef,
   viewChild,
@@ -28,9 +27,8 @@ import { DealItemContext, DealItemTpl } from '../deal-item-tpl/deal-item-tpl';
       selectionMode="explicit"
       focusMode="activedescendant"
       aria-label="Deals"
-      selectionMode="follow"
       class=" flex flex-col gap-1"
-      [value]="[]"
+      [value]="selectedValue()"
       (valueChange)="onValueChange($event)"
     >
       @for (deal of deals(); track deal.id) {
@@ -76,7 +74,9 @@ export class DealMasterList {
   readonly dealSelected = output<string | null>();
 
   protected readonly selectedValue = computed(() => {
-    return this.selectedId() ? [this.selectedId()] : null;
+    const id = this.selectedId();
+    // The listbox drops values that have no option yet, so wait until the deal is in the list
+    return id && this.deals().some((deal) => deal.id === id) ? [id] : [];
   });
 
   protected onValueChange([id]: (string | null)[]): void {
