@@ -1,0 +1,23 @@
+{
+  "name": "angular-erp-server",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "tsx watch src/index.ts",
+    "dev": "tsx watch src/index.ts"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "swagger-ui-express": "^5.0.0",
+    "yaml": "^2.4.0"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.1",
+    "@types/swagger-ui-express": "^4.1.6",
+    "tsx": "^4.19.0",
+    "typescript": "~5.9.2"
+  }
+}

@@ -1,0 +1,525 @@
+openapi: 3.1.0
+info:
+  title: CRM API
+  version: 1.0.0
+  description: REST API for the CRM system — Contacts, Deals, Tasks, Auth.
+
+servers:
+  - url: http://localhost:3000/api
+
+paths:
+
+  # ─── AUTH ────────────────────────────────────────────
+
+  /auth/login:
+    post:
+      tags: [Auth]
+      summary: Authenticate user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: JWT tokens
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '401':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+  /auth/refresh:
+    post:
+      tags: [Auth]
+      summary: Refresh access token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                refreshToken:
+                  type: string
+              required: [refreshToken]
+      responses:
+        '200':
+          description: New access token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '401':
+          description: Invalid refresh token
+
+  /auth/me:
+    get:
+      tags: [Auth]
+      summary: Get current user profile
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Authenticated user info
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthUser'
+
+  # ─── CONTACTS ────────────────────────────────────────
+
+  /contacts:
+    get:
+      tags: [Contacts]
+      summary: Search contacts
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: q
+          in: query
+          description: Search query (matches name, email, company)
+          schema:
+            type: string
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: Paginated contact list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContactSearchResponse'
+
+  /contacts/check-email:
+    get:
+      tags: [Contacts]
+      summary: Check if a contact email already exists (for async validator)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: email
+          in: query
+          required: true
+          schema:
+            type: string
+            format: email
+      responses:
+        '200':
+          description: Duplicate check result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  exists:
+                    type: boolean
+
+  /contacts/{contactId}:
+    get:
+      tags: [Contacts]
+      summary: Get contact by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: contactId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Contact details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contact'
+        '404':
+          description: Contact not found
+
+  # ─── DEALS ──────────────────────────────────────────
+
+  /deals:
+    get:
+      tags: [Deals]
+      summary: List all deals
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of deals (without embedded tasks)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagingObject_Deal'
+
+  /deals/{dealId}:
+    get:
+      tags: [Deals]
+      summary: Get deal by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: dealId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Deal details (without embedded tasks)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Deal'
+        '404':
+          description: Deal not found
+
+    put:
+      tags: [Deals]
+      summary: Update a deal
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: dealId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DealUpdateRequest'
+      responses:
+        '200':
+          description: Updated deal
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Deal'
+
+  # ─── TASKS (nested under deals) ─────────────────────
+
+  /deals/{dealId}/tasks:
+    get:
+      tags: [Tasks]
+      summary: List tasks for a deal
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: dealId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of tasks
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Task'
+        '404':
+          description: Deal not found
+
+    post:
+      tags: [Tasks]
+      summary: Add a task to a deal
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: dealId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskCreateRequest'
+      responses:
+        '201':
+          description: Created task
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+
+  /deals/{dealId}/tasks/{taskId}:
+    patch:
+      tags: [Tasks]
+      summary: Update a task (toggle complete, edit)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: dealId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: taskId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskUpdateRequest'
+      responses:
+        '200':
+          description: Updated task
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+
+    delete:
+      tags: [Tasks]
+      summary: Delete a task
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: dealId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: taskId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Deleted
+
+# ─── COMPONENTS ──────────────────────────────────────
+
+components:
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+
+    LoginRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+      required: [email, password]
+
+    LoginResponse:
+      type: object
+      properties:
+        accessToken:
+          type: string
+        refreshToken:
+          type: string
+        expiresIn:
+          type: integer
+          description: Seconds until access token expires
+
+    AuthUser:
+      type: object
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+        name:
+          type: string
+
+    Contact:
+      type: object
+      properties:
+        id:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+        phone:
+          type: string
+        company:
+          type: string
+        status:
+          type: string
+          enum: [lead, prospect, customer, churned]
+        avatarUrl:
+          type: string
+        notes:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+
+    ContactSearchResponse:
+      type: object
+      properties:
+        contacts:
+          $ref: '#/components/schemas/PagingObject_Contact'
+
+    PagingObject_Contact:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Contact'
+        total:
+          type: integer
+        offset:
+          type: integer
+        limit:
+          type: integer
+
+    Deal:
+      type: object
+      required:
+        - id
+        - title
+        - value
+        - stage
+        - description
+        - contactId
+        - public
+        - createdAt
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        value:
+          type: number
+        stage:
+          type: string
+          enum: [new, negotiation, proposal, closed-won, closed-lost]
+        description:
+          type: string
+        contactId:
+          type: string
+        public:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+
+    DealUpdateRequest:
+      type: object
+      properties:
+        title:
+          type: string
+        value:
+          type: number
+        stage:
+          type: string
+          enum: [new, negotiation, proposal, closed-won, closed-lost]
+        description:
+          type: string
+        contactId:
+          type: string
+        public:
+          type: boolean
+
+    PagingObject_Deal:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Deal'
+        total:
+          type: integer
+        offset:
+          type: integer
+        limit:
+          type: integer
+
+    Task:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        dueDate:
+          type: string
+          format: date
+        priority:
+          type: string
+          enum: [low, medium, high]
+        completed:
+          type: boolean
+
+    TaskCreateRequest:
+      type: object
+      properties:
+        title:
+          type: string
+        dueDate:
+          type: string
+          format: date
+        priority:
+          type: string
+          enum: [low, medium, high]
+      required: [title]
+
+    TaskUpdateRequest:
+      type: object
+      properties:
+        title:
+          type: string
+        dueDate:
+          type: string
+          format: date
+        priority:
+          type: string
+          enum: [low, medium, high]
+        completed:
+          type: boolean
+
+    ApiError:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            status:
+              type: integer
+            message:
+              type: string
+            code:
+              type: string
