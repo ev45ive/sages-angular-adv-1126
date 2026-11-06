@@ -5,6 +5,11 @@ import { DEAL_EDIT_SOURCE, TASKS_COMMANDS, TASKS_READER } from '../../data/deals
 import { injectContactLookup } from '../../data/inject-contact-lookup';
 import { DealEditor, DealEditorValue, toDealDraft } from '../../ui/deal-editor/deal-editor';
 
+/**
+ * Routed page of `/deals/:dealId/edit`.
+ * - **What:** container for the presentational `DealEditor`; implements `HasUnsavedChanges` for the route guard.
+ * - **Why:** edit mode is a URL, so reload, back and deep links work; saving is delegated to the store, which owns debounce and rollback.
+ */
 @Component({
   imports: [DealEditor],
   selector: 'app-deal-edit-page',

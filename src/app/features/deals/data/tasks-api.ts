@@ -4,6 +4,11 @@ import { map, Observable } from 'rxjs';
 import { DealTask, TaskChanges, TaskDraft } from '../model/deal-task.model';
 import { TaskDto, toTask, toTaskCreateRequest, toTaskUpdateRequest } from './deals.mappers';
 
+/**
+ * HTTP gateway for the tasks sub-resource of a deal (`/deals/:id/tasks`).
+ * - **What:** separate from `DealsApi`: tasks have their own endpoints and their own store.
+ * - **Why:** one API class per backend resource keeps stores independent and fakeable.
+ */
 @Service()
 export class TasksApi {
   private readonly http = inject(HttpClient);

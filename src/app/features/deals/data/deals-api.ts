@@ -10,6 +10,11 @@ import {
   toDealUpdateRequest,
 } from './deals.mappers';
 
+/**
+ * HTTP gateway for deals.
+ * - **What:** the only class that calls `/deals`; returns client-model objects, never DTOs.
+ * - **Why:** Sheriff forbids `features -> core`, so API access is feature-local; stores depend on it and specs replace it with a fake.
+ */
 @Service()
 export class DealsApi {
   private readonly http = inject(HttpClient);

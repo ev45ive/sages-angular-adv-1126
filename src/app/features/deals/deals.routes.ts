@@ -1,7 +1,11 @@
 import { Routes } from '@angular/router';
 import { unsavedChangesGuard } from '@shared';
 
-// DealsStore and TasksStore are root-scoped, so their cached entities outlive these routes.
+/**
+ * Route tree of the deals feature.
+ * - **What:** a layout route (master list + `<router-outlet>`) with children: placeholder, `new`, `:dealId` (details with nested tasks) and `:dealId/edit`.
+ * - **Why:** the URL is the single source of truth for selection and edit mode, the list stays mounted while the detail changes, and `canDeactivate` guards sit on the form routes. Stores are root-scoped, so nothing is provided here.
+ */
 const routes: Routes = [
   {
     path: '',

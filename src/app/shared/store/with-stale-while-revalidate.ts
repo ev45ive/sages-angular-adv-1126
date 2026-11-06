@@ -12,14 +12,22 @@ import {
 import { defer, EMPTY, Observable } from 'rxjs';
 import { LoadingState, loadingError, loadingFinish, loadingStart } from './with-loading-state';
 
-// Replaceable in tests to control time
+/**
+ * Injectable time source of the cache.
+ * - **What:** a function returning "now" in milliseconds.
+ * - **Why:** specs control TTL expiry by overriding the token, no fake timers needed.
+ */
 export const CLOCK = new InjectionToken<() => number>('CLOCK', {
   providedIn: 'root',
   factory: () => () => Date.now(),
 });
 
+/**
+ * Cache bookkeeping kept in store state.
+ * - **What:** per-key time of the last successful fetch, plus keys that are currently refreshing in the background.
+ * - **Why:** being state, it is observable, so the UI can show "refreshing" separately from "loading".
+ */
 export interface SwrState {
-  // key -> time of the last successful fetch
   cacheMeta: Record<string, number>;
   revalidatingKeys: string[];
 }
@@ -27,11 +35,21 @@ export interface SwrState {
 // Older than any ttl, but still present, so cached data keeps being served
 const STALE = Number.NEGATIVE_INFINITY;
 
+/**
+ * Curried state updater: records a successful fetch of a cache key.
+ * - **What:** sets the key's fetch time, which starts its TTL.
+ * - **Why:** freshness is decided from state, not from timers.
+ */
 export const cacheHit =
   (key: string, at: number): PartialStateUpdater<SwrState> =>
   (state) => ({ cacheMeta: { ...state.cacheMeta, [key]: at } });
 
-// Marks every cached key starting with `prefix` as stale; unknown keys stay cold
+/**
+ * Curried state updater: marks cache keys as stale by prefix.
+ * - **What:** stale keys keep their data but count as expired; unknown keys stay "cold" (never fetched).
+ * - **Why:** mutations call it so the next load refreshes quietly instead of clearing the screen.
+ * - **Use when:** a create/update/delete makes cached lists or queries outdated; keys share a hierarchical prefix.
+ */
 export const cacheInvalidate =
   (prefix: string): PartialStateUpdater<SwrState> =>
   (state) => ({
@@ -43,10 +61,20 @@ export const cacheInvalidate =
     ),
   });
 
+/**
+ * Curried state updater: marks a key as refreshing in the background.
+ * - **What:** the quiet counterpart of `loadingStart`, for keys that already have cached data.
+ * - **Why:** keeps the spinner (`inFlightIds`) for cold loads only.
+ */
 export const revalidatingStart =
   (key: string): PartialStateUpdater<SwrState> =>
   (state) => ({ revalidatingKeys: [...state.revalidatingKeys, key] });
 
+/**
+ * Curried state updater: ends a background refresh.
+ * - **What:** counterpart of `revalidatingStart`.
+ * - **Use when:** in `finalize`, so the flag clears on success, error and cancellation.
+ */
 export const revalidatingFinish =
   (key: string): PartialStateUpdater<SwrState> =>
   (state) => {
@@ -55,6 +83,11 @@ export const revalidatingFinish =
     return { revalidatingKeys: state.revalidatingKeys.filter((_, i) => i !== index) };
   };
 
+/**
+ * Argument object of `_swr`.
+ * - **What:** cache key, the request factory, and the callback that writes the response into the store.
+ * - **Why:** the cache policy stays independent of entity types; each store decides how data is stored.
+ */
 export interface SwrRequest<T> {
   key: string;
   // Id shown by selectLoadingById() during a cold load; defaults to `key`
@@ -64,10 +97,10 @@ export interface SwrRequest<T> {
 }
 
 /**
- * Time-to-live cache with stale-while-revalidate for rxMethod loaders.
- * - cold key: blocking load (`inFlightIds`)
- * - fresh key: no request
- * - stale key: cached entities stay visible, refetch runs in the background (`revalidatingKeys`)
+ * Store feature adding a TTL cache with stale-while-revalidate to `rxMethod` loaders.
+ * - **What:** per-key freshness metadata and a private `_swr` helper (the `_` prefix hides it from store consumers). Needs `withLoadingState()` before it.
+ * - **Why:** revisiting a screen is instant: fresh data needs no request, stale data shows at once and refreshes silently, cold data loads with a spinner.
+ * - **Use when:** a root-scoped store keeps server data across routes; pair it with `cacheInvalidate` in mutations.
  */
 export function withStaleWhileRevalidate(config: { ttlMs: number }) {
   return signalStoreFeature(

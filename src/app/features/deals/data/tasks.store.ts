@@ -26,10 +26,18 @@ import { withTaskSelectors } from './with-task-selectors';
 
 const TTL_MS = 60_000;
 
+/**
+ * Cache keys of this store's loaders.
+ * - **Why:** one key per deal, so a deal's task list is cached and invalidated independently.
+ */
 export const tasksCacheKey = {
   byDeal: (dealId: string) => `tasks:deal:${dealId}`,
 };
 
+/**
+ * Input objects of the task `rxMethod`s.
+ * - **What:** `rxMethod` accepts one argument, so parameters travel as a single object.
+ */
 export interface CreateTaskCommand {
   dealId: string;
   draft: TaskDraft;
@@ -46,6 +54,11 @@ export interface DeleteTaskCommand {
   taskId: string;
 }
 
+/**
+ * Root-scoped signal store holding every `DealTask` the app has seen.
+ * - **What:** normalized entities keyed by task id; each task carries its `dealId`, so one map serves all deals.
+ * - **Why:** separate from `DealsStore` because tasks have their own endpoints, lifecycle and cache keys; pages reach it through `TASKS_READER` / `TASKS_COMMANDS`.
+ */
 export const TasksStore = signalStore(
   { providedIn: 'root' },
   withEntities<DealTask>(),
@@ -54,6 +67,10 @@ export const TasksStore = signalStore(
   withTaskSelectors(),
 
   withMethods((store, api = inject(TasksApi)) => ({
+    /**
+     * Loader for the full task list of one deal.
+     * - **Why:** the response replaces the deal's cached tasks, so tasks deleted elsewhere disappear.
+     */
     loadTasksForDeal: rxMethod<string | undefined>(
       pipe(
         filter((dealId): dealId is string => dealId !== undefined),
@@ -62,7 +79,6 @@ export const TasksStore = signalStore(
             key: tasksCacheKey.byDeal(dealId),
             loadingId: dealId,
             source: () => api.list(dealId),
-            // The response is the full task list of the deal, so missing tasks are dropped
             onData: (tasks) =>
               patchState(
                 store,
@@ -90,7 +106,11 @@ export const TasksStore = signalStore(
       ),
     ),
 
-    // The optimistic patch is applied on call, before the request waits in the queue
+    /**
+     * Optimistic, queued task update (e.g. toggling `done`).
+     * - **Why optimistic:** the checkbox reacts at once; a rejected request restores the previous task.
+     * - **Why queued:** `concatMap` keeps request order, so quick toggles cannot overwrite each other out of order.
+     */
     updateTask: rxMethod<UpdateTaskCommand>(
       pipe(
         map((command) => {

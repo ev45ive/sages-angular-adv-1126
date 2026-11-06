@@ -9,6 +9,11 @@ import { DealListItem } from '../../ui/deal-list-item/deal-list-item';
 import { DealMasterList } from '../../ui/deal-master-list/deal-master-list';
 import { DealsFilter } from '../../ui/deals-filter/deals-filter';
 
+/**
+ * Layout route component of `/deals`.
+ * - **What:** a container (page) component: owns the master list and the outlet where details, edit and create render.
+ * - **Why:** the only place that loads the list and maps selection/filter to URL navigation; children stay unaware of the list.
+ */
 @Component({
   imports: [
     ...SharedUI,

@@ -1,5 +1,10 @@
 export { default as dealsRoutes } from './deals.routes';
 
+/**
+ * Cross-feature API of the deals feature.
+ * - **What:** the only symbols other modules may import (Sheriff blocks deep imports).
+ * - **Why:** ports and types instead of stores keep consumers decoupled; `CONTACT_DIRECTORY` is inverted: deals declares it, the app wires it.
+ */
 export { CONTACT_DIRECTORY } from './data/contact-directory.port';
 export type { ContactDirectory, ContactOption } from './data/contact-directory.port';
 export { DEALS_BY_CONTACT } from './data/deals.ports';

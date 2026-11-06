@@ -1,7 +1,13 @@
 import { computed, effect, inject, signal, untracked } from '@angular/core';
 import { CONTACT_DIRECTORY } from './contact-directory.port';
 
-// State for a contact picker: options for the typed query, plus the label of the selected contact
+/**
+ * `inject*` helper (call it in an injection context, like a field initializer) returning picker state.
+ * - **What:** the label of the selected contact plus the options for the query typed so far, built on `CONTACT_DIRECTORY`.
+ * - **Why:** details, edit and create pages share this logic once and never see the directory's raw maps.
+ * - **Why fallback:** options include the selected contact until search results arrive, so its label never goes blank.
+ * - **Use when:** a page renders `ContactPicker` or needs a contact's name from its id.
+ */
 export function injectContactLookup(selectedId: () => string | undefined) {
   const directory = inject(CONTACT_DIRECTORY);
   const query = signal('');
@@ -19,7 +25,6 @@ export function injectContactLookup(selectedId: () => string | undefined) {
   return {
     label: computed(() => selected()?.label),
     loading: directory.loading,
-    // Before the search answers, the selected contact keeps its label visible
     options: computed(() => {
       const found = directory.searchResults()[query()];
       if (found) return found;

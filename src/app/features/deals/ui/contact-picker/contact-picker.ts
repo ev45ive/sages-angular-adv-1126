@@ -5,7 +5,11 @@ import { ContactOption } from '../../data/contact-directory.port';
 
 const SEARCH_DEBOUNCE_MS = 300;
 
-// Autocomplete over options the parent supplies; `value` is the picked contact id
+/**
+ * Contact autocomplete usable as a Signal Forms control.
+ * - **What:** implements `FormValueControl<string>`, so `[formField]` binds it like a native input; `value` is the picked contact id.
+ * - **Why:** presentational: options and the selected label come from the parent page via `CONTACT_DIRECTORY`, so the picker does not know the contacts feature.
+ */
 @Component({
   imports: [...SharedForms],
   selector: 'app-contact-picker',

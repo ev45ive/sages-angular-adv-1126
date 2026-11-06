@@ -16,25 +16,48 @@ import { withRelatedDeals } from './with-related-deals';
 
 const TTL_MS = 60_000;
 
+/**
+ * Cache keys of this store's loaders.
+ * - **Why:** hierarchical names let `cacheInvalidate` target a family of queries by prefix.
+ */
 export const contactsCacheKey = {
   search: (query: string) => `contacts:search:${query}`,
   byId: (id: string) => `contact:${id}`,
 };
 
+/**
+ * Result list of one search query.
+ * - **What:** contact ids and the server's total, not the contacts themselves.
+ * - **Why:** entities live once in the entity map, so an edited contact also changes in every earlier search result.
+ */
 export interface SearchResult {
   ids: string[];
   total: number;
 }
 
+/**
+ * Extra store state next to the entities.
+ * - **What:** `searchByQuery` keeps one `SearchResult` per query string.
+ * - **Why:** the server matches by name, email and company, which the client cannot replay, so lists are stored per query.
+ */
 interface ContactsState {
-  // Server-side matching cannot be repeated on the client, so each query keeps its own id list
   searchByQuery: Record<string, SearchResult>;
 }
 
+/**
+ * Curried state updater: stores the result list of one query.
+ * - **Why:** a named transition; results of other queries are kept, so overlapping searches never overwrite each other.
+ */
 export const setSearchResult =
   (query: string, result: SearchResult): PartialStateUpdater<ContactsState> =>
   (state) => ({ searchByQuery: { ...state.searchByQuery, [query]: result } });
 
+/**
+ * Root-scoped signal store holding every `Contact` the app has seen.
+ * - **What:** normalized entities, per-query search result lists, loading state, a TTL cache, and related-deals selectors from `withRelatedDeals()`.
+ * - **Why root scope:** search and details pages share one cache, and the deals feature reaches it through the directory adapter.
+ * - **Use when:** adding contact behaviour; pages call it directly (it is this feature's own store, no port needed).
+ */
 export const ContactsStore = signalStore(
   { providedIn: 'root' },
   withEntities<Contact>(),
@@ -50,7 +73,10 @@ export const ContactsStore = signalStore(
         return key === undefined ? undefined : store.entityMap()[key];
       }),
 
-    // `query` must be trimmed, as it is when passed to search()
+    /**
+     * Contacts of a finished search, in server order.
+     * - **What:** derived from the id list and the entity map; `query` must already be trimmed, like the argument of `search`.
+     */
     selectSearchResults: (query: () => string) =>
       computed(() => {
         const result: SearchResult | undefined = store.searchByQuery()[query()];
@@ -58,13 +84,19 @@ export const ContactsStore = signalStore(
         return (result?.ids ?? []).map((id) => contacts[id]);
       }),
 
-    // True once the query has an answer, so "no results" is not shown before it arrives
+    /**
+     * Whether a query has an answer yet.
+     * - **Why:** separates "no results" from "not loaded yet", so the empty state does not flash before the response.
+     */
     selectSearched: (query: () => string) => computed(() => query() in store.searchByQuery()),
 
     selectSearchLoading: (query: () => string) =>
       store.selectLoadingById(() => contactsCacheKey.search(query())),
 
-    // Results are stored per query, so overlapping searches cannot overwrite each other
+    /**
+     * Search loader (`rxMethod`).
+     * - **Why `mergeMap`:** results are stored per query, so overlapping searches (page and contact picker) cannot overwrite or cancel each other.
+     */
     search: rxMethod<string>(
       pipe(
         mergeMap((query) =>

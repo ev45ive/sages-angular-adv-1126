@@ -3,7 +3,11 @@ import type { ContactDirectory } from '@feature/deals';
 
 const NO_OPTIONS = Object.freeze({});
 
-// Deals must not import contacts, so the app wires them. The contacts chunk loads on first use.
+/**
+ * Lazy `ContactDirectory` implementation.
+ * - **What:** a facade that dynamically imports the contacts feature on first use and delegates to its adapter. Signals are empty and `loading` is true until then; commands are queued in order.
+ * - **Why:** the app root is the only layer allowed to know both features, so it connects deals to contacts without a cycle or loading contacts eagerly.
+ */
 function lazyContactDirectory(): ContactDirectory {
   const injector = inject(Injector);
   const loaded = signal<ContactDirectory | undefined>(undefined);
@@ -17,15 +21,18 @@ function lazyContactDirectory(): ContactDirectory {
   return {
     optionsById: computed(() => loaded()?.optionsById() ?? NO_OPTIONS),
     searchResults: computed(() => loaded()?.searchResults() ?? NO_OPTIONS),
-    // Counts as loading until the chunk is there
     loading: computed(() => loaded()?.loading() ?? true),
-    // Chained on one promise, so calls made before the chunk loads keep their order
     search: (query) => void ready.then((directory) => directory.search(query)),
     load: (id) => void ready.then((directory) => directory.load(id)),
   };
 }
 
-// The token arrives as an argument: importing it statically would pull the deals feature into the main bundle
+/**
+ * Provider for the contact directory token.
+ * - **What:** takes the token as an argument instead of importing it.
+ * - **Why:** a static import of `@feature/deals` here would pull the whole deals feature into the main bundle; the route passes the token it got from the lazy module.
+ * - **Use when:** declared in `providers` of the lazy deals route in `app.routes.ts`.
+ */
 export function provideContactDirectory(token: InjectionToken<ContactDirectory>): Provider {
   return { provide: token, useFactory: lazyContactDirectory };
 }

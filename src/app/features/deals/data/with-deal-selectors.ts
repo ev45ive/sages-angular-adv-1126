@@ -3,7 +3,12 @@ import { signalStoreFeature, type, withMethods } from '@ngrx/signals';
 import { EntityProps, EntityState } from '@ngrx/signals/entities';
 import { Deal } from '../model/deal.model';
 
-// Selectors read the normalized entity map, so any entity change reaches every selector
+/**
+ * Store feature with read-only selectors for deals.
+ * - **What:** `computed` signals derived from the normalized entity map. Each selector takes a getter (a signal or arrow function) and returns a signal, so it stays reactive to the caller's input.
+ * - **Why:** a deal exists once in the map, so an edit reaches every view (list, details, a contact's deals) with no copies to sync. `type<EntityState<Deal>>()` makes it compose only onto an entity store.
+ * - **Use when:** a screen needs another view of the same deals.
+ */
 export function withDealSelectors() {
   return signalStoreFeature(
     { state: type<EntityState<Deal>>(), props: type<EntityProps<Deal>>() },

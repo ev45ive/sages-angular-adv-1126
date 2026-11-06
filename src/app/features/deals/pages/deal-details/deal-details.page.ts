@@ -4,6 +4,11 @@ import { DEAL_DETAILS_SOURCE } from '../../data/deals.ports';
 import { injectContactLookup } from '../../data/inject-contact-lookup';
 import { DealDetailsCard } from '../../ui/deal-details-card/deal-details-card';
 
+/**
+ * Routed page of `/deals/:dealId`.
+ * - **What:** a container component: loads one deal through its port and renders the presentational details card; its outlet hosts the tasks page.
+ * - **Why:** `dealId` arrives as a router-bound input, so the page needs no `ActivatedRoute`.
+ */
 @Component({
   imports: [DealDetailsCard, RouterOutlet],
   selector: 'app-deal-details-page',

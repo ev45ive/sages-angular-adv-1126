@@ -209,12 +209,19 @@ export class DealEditor implements HasUnsavedChanges {
     return this.dealForm().dirty();
   }
 
-  // Lets the parent leave the page right after saving without tripping the unsaved-changes guard
+  /**
+   * Lets the parent leave the page right after saving.
+   * - **Why:** the form is only reset asynchronously, so without this the unsaved-changes guard would still see a dirty form.
+   */
   markPristine(): void {
     this.dealForm().reset();
   }
 }
 
+/**
+ * Maps the editor's flat form value to a domain `DealDraft`.
+ * - **Why:** the form model is shaped for inputs (`amount`, `tasks`); stores and APIs only know the domain model.
+ */
 export function toDealDraft(value: DealEditorValue): DealDraft {
   return {
     title: value.title,

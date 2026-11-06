@@ -5,6 +5,11 @@ import { DEAL_CREATE_SOURCE } from '../../data/deals.ports';
 import { injectContactLookup } from '../../data/inject-contact-lookup';
 import { DealEditor, DealEditorValue, toDealDraft } from '../../ui/deal-editor/deal-editor';
 
+/**
+ * Routed page of `/deals/new`.
+ * - **What:** container reusing `DealEditor` for creation, without tasks (they need a saved deal).
+ * - **Why:** creation is a route with its own guard, symmetrical to edit.
+ */
 @Component({
   imports: [DealEditor],
   selector: 'app-deal-create-page',

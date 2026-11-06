@@ -11,7 +11,11 @@ function toOption(contact: Contact): ContactOption {
   };
 }
 
-// Adapts the contacts store to the lookup port that the deals feature defines
+/**
+ * Implementation of deals' `ContactDirectory` port.
+ * - **What:** adapter that exposes `ContactsStore` data as `ContactOption`s.
+ * - **Why:** the dependency points contacts -> deals only; deals declares what it needs, contacts satisfies it. Exported from `@feature/contacts` solely for the app wiring.
+ */
 @Service()
 export class ContactDirectoryAdapter implements ContactDirectory {
   private readonly store = inject(ContactsStore);

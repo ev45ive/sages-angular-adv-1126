@@ -3,6 +3,11 @@ import { TASKS_COMMANDS, TASKS_READER } from '../../data/deals.ports';
 import { TaskPriority } from '../../model/deal-task.model';
 import { DealTasksCard } from '../../ui/deal-tasks-card/deal-tasks-card';
 
+/**
+ * Routed page nested in the details page.
+ * - **What:** container for the tasks card: the only consumer of the tasks write port.
+ * - **Why:** its own route and store slice, so task changes do not re-render or reload the deal.
+ */
 @Component({
   imports: [DealTasksCard],
   selector: 'app-deal-tasks-page',

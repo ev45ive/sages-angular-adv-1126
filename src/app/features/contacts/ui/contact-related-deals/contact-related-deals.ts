@@ -3,6 +3,11 @@ import { Component, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Deal, DEAL_STAGE_LABELS } from '@feature/deals';
 
+/**
+ * List of the deals related to a contact.
+ * - **What:** presentational component; deals arrive as an input from the page.
+ * - **Why:** shows another feature's data using only its public API (`Deal` type and labels from `@feature/deals`).
+ */
 @Component({
   imports: [CurrencyPipe, RouterLink],
   selector: 'app-contact-related-deals',
