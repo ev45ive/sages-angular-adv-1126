@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal, viewChild } from '@angular/core';
+import { Component, computed, inject, signal, SimpleChanges, viewChild } from '@angular/core';
 import { MasterDetailLayout, NeverPipe, SharedModule } from '@shared';
 import { DealsStore } from '../../data/deals.store';
 import { Deal } from '../../model/deal.model';
@@ -102,17 +102,24 @@ export class DealsPage {
     return this.store.filterDeals(this.filterText());
   });
 
+  // Angular Component Lifecycle - Chain of responsibility - walk down/up init/check
+
+  ngOnChanges(changes: SimpleChanges): void {}
+  ngOnInit(): void {} // v- recursive walk descendants
+    ngDoCheck(): void {}
+      ngAfterContentInit(): void {}
+        ngAfterViewInit(): void {} // ^- walk back ancestors
+  ngOnDestroy(): void {}
+
   protected readonly selectedDeal = computed<Deal | undefined>(() =>
     this.filteredDeals().find((deal) => deal.id === this.selectedDealId()),
   );
+
   protected readonly selectedTasks = computed(() => {
     const deal = this.selectedDeal();
     return deal ? this.store.getTasksForDeal(deal.id) : [];
   });
 
-  // editorRef = viewChild<DealEditor>('editorRef');
-  // editorRef = viewChild<IHaveUnsavedChanges>(DealEditor);
-  // editorRef = viewChild<IHaveUnsavedChanges>(IHaveUnsavedChanges);
   editorRef = viewChild(IHaveUnsavedChanges);
 
   protected onSelectDeal(dealId: string | null): void {
