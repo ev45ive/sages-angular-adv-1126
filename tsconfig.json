@@ -13,6 +13,7 @@
     "importHelpers": true,
     "target": "ES2025",
     "module": "preserve",
+    "erasableSyntaxOnly": true, // no enums,...
     "paths": {
       "@core": ["./src/app/core/index.ts"],
       "@shared": ["./src/app/shared/index.ts"],

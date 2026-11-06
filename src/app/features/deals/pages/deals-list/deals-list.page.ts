@@ -51,7 +51,9 @@ type DealViewMode = 'details' | 'editor' | 'creator';
           </button>
         </app-deal-master-list>
 
-        @if (viewMode() === 'details') {
+        @let mode = viewMode();
+
+        @if (mode === 'details') {
           <div>
             <app-deal-details-card [deal]="selectedDeal()" (editRequested)="onEditDeal()">
               <!-- <div empty-state>No deals found </div> -->
@@ -64,13 +66,13 @@ type DealViewMode = 'details' | 'editor' | 'creator';
               (archiveCompletedRequested)="onArchiveCompleted()"
             />
           </div>
-        } @else if (viewMode() === 'editor') {
+        } @else if (mode === 'editor') {
           <app-deal-editor
             [deal]="selectedDeal()"
             (saved)="onSaveDeal()"
             (cancelled)="onCancelEdit()"
           />
-        } @else if (viewMode() === 'creator') {
+        } @else if (mode === 'creator') {
           <app-deal-editor (saved)="onSaveNewDeal()" (cancelled)="onCancelEdit()" />
         }
       </app-master-detail-layout>
@@ -85,7 +87,8 @@ export class DealsPage {
   // private readonly store = new DealsStore(new DealsAPI( new DealsConfig() )); // Concrete Coupling
   private readonly store = inject(DealsStore); // Abstract Dependency
 
-  protected readonly viewMode = signal<DealViewMode>('details');
+  // protected readonly viewMode = signal<DealViewMode>('details');
+  protected readonly viewMode = signal<'details' | 'editor' | 'creator'>('details');
 
   protected readonly filterText = signal('');
   protected readonly selectedDealId = signal<string | null>(null);
@@ -109,6 +112,23 @@ export class DealsPage {
 
   protected onCreateDeal(): void {
     this.viewMode.set('creator');
+
+    const mode = this.viewMode(); // : 'details' | 'editor' | 'creator';
+
+    if (mode === 'details') {
+    } else if (mode === 'creator') {
+    } else if (mode === 'editor') {
+    } else {
+      // mode satisfies never; // never
+      exhaustivenessCheck(mode)
+
+
+      const x = 123 // Unreachable code detected
+    }
+
+    function exhaustivenessCheck(value: never, message = 'Invalid value ' + value): never {
+      throw new Error(message);
+    }
   }
 
   protected onEditDeal(): void {
