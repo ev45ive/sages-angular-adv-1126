@@ -7,7 +7,7 @@ import { provideRouter, withComponentInputBinding, withRouterConfig } from '@ang
 import { routes } from './app.routes';
 import { provideClientHydration } from '@angular/platform-browser';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
-import { AuthInterceptor, ErrorInterceptor, URLInterceptor } from './core/http/index-interceptor';
+import { AuthInterceptor, ErrorInterceptor, URLInterceptor } from '@core';
 
 export const appConfig: ApplicationConfig = {
   providers: [
