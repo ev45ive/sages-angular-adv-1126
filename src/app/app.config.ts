@@ -8,6 +8,7 @@ import { routes } from './app.routes';
 import { provideClientHydration } from '@angular/platform-browser';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { AuthInterceptor, ErrorInterceptor, URLInterceptor } from './core/http/index-interceptor';
+import { provideContactDirectory } from './contact-directory.provider';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -25,6 +26,8 @@ export const appConfig: ApplicationConfig = {
 
     // Composite Providers
     provideHttpClient(withInterceptors([URLInterceptor, AuthInterceptor, ErrorInterceptor])),
+
+    provideContactDirectory(),
 
     // DealsStore // App (siglneton lifecycle)
   ],

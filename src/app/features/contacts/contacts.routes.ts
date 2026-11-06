@@ -1,33 +1,21 @@
-import { ActivatedRouteSnapshot, Routes } from '@angular/router';
-import { ContactsStore } from './data/contacts.store';
+import { Routes } from '@angular/router';
 
-// One ContactsStore for the whole feature, shared by the search and details pages.
+// ContactsStore is root-scoped, so the pages share its cached entities.
 const routes: Routes = [
   {
     path: '',
-    providers: [ContactsStore],
-    children: [
-      {
-        path: '',
-        pathMatch: 'full',
-        redirectTo: 'search?q=',
-      },
-      {
-        path: 'search',
-        loadComponent: () =>
-          import('./pages/contact-search/contact-search.page').then((m) => m.ContactSearchPage),
-      },
-      {
-        path: ':contactId',
-        resolve:{
-            contact:(route: ActivatedRouteSnapshot) => {
-                
-            }
-        },
-        loadComponent: () =>
-          import('./pages/contact-details/contact-details.page').then((m) => m.ContactDetailsPage),
-      },
-    ],
+    pathMatch: 'full',
+    redirectTo: 'search?q=',
+  },
+  {
+    path: 'search',
+    loadComponent: () =>
+      import('./pages/contact-search/contact-search.page').then((m) => m.ContactSearchPage),
+  },
+  {
+    path: ':contactId',
+    loadComponent: () =>
+      import('./pages/contact-details/contact-details.page').then((m) => m.ContactDetailsPage),
   },
 ];
 

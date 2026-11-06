@@ -41,8 +41,8 @@ export interface DealCreateSource {
 // Public: other features read a contact's deals through this port
 export interface DealsByContactSource {
   readonly selectDealsByContactId: Selector<Deal[]>;
-  readonly selectLoadingById: Selector<boolean>;
-  readonly selectRevalidating: Selector<boolean>;
+  readonly selectLoadingByContactId: Selector<boolean>;
+  readonly selectRevalidatingByContactId: Selector<boolean>;
   readonly loadDealsByContact: RxMethod<string | undefined>;
 }
 

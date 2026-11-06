@@ -14,7 +14,7 @@ export interface ContactOption {
 export interface ContactDirectory {
   // Every contact seen so far, by id
   readonly optionsById: Signal<Readonly<Record<string, ContactOption>>>;
-  // Result lists of finished searches, by query
+  // Result lists of finished searches, by trimmed query
   readonly searchResults: Signal<Readonly<Record<string, readonly ContactOption[]>>>;
   readonly loading: Signal<boolean>;
   search(query: string): void;

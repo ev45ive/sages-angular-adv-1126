@@ -58,6 +58,18 @@ export const DealsStore = signalStore(
     const upsertDeals = (deals: Deal[]) => patchState(store, upsertEntities(deals));
 
     return {
+      selectLoadingByContactId: (contactId: () => string | undefined) =>
+        store.selectLoadingById(() => {
+          const id = contactId();
+          return id === undefined ? undefined : dealsCacheKey.byContact(id);
+        }),
+
+      selectRevalidatingByContactId: (contactId: () => string | undefined) =>
+        store.selectRevalidating(() => {
+          const id = contactId();
+          return id === undefined ? undefined : dealsCacheKey.byContact(id);
+        }),
+
       loadDeals: rxMethod<void>(
         pipe(
           switchMap(() =>
