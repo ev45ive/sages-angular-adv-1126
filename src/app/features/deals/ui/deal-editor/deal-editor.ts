@@ -8,19 +8,14 @@ import {
   untracked,
 } from '@angular/core';
 import {
-  applyEach,
-  FieldValidator,
   form,
   FormField,
-  maxLength,
-  min,
-  minLength,
-  required,
   SchemaPathTree,
   submit,
-  validate,
+  validateStandardSchema,
 } from '@angular/forms/signals';
 import { SharedImports } from '@shared';
+import { z } from 'zod';
 import { Deal, DEAL_STAGE_LABELS, DealStage } from '../../model/deal.model';
 import { DealTask, TASK_PRIORITY_LABELS, TaskPriority } from '../../model/deal-task.model';
 
@@ -40,28 +35,30 @@ export interface DealEditorValue {
 
 const FORBIDDEN_NAMES = ['admin', 'root', 'test'];
 
-export function forbiddenNames(names: readonly string[]): FieldValidator<string> {
-  const blocked = new Set(names.map((name) => name.toLowerCase()));
-  return ({ value }) =>
-    blocked.has(value().trim().toLowerCase())
-      ? { kind: 'forbiddenName', message: 'This name is not allowed' }
-      : null;
-}
+const notForbidden = (value: string): boolean =>
+  !FORBIDDEN_NAMES.includes(value.trim().toLowerCase());
+
+const dealZod = z.object({
+  title: z
+    .string()
+    .min(1, 'Title is required')
+    .min(3, 'At least 3 characters')
+    .max(100, 'Max 100 characters')
+    .refine(notForbidden, 'This name is not allowed'),
+  amount: z.number({ error: 'Value is required' }).min(0, 'Value cannot be negative'),
+  tasks: z.array(
+    z.object({
+      title: z
+        .string()
+        .min(1, 'Title is required')
+        .min(3, 'At least 3 characters')
+        .refine(notForbidden, 'This name is not allowed'),
+    }),
+  ),
+});
 
 function dealSchema(p: SchemaPathTree<DealEditorValue>): void {
-  required(p.title, { message: 'Title is required' });
-  minLength(p.title, 3, { message: 'At least 3 characters' });
-  maxLength(p.title, 100, { message: 'Max 100 characters' });
-  validate(p.title, forbiddenNames(FORBIDDEN_NAMES));
-
-  required(p.amount, { message: 'Value is required' });
-  min(p.amount, 0, { message: 'Value cannot be negative' });
-
-  applyEach(p.tasks, (task) => {
-    required(task.title, { message: 'Title is required' });
-    minLength(task.title, 3, { message: 'At least 3 characters' });
-    validate(task.title, forbiddenNames(FORBIDDEN_NAMES));
-  });
+  validateStandardSchema(p, dealZod);
 }
 
 function toValue(deal: Deal | undefined, tasks: readonly DealTask[]): DealEditorValue {
