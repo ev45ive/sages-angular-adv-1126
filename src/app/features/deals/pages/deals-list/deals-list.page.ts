@@ -28,6 +28,21 @@ type DealViewMode = 'details' | 'editor' | 'creator';
   ],
   template: `
     <main class="bg-surface text-on-surface">
+
+
+    <!-- function myTemplateUchtyt($implicit, {x,y,z}) -->
+      <ng-template #uchywt let-owoc let-liczba="x">
+          <h1>{{owoc}}</h1>
+          {{liczba}}
+      </ng-template>
+      
+      
+      <ng-container [ngTemplateOutlet]="uchywt" [ngTemplateOutletContext]="{$implicit:'apple',x:1}" />
+      <ng-container [ngTemplateOutlet]="uchywt" [ngTemplateOutletContext]="{$implicit:'banana',x:2}" />
+      
+      <!-- <div [innerHTML]="'<h1>Banana</h1>'"></div> Script injection + Sanitizer -->
+
+
       <app-master-detail-layout>
         <!-- --- -->
         <app-deal-master-list
@@ -41,7 +56,6 @@ type DealViewMode = 'details' | 'editor' | 'creator';
             [deal]="deal" [selected]="isSelected" 
           /> -->
 
-          <!-- <div [innerHTML]="'<h1>Banana</h1>'"></div> Script injection + Sanitizer -->
 
           <ng-container *appDealItemTpl="let deal; selected as isSelected">
             <app-deal-list-item [deal]="deal" [selected]="isSelected"  />
