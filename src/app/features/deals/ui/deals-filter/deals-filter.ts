@@ -1,5 +1,7 @@
-import { Component, model } from '@angular/core';
+import { Component, effect, input, linkedSignal, output, signal } from '@angular/core';
 import { SharedModule } from '@shared';
+
+const FILTER_DEBOUNCE_MS = 300;
 
 @Component({
   selector: 'app-deals-filter',
@@ -11,8 +13,8 @@ import { SharedModule } from '@shared';
         matInput
         type="search"
         #filterInput
-        [value]="value()"
-        (input)="value.set(filterInput.value)"
+        [value]="text()"
+        (input)="onInput(filterInput.value)"
       />
       <mat-icon matSuffix aria-hidden="true">search</mat-icon>
     </mat-form-field>
@@ -20,5 +22,26 @@ import { SharedModule } from '@shared';
   host: { class: 'block' },
 })
 export class DealsFilter {
-  readonly value = model('');
+  readonly value = input('');
+  readonly debouncedChange = output<string>();
+
+  protected readonly text = linkedSignal(() => this.value());
+
+  // null skips the initial run so the URL value is not overwritten
+  private readonly pendingText = signal<string | null>(null);
+
+  constructor() {
+    effect((onCleanup) => {
+      const text = this.pendingText();
+      if (text === null) return;
+
+      const timerId = setTimeout(() => this.debouncedChange.emit(text), FILTER_DEBOUNCE_MS);
+      onCleanup(() => clearTimeout(timerId));
+    });
+  }
+
+  protected onInput(text: string): void {
+    this.text.set(text);
+    this.pendingText.set(text);
+  }
 }

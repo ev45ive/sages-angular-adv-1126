@@ -1,7 +1,6 @@
 import {
   Component,
   computed,
-  debounced,
   effect,
   inject,
   linkedSignal,
@@ -55,7 +54,11 @@ type DealViewMode = 'details' | 'editor' | 'creator';
             <app-deal-list-item [deal]="deal" [selected]="isSelected" />
           </ng-container>
 
-          <app-deals-filter app-master-list-header [(value)]="filterText" />
+          <app-deals-filter
+            app-master-list-header
+            [value]="filterQuery()"
+            (debouncedChange)="filterQuery.set($event)"
+          />
 
           <button
             app-master-list-footer
@@ -117,31 +120,25 @@ export class DealsPage {
   router = inject(Router);
   route = inject(ActivatedRoute);
 
-  /*  */
+  // Set Siganls initial value from URL
   queryParams = toSignal(this.route.queryParams, { initialValue: { dealFilter: '', dealId: '' } });
 
-  // Set Siganls initial value from URL
-  filterText = linkedSignal<string>(() => this.queryParams().dealFilter ?? '');
+  filterQuery = linkedSignal<string>(() => this.queryParams().dealFilter ?? '');
   selectedDealId = linkedSignal<string | undefined>(() => this.queryParams().dealId);
 
-  // Debouce search
-  filterTextDebouced = debounced(() => this.filterText(), 300);
-
-  // Sync URL with search filter
+  // Sync URL with debounced search filter
   dealsURL = effect(() => {
     this.router.navigate([], {
       relativeTo: this.route,
       queryParams: {
-        dealFilter: this.filterTextDebouced.value(),
+        dealFilter: this.filterQuery(),
         dealId: this.selectedDealId(),
       },
     });
   });
 
-  /*  */
-
   dealsResource = rxResource<Deal[], { q: string }>({
-    params: () => ({ q: this.filterTextDebouced.value() }),
+    params: () => ({ q: this.filterQuery() }),
     stream: ({ params: { q } }) => {
       return this.store.fetchDeals(q);
     },
@@ -151,7 +148,7 @@ export class DealsPage {
 
   selectedDealResource = rxResource<Deal, string | undefined>({
     params: ({ chain }) => {
-      chain(this.dealsResource);
+      // chain(this.dealsResource);
 
       return this.selectedDealId();
     },
