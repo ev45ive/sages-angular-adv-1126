@@ -120,6 +120,18 @@ export class DealsPage {
   //   return this.store.filterDeals(this.filterText());
   // });
 
+  selectedDeal = signal<Deal | undefined>(undefined);
+
+  private loadSelectedDeal = effect(async () => {
+    const id = this.selectedDealId();
+    if (!id) return;
+
+    const deal = await this.store.fetchDealById(id);
+    // loading / error ?
+
+    this.selectedDeal.set(deal)
+  });
+
   private onInit = effect(() => {
     this.isLoading.set(true);
 
@@ -146,9 +158,9 @@ export class DealsPage {
     throw new Error('Method not implemented.');
   }
 
-  protected readonly selectedDeal = computed<Deal | undefined>(() =>
-    this.filteredDeals().find((deal) => deal.id === this.selectedDealId()),
-  );
+  // protected readonly selectedDeal = computed<Deal | undefined>(() =>
+  //   this.filteredDeals().find((deal) => deal.id === this.selectedDealId()),
+  // );
 
   protected readonly selectedTasks = computed(() => {
     const deal = this.selectedDeal();
