@@ -2311,24 +2311,123 @@ can we use linkedSignal instead of effect safetly??
 
 _**Agent (copilot/claude-haiku-5.5)**_
 
+<think><details><summary>Thought Process</summary>
+I'll check the current file first, then the Signal Forms typings for how `dirty` and `reset` behave.  
+
+I need the exact doc text for `reset` and `dirty` on signal field state.
+</details></think>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
 I'll check the current file first, then the Signal Forms typings for how  and  behave.  
 
 _**Agent (copilot/claude-haiku-5.5)**_
 
-<tool-use data-tool-type="generic" data-tool-name="copilot_findTextInFiles"><details>
-<summary>Tool use: **copilot_findTextInFiles**</summary>
+<tool-use data-tool-type="search" data-tool-name="grep_search"><details>
+<summary>Tool use: **grep_search**</summary>
 
 No matches found. Your search pattern might be excluded completely by either the search.exclude settings or .*ignore files.
 If you believe that it should have results, you can check into the .*ignore files and the exclude setting (here are some excluded patterns for reference:[**/node_modules,**/bower_components,**/*.code-search]).
 Then if you want to include those files you can call the tool again by setting "includeIgnoredFiles" to true.
+
+**Input:**
+
+- includePattern: `node_modules/@angular/forms/types/*.d.ts`
+- isRegexp: `true`
+- maxResults: `40`
+- query: `dirty|reset\(|markAsDirty|touched`
 </details></tool-use>
 
 _**Agent (copilot/claude-haiku-5.5)**_
 
-<tool-use data-tool-type="generic" data-tool-name="copilot_readFile"><details>
-<summary>Tool use: **copilot_readFile**</summary>
+<tool-use data-tool-type="read" data-tool-name="read_file"><details>
+<summary>Tool use: **read_file**</summary>
 
 Read `deal-editor.ts`, lines 1 to 80
+
+**Input:**
+
+- endLine: `80`
+- filePath: `c:\Projects\sages-angular-adv-1126\src\app\features\deals\ui\deal-editor\deal-editor.ts`
+- startLine: `1`
+
+**Result:**
+
+```
+import { Component, effect, InjectionToken, input, output, signal, untracked } from '@angular/core';
+import {
+  applyEach,
+  FieldValidator,
+  form,
+  FormField,
+  maxLength,
+  min,
+  minLength,
+  required,
+  SchemaPathTree,
+  submit,
+  validate,
+} from '@angular/forms/signals';
+import { SharedImports } from '@shared';
+import { Deal, DEAL_STAGE_LABELS, DealStage } from '../../model/deal.model';
+import { DealTask, TASK_PRIORITY_LABELS, TaskPriority } from '../../model/deal-task.model';
+
+export interface IHaveUnsavedChanges {
+  hasUnsavedChanges(): boolean;
+}
+export const IHaveUnsavedChanges = new InjectionToken<IHaveUnsavedChanges>('IHaveUnsavedChanges');
+
+export interface DealEditorValue {
+  title: string;
+  summary: string;
+  stage: DealStage;
+  amount: number;
+  isPublic: boolean;
+  tasks: { title: string; priority: TaskPriority }[];
+}
+
+const FORBIDDEN_NAMES = ['admin', 'root', 'test'];
+
+export function forbiddenNames(names: readonly string[]): FieldValidator<string> {
+  const blocked = new Set(names.map((name) => name.toLowerCase()));
+  return ({ value }) =>
+    blocked.has(value().trim().toLowerCase()) ? { kind: 'forbiddenName' } : null;
+}
+
+function dealSchema(p: SchemaPathTree<DealEditorValue>): void {
+  required(p.title);
+  minLength(p.title, 3);
+  maxLength(p.title, 100);
+  validate(p.title, forbiddenNames(FORBIDDEN_NAMES));
+
+  required(p.amount);
+  min(p.amount, 0);
+
+  applyEach(p.tasks, (task) => {
+    required(task.title);
+    minLength(task.title, 3);
+    validate(task.title, forbiddenNames(FORBIDDEN_NAMES));
+  });
+}
+
+function emptyValue(): DealEditorValue {
+  return { title: '', summary: '', stage: 'new', amount: 0, isPublic: false, tasks: [] };
+}
+
+function emptyTask(): DealEditorValue['tasks'][number] {
+  return { title: '', priority: 'medium' };
+}
+
+@Component({
+  selector: 'app-deal-editor',
+  imports: [SharedImports, FormField],
+  template: `
+    <form (ngSubmit)="onSubmit()">
+      <mat-card appearance="outlined">
+        <mat-card-header>
+          
+… (output truncated)
+```
 </details></tool-use>
 
 _**Agent (copilot/claude-haiku-5.5)**_
@@ -2337,8 +2436,394 @@ The file's imports still match what I left, so no outside edits there. The typin
 
 _**Agent (copilot/claude-haiku-5.5)**_
 
-<tool-use data-tool-type="generic" data-tool-name="copilot_findTextInFiles"><details>
-<summary>Tool use: **copilot_findTextInFiles**</summary>
+<tool-use data-tool-type="search" data-tool-name="grep_search"><details>
+<summary>Tool use: **grep_search**</summary>
 
 Searched for regex `dirty|reset\(|markAsDirty|touched` (`**/node_modules/@angular/forms/types/**`), 149 results
+
+**Input:**
+
+- includeIgnoredFiles: `true`
+- includePattern: `node_modules/@angular/forms/types/**`
+- isRegexp: `true`
+- maxResults: `40`
+- query: `dirty|reset\(|markAsDirty|touched`
+
+**Result:**
+
+```
+Found 149 matches in 4 files for "dirty|reset\(|markAsDirty|touched" (showing 40 matches in 4 files)
+
+node_modules/@angular/forms/types/_structure-chunk.d.ts
+327: * 3. Relays relevant events on the control to the field state (e.g. marks touched on blur)
+393:    reset(): void;
+1004: * Options for the `markAsTouched` method.
+1006: * @see [Touched state](guide/forms/signals/field-state-management#touched-state)
+1010:interface MarkAsTouchedOptions {
+... (14 more matches in this file)
+
+node_modules/@angular/forms/types/forms.d.ts
+106:     * When implementing `registerOnTouched` in your own value accessor, save the given
+108:     * blurred or "touched".
+116:     * registerOnTouched(fn: any): void {
+117:     *   this._onTouched = fn;
+126:     *    '(blur)': '_onTouched()'
+132:    registerOnTouched(fn: any): void;
+172:    onTouched: () => void;
+181:     * Registers a function called when the control is touched.
+184:    registerOnTouched(fn: () => void): void;
+1117:     * NOTE: Pushing to the FormArray will not mark it dirty. If you want to mark if dirty, call `markAsDirty()`.
+1135:     * NOTE: Inserting to the FormArray will not mark it dirty. If you want to mark if dirty, call `markAsDirty()`.
+1152:     * NOTE: Removing the FormArray will not mark it dirty. If you want to mark if dirty, call `markAsDirty()`.
+1253:     * Resets the `FormArray` and all descendants are marked `pristine` and `untouched`, and the
+1268:     * arr.reset(['name', 'last name']);
+1276:     * arr.reset([
+1298:    reset(value?: ɵTypedOrUntyped<TControl, ɵFormArrayValue<TControl>, any>, options?: {
+1562: * control.reset('Drew');
+1577: * control.reset();
+1590: * control.reset({ value: 'Drew', disabled: true });
+1651:     * Resets the form control, marking it `pristine` and `untouched`, and resetting
+1658:     * dog.reset(); // dog.value is null
+1662:     * cat.reset(); // cat.value is "tabby"
+1666:     * fish.reset('bubble'); // fish.value is "bubble"
+1684:    reset(formState?: TValue | FormControlState
+… (output truncated)
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+I need the exact doc text for  and  on signal field state.   
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="search" data-tool-name="grep_search"><details>
+<summary>Tool use: **grep_search**</summary>
+
+Searched for regex `dirty|reset\(|Resets|pristine|linkedSignal` (`**/node_modules/@angular/forms/types/_structure-chunk.d.ts`), 9 results
+
+**Input:**
+
+- includeIgnoredFiles: `true`
+- includePattern: `node_modules/@angular/forms/types/_structure-chunk.d.ts`
+- isRegexp: `true`
+- maxResults: `30`
+- query: `dirty|reset\(|Resets|pristine|linkedSignal`
+
+**Result:**
+
+```
+Found 9 matches in 1 file for "dirty|reset\(|Resets|pristine|linkedSignal"
+
+node_modules/@angular/forms/types/_structure-chunk.d.ts
+304:     * Resets the binding.
+391:     * Resets the bound control.
+393:    reset(): void;
+1283:    readonly dirty: Signal<boolean>;
+1287:     * When a field is hidden it is ignored when determining the valid, touched, and dirty states.
+1398:     * Sets the dirty status of the field to `true`.
+1400:    markAsDirty(): void;
+1421:     * Resets the {@link touched} and {@link dirty} state of the field and its descendants.
+1427:    reset(value?: TValue): void;
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="read" data-tool-name="read_file"><details>
+<summary>Tool use: **read_file**</summary>
+
+Read `_structure-chunk.d.ts`, lines 1280 to 1430
+
+**Input:**
+
+- endLine: `1430`
+- filePath: `c:\Projects\sages-angular-adv-1126\node_modules\@angular\forms\types\_structure-chunk.d.ts`
+- startLine: `1280`
+
+**Result:**
+
+````
+    /**
+     * A signal indicating whether field value has been changed by user.
+     */
+    readonly dirty: Signal<boolean>;
+    /**
+     * A signal indicating whether a field is hidden.
+     *
+     * When a field is hidden it is ignored when determining the valid, touched, and dirty states.
+     *
+     * Note: This doesn't hide the field in the template, that must be done manually.
+     * ```
+     * @if (!field.hidden()) {
+     *   ...
+     * }
+     * ```
+     */
+    readonly hidden: Signal<boolean>;
+    readonly disabledReasons: Signal<readonly DisabledReason[]>;
+    /**
+     * A signal containing the {@link errors} of the field itself, excluding its descendants.
+     */
+    readonly errors: Signal<ValidationError.WithFieldTree[]>;
+    /**
+     * A signal containing the {@link errors} of the field and its descendants.
+     */
+    readonly errorSummary: Signal<ValidationError.WithFieldTree[]>;
+    /**
+     * A signal indicating whether the field's value is currently valid.
+     *
+     * Note: `valid()` is not the same as `!invalid()`.
+     * - `valid()` is `true` when there are no validation errors *and* no pending validators.
+     * - `invalid()` is `true` when there are validation errors, regardless of pending validators.
+     *
+     * Ex: consider the situation where a field has 3 validators, 2 of which have no errors and 1 of
+     * which is still pending. In this case `valid()` is `false` because of the pending validator.
+     * However `invalid()` is also `false` because there are no errors.
+     */
+    readonly valid: Signal<boolean>;
+    /**
+     * A signal indicating whether the field's value is currently invalid.
+     *
+     * Note: `invalid()` is not the same as `!valid()`.
+     * - `invalid()` is `true` when there are validation errors, regardless of pending validators.
+     * - `valid()` is `true` when there are no validation errors *and* no pending validators.
+     *
+     * Ex: consider the situation where a field has 3 validators, 2 of which have no
+… (output truncated)
+````
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+Not as a straight swap. `linkedSignal` would reset the values when the inputs change, but it would leave the form's touched and dirty state from the previous deal in place.
+
+- The  signal means the value was changed by the user (`node_modules/@angular/forms/types/_structure-chunk.d.ts#L1281`).
+- Only  clears  and  (`node_modules/@angular/forms/types/_structure-chunk.d.ts#L1421`). Setting the model signal does not.
+
+If `linkedSignal` replaced the effect, two things could go wrong:
+-  could return `true` for a deal the user never edited, if they had edited a different deal before.
+- Errors could show right away on the new deal, if the previous deal's fields were touched.
+
+Options:
+
+1. **Keep the effect (current code).** It is correct, because  clears both flags. The effect writes to the form, not to a signal, so it is not the pattern Angular discourages.
+2. **Use `linkedSignal` for the model, and compare against a baseline for unsaved changes.**  would check whether  differs from a second `linkedSignal` holding the loaded value. This drops the dependency on . The touched-state leak remains.
+
+I would keep option 1. Option 2 is only worth it if you want to avoid the effect entirely and accept the touched-state leak. I have not changed the file. Which option do you want?
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="task" data-tool-name="manage_todo_list"><details>
+<summary>Tool use: **manage_todo_list**</summary>
+
+Created 3 todos
+</details></tool-use>
+
+---
+
+_**User (2026-11-06 10:51:56Z)**_
+
+use likedState for model data,  keep effect only for form state? would that help?
+
+---
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<think><details><summary>Thought Process</summary>
+The class still holds the old `load` method and the `signal`-based model. I'll make all the edits in one batch: derive the model with `linkedSignal`, keep the effect for flag-reset only, and remove `load`.
+</details></think>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+I'll re-read the current class section before editing, since the file may have changed.   
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="read" data-tool-name="read_file"><details>
+<summary>Tool use: **read_file**</summary>
+
+Read `deal-editor.ts`, lines 186 to 242
+
+**Input:**
+
+- endLine: `250`
+- filePath: `c:\Projects\sages-angular-adv-1126\src\app\features\deals\ui\deal-editor\deal-editor.ts`
+- startLine: `186`
+
+**Result:**
+
+```
+  constructor() {
+    effect(() => {
+      const deal = this.deal();
+      const tasks = this.tasks();
+      untracked(() => this.load(deal, tasks));
+    });
+  }
+
+  protected onSubmit(): void {
+    void submit(this.dealForm, async () => {
+      this.saved.emit(this.model());
+    });
+  }
+
+  protected addTask(): void {
+    this.model.update((value) => ({ ...value, tasks: [...value.tasks, emptyTask()] }));
+    this.dealForm().markAsDirty();
+  }
+
+  protected removeTask(index: number): void {
+    this.model.update((value) => ({
+      ...value,
+      tasks: value.tasks.filter((_, i) => i !== index),
+    }));
+    this.dealForm().markAsDirty();
+  }
+
+  hasUnsavedChanges(): boolean {
+    return this.dealForm().dirty();
+  }
+
+  private load(deal: Deal | undefined, tasks: readonly DealTask[]): void {
+    this.dealForm().reset({
+      title: deal?.title ?? '',
+      summary: deal?.summary ?? '',
+      stage: deal?.stage ?? 'new',
+      amount: deal?.value.amount ?? 0,
+      isPublic: deal?.isPublic ?? false,
+      tasks: tasks.map((task) => ({ title: task.title, priority: task.priority })),
+    });
+  }
+}
+
+export type PartialPartial<T, F extends keyof T> = Omit<T, F> & Partial<Pick<T, F>>;
+
+export type DealFormDraft = PartialPartial<Deal, 'id' | 'accountId' | 'contactId'>;
+
+export function emptyDeal(): DealFormDraft {
+  return {
+    title: '',
+    summary: '',
+    stage: 'new',
+    value: { amount: 0, currency: 'USD' },
+    isPublic: false,
+  };
+}
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+The class still holds the old  method and the -based model. I'll make all the edits in one batch: derive the model with `linkedSignal`, keep the effect for flag-reset only, and remove .   
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **deal-editor.ts**</summary>
+
+@@ lines 216-227 @@ (deleted)
+
+@@ lines 187-190 @@
+
+```
+// Tracks only the inputs, so user edits do not clear dirty state.
+    effect(() => {
+      this.deal();
+      this.tasks();
+      untracked(() => this.dealForm().reset(
+```
+
+@@ lines 178-178 @@
+
+```
+linkedSignal(() => toValue(this.deal(), this.tasks()
+```
+
+@@ lines 57-58 @@
+
+```
+toValue(deal: Deal | undefined, tasks: readonly DealTask[]): DealEditorValue {
+  return {
+    title: deal?.title ?? '',
+    summary: deal?.summary ?? '',
+    stage: deal?.stage ?? 'new',
+    amount: deal?.value.amount ?? 0,
+    isPublic: deal?.isPublic ?? false,
+    tasks: tasks.map((task) => ({ title: task.title, priority: task.priority })),
+ 
+```
+
+@@ lines 1-1 @@
+
+```
+linkedSignal, output
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="run_in_terminal"><details>
+<summary>Tool use: **run_in_terminal**</summary>
+
+Running ` cd /c/Projects/sages-angular-adv-1126 && npx prettier --write src/app/featur...`
+
+Format, type-check, and lint the editor
+
+```bash
+cd /c/Projects/sages-angular-adv-1126 && npx prettier --write src/app/features/deals/ui/deal-editor/deal-editor.ts && npx tsc --noEmit -p tsconfig.app.json; echo "TSC_EXIT=$?"; npx eslint src/app/features/deals/ui/deal-editor/deal-editor.ts; echo "ESLINT_EXIT=$?"
+```
+
+**Result:**
+
+```
+src/app/features/deals/ui/deal-editor/deal-editor.ts 450ms
+TSC_EXIT=0
+ESLINT_EXIT=0
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="get_errors"><details>
+<summary>Tool use: **get_errors**</summary>
+
+Checked `deal-editor.ts`, no problems found
+
+**Input:**
+
+- filePaths:
+
+```
+[
+  "c:\\Projects\\sages-angular-adv-1126\\src\\app\\features\\deals\\ui\\deal-editor\\deal-editor.ts"
+]
+```
+
+
+**Result:**
+
+```
+<errors path="c:\\Projects\\sages-angular-adv-1126\\src\\app\\features\\deals\\ui\\deal-editor\\deal-editor.ts">
+No errors found
+</errors>
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+Yes, this is a better split. The model is now derived from the inputs with , and the effect only clears the touched and dirty flags.
+
+- The `load` method is gone.  builds the model, and  recomputes it when the inputs change.
+- The effect reads only  and , so typing or adding tasks does not reset the dirty state.
+- `prettier`, `tsc`, and `eslint` pass, and `get_errors` reports nothing for `src/app/features/deals/ui/deal-editor/deal-editor.ts`.
+
+The effect still exists, because clearing touched and dirty state requires . Behaviour in the browser is not verified; I can run it if you approve browser tools.
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="task" data-tool-name="manage_todo_list"><details>
+<summary>Tool use: **manage_todo_list**</summary>
+
+Created 3 todos
 </details></tool-use>

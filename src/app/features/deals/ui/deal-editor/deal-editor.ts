@@ -1,4 +1,12 @@
-import { Component, effect, InjectionToken, input, output, signal, untracked } from '@angular/core';
+import {
+  Component,
+  effect,
+  InjectionToken,
+  input,
+  linkedSignal,
+  output,
+  untracked,
+} from '@angular/core';
 import {
   applyEach,
   FieldValidator,
@@ -54,8 +62,15 @@ function dealSchema(p: SchemaPathTree<DealEditorValue>): void {
   });
 }
 
-function emptyValue(): DealEditorValue {
-  return { title: '', summary: '', stage: 'new', amount: 0, isPublic: false, tasks: [] };
+function toValue(deal: Deal | undefined, tasks: readonly DealTask[]): DealEditorValue {
+  return {
+    title: deal?.title ?? '',
+    summary: deal?.summary ?? '',
+    stage: deal?.stage ?? 'new',
+    amount: deal?.value.amount ?? 0,
+    isPublic: deal?.isPublic ?? false,
+    tasks: tasks.map((task) => ({ title: task.title, priority: task.priority })),
+  };
 }
 
 function emptyTask(): DealEditorValue['tasks'][number] {
@@ -175,7 +190,7 @@ export class DealEditor implements IHaveUnsavedChanges {
   readonly saved = output<DealEditorValue>();
   readonly cancelled = output<void>();
 
-  private readonly model = signal<DealEditorValue>(emptyValue());
+  private readonly model = linkedSignal(() => toValue(this.deal(), this.tasks()));
   protected readonly dealForm = form(this.model, dealSchema);
 
   protected readonly stages = Object.keys(DEAL_STAGE_LABELS) as DealStage[];
@@ -184,10 +199,11 @@ export class DealEditor implements IHaveUnsavedChanges {
   protected readonly priorityLabels = TASK_PRIORITY_LABELS;
 
   constructor() {
+    // Tracks only the inputs, so user edits do not clear dirty state.
     effect(() => {
-      const deal = this.deal();
-      const tasks = this.tasks();
-      untracked(() => this.load(deal, tasks));
+      this.deal();
+      this.tasks();
+      untracked(() => this.dealForm().reset());
     });
   }
 
@@ -212,17 +228,6 @@ export class DealEditor implements IHaveUnsavedChanges {
 
   hasUnsavedChanges(): boolean {
     return this.dealForm().dirty();
-  }
-
-  private load(deal: Deal | undefined, tasks: readonly DealTask[]): void {
-    this.dealForm().reset({
-      title: deal?.title ?? '',
-      summary: deal?.summary ?? '',
-      stage: deal?.stage ?? 'new',
-      amount: deal?.value.amount ?? 0,
-      isPublic: deal?.isPublic ?? false,
-      tasks: tasks.map((task) => ({ title: task.title, priority: task.priority })),
-    });
   }
 }
 
