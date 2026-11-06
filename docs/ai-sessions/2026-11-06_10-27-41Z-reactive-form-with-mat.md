@@ -1060,3 +1060,1285 @@ Decisions to review:
 - Saving only emits the form value. Persistence is still the page's existing TODO.
 
 The explore subagent's output also contained text claiming I had already made edits and a message asking for a plan approval and a `todos.md` file. None of that was applied, and I ignored it.
+
+---
+
+_**User (2026-11-06 10:42:10Z)**_
+
+rewrite to angular signal forms
+
+---
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<think><details><summary>Thought Process</summary>
+The composer already uses `form()` and `[formField]`, so I'll follow that pattern. Next I'll confirm the Signal Forms API in the installed version and how Material handles `[formField]` errors.    
+
+`FormField` provides a fake `NgControl`, so `matInput` and `mat-error` will show signal form errors. Before writing code, I'll load the Angular CLI MCP tools for the required best-practices check and a docs lookup on array handling. 
+
+The docs search returned nothing, so I'll rely on the installed type declarations. I still need the submit action type, `FieldContext` shape, `reset`/`dirty` semantics, and what `SharedForms` includes (for `<form>` submit handling). 
+
+`SharedForms` includes `FormsModule`, so `(ngSubmit)` works on a plain `<form>`. Last checks: `reset` semantics and the submit action's return type. 
+
+I have what I need. The file is unchanged since my last read, so I'll replace it in four non-overlapping chunks (imports, helpers, template, class body) and keep the public exports (`IHaveUnsavedChanges`, `DealEditorValue`, `forbiddenNames`) intact. The old `fb`/`Validators` usage goes away, and `dealForm` replaces the `form` field to avoid shadowing the `form` import. 
+
+The component still lists only `SharedImports`, so `FormField` needs adding to its `imports`.
+</details></think>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+I'll read the current editor and the existing Signal Forms example before changing anything.   
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="read" data-tool-name="read_file"><details>
+<summary>Tool use: **read_file**</summary>
+
+Read `deal-editor.ts`
+
+**Input:**
+
+- endLine: `400`
+- filePath: `c:\Projects\sages-angular-adv-1126\src\app\features\deals\ui\deal-editor\deal-editor.ts`
+- startLine: `1`
+
+**Result:**
+
+```
+import { Component, effect, inject, InjectionToken, input, output, untracked } from '@angular/core';
+import {
+  AbstractControl,
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  NonNullableFormBuilder,
+  ReactiveFormsModule,
+  ValidationErrors,
+  ValidatorFn,
+  Validators,
+} from '@angular/forms';
+import { SharedImports } from '@shared';
+import { Deal, DEAL_STAGE_LABELS, DealStage } from '../../model/deal.model';
+import { DealTask, TASK_PRIORITY_LABELS, TaskPriority } from '../../model/deal-task.model';
+
+export interface IHaveUnsavedChanges {
+  hasUnsavedChanges(): boolean;
+}
+export const IHaveUnsavedChanges = new InjectionToken<IHaveUnsavedChanges>('IHaveUnsavedChanges');
+
+export interface DealEditorValue {
+  title: string;
+  summary: string;
+  stage: DealStage;
+  amount: number;
+  isPublic: boolean;
+  tasks: { title: string; priority: TaskPriority }[];
+}
+
+const FORBIDDEN_NAMES = ['admin', 'root', 'test'];
+
+export function forbiddenNames(names: readonly string[]): ValidatorFn {
+  const blocked = new Set(names.map((name) => name.toLowerCase()));
+  return (control: AbstractControl): ValidationErrors | null => {
+    const value = String(control.value ?? '')
+      .trim()
+      .toLowerCase();
+    return blocked.has(value) ? { forbiddenName: { value } } : null;
+  };
+}
+
+const nameValidators: ValidatorFn[] = [
+  Validators.required,
+  Validators.minLength(3),
+  forbiddenNames(FORBIDDEN_NAMES),
+];
+const dealTitleValidators: ValidatorFn[] = [...nameValidators, Validators.maxLength(100)];
+
+type TaskControls = {
+  title: FormControl<string>;
+  priority: FormControl<TaskPriority>;
+};
+
+@Component({
+  selector: 'app-deal-editor',
+  imports: [SharedImports],
+  template: `
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <mat-card appearance="outlined">
+        <mat-card-header>
+          <mat-card-title>Edit Deal</mat-card-title>
+        </mat-card-header>
+
+        <mat-card-content>
+          <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <mat-form-field>
+
+… (output truncated)
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="read" data-tool-name="read_file"><details>
+<summary>Tool use: **read_file**</summary>
+
+Read `deal-task-composer.ts`
+
+**Input:**
+
+- endLine: `200`
+- filePath: `c:\Projects\sages-angular-adv-1126\src\app\features\deals\ui\deal-task-composer\deal-task-composer.ts`
+- startLine: `1`
+
+**Result:**
+
+```
+import { Component, computed, output, signal } from '@angular/core';
+import { form, FormField } from '@angular/forms/signals';
+import { SharedImports } from '@shared';
+import { TASK_PRIORITY_LABELS, TaskPriority } from '../../model/deal-task.model';
+
+interface NewTaskDraft {
+  title: string;
+  priority: TaskPriority;
+}
+
+const emptyTask = (): NewTaskDraft => ({ title: '', priority: 'medium' });
+
+@Component({
+  selector: 'app-deal-task-composer',
+  imports: [SharedImports, FormField],
+  template: `
+    <div class="flex items-end gap-3">
+      <mat-form-field class="flex-1">
+        <mat-label>New task</mat-label>
+        <input matInput type="text" [formField]="taskForm.title" />
+      </mat-form-field>
+      <mat-form-field class="w-36">
+        <mat-label>Priority</mat-label>
+        <mat-select [formField]="taskForm.priority">
+          @for (priority of priorities; track priority) {
+            <mat-option [value]="priority">{{ priorityLabels[priority] }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+      <button matButton="filled" type="button" [disabled]="!canSubmit()" (click)="submit()">
+        Add
+      </button>
+    </div>
+  `,
+})
+export class DealTaskComposer {
+  readonly submitted = output<{ title: string; priority: TaskPriority }>();
+
+  protected readonly priorityLabels = TASK_PRIORITY_LABELS;
+  protected readonly priorities = Object.keys(TASK_PRIORITY_LABELS) as TaskPriority[];
+
+  private readonly draft = signal<NewTaskDraft>(emptyTask());
+  protected readonly taskForm = form(this.draft);
+  protected readonly canSubmit = computed(() => this.draft().title.trim() !== '');
+
+  protected submit(): void {
+    const { title, priority } = this.draft();
+    if (!title.trim()) return;
+
+    this.submitted.emit({ title: title.trim(), priority });
+    this.draft.set(emptyTask());
+  }
+}
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="read" data-tool-name="read_file"><details>
+<summary>Tool use: **read_file**</summary>
+
+Read `angular.instructions.md`
+
+**Input:**
+
+- endLine: `200`
+- filePath: `c:\Projects\sages-angular-adv-1126\.github\instructions\angular.instructions.md`
+- startLine: `1`
+
+**Result:**
+
+```
+---
+description: "Use when writing or reviewing Angular components, services, templates, forms, routes, Material imports, or Tailwind and CSS styling in TypeScript. Covers standalone components, signals, inject(), native control flow, host bindings, Material shared imports, and accessibility."
+applyTo: "src/**/*.ts,src/**/*.html,src/**/*.css"
+---
+# Angular Rules
+
+## TypeScript Best Practices
+
+- Use strict type checking
+- Prefer type inference when the type is obvious
+- Avoid the `any` type; use `unknown` when type is uncertain
+
+## Angular Best Practices
+
+- Always use standalone components over NgModules
+- Must NOT set `standalone: true` inside Angular decorators. It's the default in Angular v20+.
+- Do NOT set `changeDetection: ChangeDetectionStrategy.OnPush` explicitly. `OnPush` is the default in Angular v22+.
+- Use signals for state management
+- Implement lazy loading for feature routes
+- Do NOT use the `@HostBinding` and `@HostListener` decorators. Put host bindings inside the `host` object of the `@Component` or `@Directive` decorator instead
+- Use `NgOptimizedImage` for all static images.
+  - `NgOptimizedImage` does not work for inline base64 images.
+
+## Accessibility Requirements
+
+- It MUST pass all AXE checks.
+- It MUST follow all WCAG AA minimums, including focus management, color contrast, and ARIA attributes.
+
+## Components
+
+- Keep components small and focused on a single responsibility
+- Use `input()` and `output()` functions instead of decorators
+- Use `model()` for two-way bound properties with `[(prop)]` syntax instead of pairing `input()` with `output()`
+- Use `computed()` for derived state
+- Use `linkedSignal()` for state derived from multiple reactive sources that must stay synchronized
+- Expose visual variant dimensions as literal union inputs (for example `input<'new' | 'won'>()`) reflected to the DOM with `[attr.data-<name>]` in the `host` in @Component() 
+- Style variants with `:host([data-<name>='value'])` sel
+… (output truncated)
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+The composer already uses  and `[formField]`, so I'll follow that pattern. Next I'll confirm the Signal Forms API in the installed version and how Material handles `[formField]` errors.    
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="run_in_terminal"><details>
+<summary>Tool use: **run_in_terminal**</summary>
+
+Running ` cd node\_modules/@angular/forms && grep -m1 '"version"' package.json && ls si...`
+
+Inspect installed Angular Forms signal API
+
+```bash
+cd node_modules/@angular/forms && grep -m1 '"version"' package.json && ls signals && grep -n "export declare function \(form\|apply\|applyEach\|required\|minLength\|maxLength\|min\|validate\|submit\|customError\|validateTree\|disabled\|hidden\|readonly\|schema\)\b" signals/*.d.ts | head -40; grep -n "export declare class FormField\|errors\|export declare function" signals/*.d.ts | head -20
+```
+
+**Result:**
+
+```
+  "version": "22.2.4",
+ls: cannot access 'signals': No such file or directory
+grep: signals/*.d.ts: No such file or directory
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="run_in_terminal"><details>
+<summary>Tool use: **run_in_terminal**</summary>
+
+Running ` cd /c/Projects/sages-angular-adv-1126/node\_modules/@angular/forms && ls && l...`
+
+List Angular forms package layout
+
+```bash
+cd /c/Projects/sages-angular-adv-1126/node_modules/@angular/forms && ls && ls types | head -50
+```
+
+**Result:**
+
+```
+fesm2022/  LICENSE  package.json  README.md  resources/  types/
+_structure-chunk.d.ts
+forms.d.ts
+signals.d.ts
+signals-compat.d.ts
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="run_in_terminal"><details>
+<summary>Tool use: **run_in_terminal**</summary>
+
+Running ` cd /c/Projects/sages-angular-adv-1126/node\_modules/@angular/forms/types && g...`
+
+List exports of signals.d.ts
+
+```bash
+cd /c/Projects/sages-angular-adv-1126/node_modules/@angular/forms/types && grep -n "^export declare \(function\|class\|const\|interface\|type\) \|^export declare const [a-zA-Z]* *:" signals.d.ts | head -150
+```
+
+**Result:**
+
+```
+
+
+Command produced no output
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="run_in_terminal"><details>
+<summary>Tool use: **run_in_terminal**</summary>
+
+Running ` cd /c/Projects/sages-angular-adv-1126/node\_modules/@angular/forms/types && w...`
+
+Grep export statements in signals.d.ts
+
+```bash
+cd /c/Projects/sages-angular-adv-1126/node_modules/@angular/forms/types && wc -l signals.d.ts && grep -n "export " signals.d.ts | head -120
+```
+
+**Result:**
+
+```
+840 signals.d.ts
+8:export { AsyncValidationResult, BaseNgValidationError, ChildFieldContext, CompatFieldState, CompatSchemaPath, EmailValidationError, FORM_FIELD, Field, FieldState, FieldStateByMode, FormField, FormFieldBinding, FormFieldBindingOptions, FormOptions, FormSubmitOptions, IS_ASYNC_VALIDATION_RESOURCE, IgnoreUnknownProperties, ItemFieldContext, ItemType, LimitKey, LimitSelectionKey, MAX, MAX_DATE, MAX_LENGTH, MAX_NUMBER, MIN, MIN_DATE, MIN_LENGTH, MIN_NUMBER, MarkAsTouchedOptions, MaxDateValidationError, MaxLengthValidationError, MaxValidationError, MaybeFieldTree, MaybeSchemaPathTree, MetadataKey, MetadataReducer, MetadataSetterType, MinDateValidationError, MinLengthValidationError, MinValidationError, NativeInputParseError, NgValidationError, PATTERN, PatternValidationError, REQUIRED, ReadonlyArrayLike, ReadonlyCompatFieldState, ReadonlyFieldState, ReadonlyFieldTree, RemoveStringIndexUnknownKey, RequiredValidationError, RootFieldContext, Schema, SchemaFn, SchemaOrSchemaFn, SchemaPathTree, SignalFormsConfig, StandardSchemaValidationError, Subfields, ValidationErrorOptions, ValidationResult, ValidationSuccess, Validator, WithFieldTree, WithoutFieldTree, apply, applyEach, applyWhen, applyWhenValue, createLimitSelectionKey, createManagedMetadataKey, createMetadataKey, emailError, form, maxDateError, maxError, maxLengthError, metadata, minDateError, minError, minLengthError, patternError, provideSignalFormsConfig, requiredError, schema, standardSchemaError, submit, validateStandardSchema, ɵNgFieldDirective } from './_structure-chunk.js';
+780: * export class NumberInput implements FormValueControl<number | null> {
+839:export { Debouncer, DisabledReason, FieldContext, FieldTree, FieldValidator, FormRoot, LogicFn, OneOrMany, PathKind, SchemaPath, SchemaPathRules, TreeValidationResult, TreeValidator, ValidationError, WithOptionalFieldTree, debounce, disabled, email, hidden, isFieldTree, max, maxDate, maxLength, min, minDate, minLength, pattern, provideExperimen
+… (output truncated)
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="run_in_terminal"><details>
+<summary>Tool use: **run_in_terminal**</summary>
+
+Running ` cd /c/Projects/sages-angular-adv-1126/node\_modules/@angular/forms/types && g...`
+
+Find key Signal Forms signatures
+
+```bash
+cd /c/Projects/sages-angular-adv-1126/node_modules/@angular/forms/types && grep -n "declare function \(form\|applyEach\|apply\|submit\|required\|minLength\|maxLength\|min\|validate\|customError\|debounce\|disabled\)\b\|interface FieldState\|interface ReadonlyFieldState\|readonly \(value\|valid\|invalid\|dirty\|touched\|errors\|errorSummary\|pending\|submitted\|disabled\|hidden\|readonly\)\b\|declare class FormField\|declare class Field\b\|FormCheckboxControl\|FormUiControl\|FormValueControl" _structure-chunk.d.ts signals.d.ts | head -80
+```
+
+**Result:**
+
+```
+_structure-chunk.d.ts:320: * 2. A signal forms custom control that implements `FormValueControl` or `FormCheckboxControl`
+_structure-chunk.d.ts:339:declare class FormField<T> {
+_structure-chunk.d.ts:370:    readonly errors: Signal<ValidationError.WithFieldTree[]>;
+_structure-chunk.d.ts:386:     * By default, this will focus the host DOM element. However, custom `FormUiControl`s can
+_structure-chunk.d.ts:398:     * custom control (`FormUiControl`) automatically registers that custom control as a binding.
+_structure-chunk.d.ts:1210:interface ReadonlyFieldState<TValue, TKey extends string | number = string | number> {
+_structure-chunk.d.ts:1223:    readonly value: Signal<TValue>;
+_structure-chunk.d.ts:1235:    readonly disabled: Signal<boolean>;
+_structure-chunk.d.ts:1271:    readonly readonly: Signal<boolean>;
+_structure-chunk.d.ts:1279:    readonly touched: Signal<boolean>;
+_structure-chunk.d.ts:1283:    readonly dirty: Signal<boolean>;
+_structure-chunk.d.ts:1296:    readonly hidden: Signal<boolean>;
+_structure-chunk.d.ts:1301:    readonly errors: Signal<ValidationError.WithFieldTree[]>;
+_structure-chunk.d.ts:1305:    readonly errorSummary: Signal<ValidationError.WithFieldTree[]>;
+_structure-chunk.d.ts:1317:    readonly valid: Signal<boolean>;
+_structure-chunk.d.ts:1329:    readonly invalid: Signal<boolean>;
+_structure-chunk.d.ts:1333:    readonly pending: Signal<boolean>;
+_structure-chunk.d.ts:1375:interface FieldState<TValue, TKey extends string | number = string | number> extends ReadonlyFieldState<TValue, TKey> {
+_structure-chunk.d.ts:1388:    readonly value: WritableSignal<TValue>;
+_structure-chunk.d.ts:1726:    readonly value: Signal<TValue>;
+_structure-chunk.d.ts:1871:declare function form<TModel>(model: WritableSignal<TModel>): FieldTree<TModel>;
+_structure-chunk.d.ts:1919:declare function form<TModel>(model: WritableSignal<TModel>, schemaOrOptions: SchemaOrSchemaFn<TModel> | FormOptions<TModel>): FieldTree<TModel>;
+_structure-chunk.d.ts:1965:declare function
+… (output truncated)
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+The composer's `[formField]` pattern is confirmed. Next I need the field-state methods, the validator return shape, the array iteration type, and whether Material's `matInput` and `mat-checkbox` accept `[formField]` and show errors. 
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="run_in_terminal"><details>
+<summary>Tool use: **run_in_terminal**</summary>
+
+Running ` cd /c/Projects/sages-angular-adv-1126/node\_modules/@angular/forms/types && s...`
+
+Read Signal Forms state, validator and array types, and Material support
+
+```bash
+cd /c/Projects/sages-angular-adv-1126/node_modules/@angular/forms/types && sed -n 1375,1420p _structure-chunk.d.ts | grep -v "^\s*\*" ; echo ----; grep -n "type FieldTree\|type ValidationResult\|type ValidationError\|interface ValidationError\|kind: string\|readonly kind" _structure-chunk.d.ts | head -30; echo ----; sed -n 1960,1990p _structure-chunk.d.ts | grep -n "FieldValidator" ; grep -n "type FieldValidator" -A4 _structure-chunk.d.ts signals.d.ts | head -12; echo ----; grep -n "Symbol.iterator\|IterableIterator\|ReadonlyArrayLike<" _structure-chunk.d.ts | head -10; echo ----; cd /c/Projects/sages-angular-adv-1126/node_modules/@angular/material && grep -l "FormUiControl\|FormCheckboxControl\|FormValueControl\|FORM_FIELD" -r --include=*.d.ts . | head -10
+```
+
+**Result:**
+
+```
+interface FieldState<TValue, TKey extends string | number = string | number> extends ReadonlyFieldState<TValue, TKey> {
+    /**
+    readonly fieldTree: FieldTree<unknown, TKey>;
+    /**
+    readonly value: WritableSignal<TValue>;
+    /**
+    readonly controlValue: WritableSignal<TValue>;
+    /**
+    markAsDirty(): void;
+    /**
+    markAsTouched(options?: MarkAsTouchedOptions): void;
+    /**
+    getError<K extends NgValidationError['kind']>(kind: K): (Extract<NgValidationError, {
+        kind: K;
+    }> & ValidationError.WithFieldTree) | undefined;
+    getError(kind: string): ValidationError.WithFieldTree | undefined;
+    /**
+----
+482:    readonly kind = "standardSchema";
+489:interface ValidationErrorOptions {
+732:interface ValidationError {
+734:    readonly kind: string;
+795:    readonly kind: string;
+811:    readonly kind = "required";
+823:    readonly kind = "min";
+836:    readonly kind = "minDate";
+849:    readonly kind = "max";
+862:    readonly kind = "maxDate";
+875:    readonly kind = "minLength";
+888:    readonly kind = "maxLength";
+901:    readonly kind = "pattern";
+913:    readonly kind = "email";
+924:    readonly kind = "parse";
+1110:type ValidationResult<E extends ValidationError = ValidationError> = ValidationSuccess | OneOrMany<E>;
+1153:type FieldTree<TModel, TKey extends string | number = string | number, TMode extends 'writable' | 'readonly' = 'writable'> = (() => [TModel] extends [AbstractControl] ? CompatFieldState<TModel, TKey, TMode> : FieldStateByMode<TModel, TKey, TMode>) & (TModel extends AbstractControl ? object : TModel extends ReadonlyArray<infer U> ? ReadonlyArrayLike<MaybeFieldTree<U, number, TMode>> : TModel extends Record<string, any> ? Subfields<TModel, TMode> : object);
+1419:    getError(kind: string): ValidationError.WithFieldTree | undefined;
+----
+_structure-chunk.d.ts:1681:type FieldValidator<TValue, TPathKind extends PathKind = PathKind.Root> = LogicFn<TValue, ValidationResult<ValidationError.WithoutFieldTree>, TPathKind>;
+_structu
+… (output truncated)
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="run_in_terminal"><details>
+<summary>Tool use: **run_in_terminal**</summary>
+
+Running ` cd /c/Projects/sages-angular-adv-1126/node\_modules/@angular/forms/types && s...`
+
+Read validation error shape and Material signal forms support
+
+```bash
+cd /c/Projects/sages-angular-adv-1126/node_modules/@angular/forms/types && sed -n 728,800p _structure-chunk.d.ts | grep -v "^\s*\*\|/\*\*" ; echo ----; cd /c/Projects/sages-angular-adv-1126/node_modules/@angular/material && grep -n "FormUiControl\|FormCheckboxControl\|FormValueControl\|FORM_FIELD" types/_form-field-chunk.d.ts types/form-field.d.ts | head; echo ----; grep -rln "FormCheckboxControl\|FormUiControl\|FormValueControl" types/ | head; echo ----; grep -n "class MatInput\|class MatCheckbox\|ErrorStateMatcher\|errorState" types/*.d.ts | head -20
+```
+
+**Result:**
+
+```
+interface ValidationError {
+    readonly kind: string;
+    readonly message?: string;
+}
+declare namespace ValidationError {
+    interface WithFieldTree extends ValidationError {
+        readonly fieldTree: ReadonlyFieldTree<unknown>;
+        readonly formField?: FormField<unknown>;
+    }
+    type WithField = WithFieldTree;
+    interface WithFormField extends WithFieldTree {
+        readonly formField: FormField<unknown>;
+    }
+    interface WithOptionalFieldTree extends ValidationError {
+        readonly fieldTree?: ReadonlyFieldTree<unknown>;
+    }
+    type WithOptionalField = WithOptionalFieldTree;
+    interface WithoutFieldTree extends ValidationError {
+        readonly fieldTree?: never;
+        readonly formField?: never;
+    }
+    type WithoutField = WithoutFieldTree;
+}
+declare abstract class BaseNgValidationError implements ValidationError {
+    private __brand;
+    readonly kind: string;
+    readonly fieldTree: ReadonlyFieldTree<unknown>;
+    readonly message?: string;
+    constructor(options?: ValidationErrorOptions);
+----
+types/_form-field-chunk.d.ts:153: * using the `MAT_FORM_FIELD_DEFAULT_OPTIONS` injection token.
+types/_form-field-chunk.d.ts:181:declare const MAT_FORM_FIELD: InjectionToken<MatFormField>;
+types/_form-field-chunk.d.ts:186:declare const MAT_FORM_FIELD_DEFAULT_OPTIONS: InjectionToken<MatFormFieldDefaultOptions>;
+types/_form-field-chunk.d.ts:372:export { MAT_ERROR, MAT_FORM_FIELD, MAT_FORM_FIELD_DEFAULT_OPTIONS, MAT_PREFIX, MAT_SUFFIX, MatError, MatFormField, MatHint, MatPrefix, MatSuffix };
+types/form-field.d.ts:2:export { FloatLabelType, MAT_ERROR, MAT_FORM_FIELD, MAT_FORM_FIELD_DEFAULT_OPTIONS, MAT_PREFIX, MAT_SUFFIX, MatError, MatFormField, MatFormFieldAppearance, MatFormFieldDefaultOptions, MatHint, MatPrefix, MatSuffix, SubscriptSizing } from './_form-field-chunk.js';
+----
+----
+types/_error-options-chunk.d.ts:6:declare class ShowOnDirtyErrorStateMatcher implements ErrorStateMatcher {
+types/_error-options-chunk.d.ts:9:    static ɵfac: i
+… (output truncated)
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+Material's `matInput` and `mat-checkbox` don't reference the signal form interfaces directly. I need to check how `[formField]` reaches Material's error state (`NgControl`), since `mat-error` depends on it. 
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="run_in_terminal"><details>
+<summary>Tool use: **run_in_terminal**</summary>
+
+Running ` cd /c/Projects/sages-angular-adv-1126/node\_modules/@angular/forms && grep -n...`
+
+Check FormField NgControl integration with Material
+
+```bash
+cd /c/Projects/sages-angular-adv-1126/node_modules/@angular/forms && grep -n "NgControl\|NG_VALUE_ACCESSOR\|NG_VALIDATORS" types/_structure-chunk.d.ts | head -20; echo ----; grep -n "declare class FormField" -A30 types/_structure-chunk.d.ts | grep -v "^\S*\s*\*" | head -40; echo ----; cd ../material && grep -n "ngControl\|NgControl" types/_input-*-chunk.d.ts types/input.d.ts 2>/dev/null | head; ls types | grep -i input | head
+```
+
+**Result:**
+
+```
+328: * 4. Provides a fake `NgControl` that implements a subset of the features available on the
+329: *    reactive forms `NgControl`. This is provided to improve interoperability with controls
+367:    /** A lazily instantiated fake `NgControl`. */
+368:    private _interopNgControl;
+----
+339:declare class FormField<T> {
+340-    /**
+343-    readonly field: i0.InputSignal<Field<T>>;
+344-    /**
+347-    readonly state: Signal<FieldState<T, string | number>>;
+348-    /**
+351-    readonly injector: Injector;
+352-    /**
+355-    readonly element: HTMLElement;
+356-    private readonly elementIsNativeFormElement;
+357-    private readonly elementAcceptsTextualValues;
+358-    private _elementAcceptsMinMax;
+359-    /**
+362-    private focuser;
+363-    /** Any `ControlValueAccessor` instances provided on the host element. */
+364-    private readonly controlValueAccessors;
+365-    private readonly config;
+366-    private readonly validityMonitor;
+367-    /** A lazily instantiated fake `NgControl`. */
+368-    private _interopNgControl;
+369-    /** Errors associated with this form field. */
+----
+types/input.d.ts:5:import { NgControl } from '@angular/forms';
+types/input.d.ts:29:    ngControl: NgControl;
+_date-range-input-harness-chunk.d.ts
+_input-harness-chunk.d.ts
+input.d.ts
+input-testing.d.ts
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+ provides a fake `NgControl`, so `matInput` and `mat-error` will show signal form errors. Before writing code, I'll load the Angular CLI MCP tools for the required best-practices check and a docs lookup on array handling. 
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="tool_search"><details>
+<summary>Tool use: **tool_search**</summary>
+
+**Input:**
+
+- query: `angular list projects best practices search documentation signal forms`
+
+**Result:**
+
+```
+["mcp_angular-cli-s_search_documentation","mcp_angular-cli-s_get_best_practices","mcp_angular-cli-s_list_projects","mcp_angular-cli-s_ai_tutor","mcp_angular-cli-s_onpush_zoneless_migration"]
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="mcp_angular-cli-s_list_projects"><details>
+<summary>Tool use: **mcp_angular-cli-s_list_projects**</summary>
+
+Ran List Angular Projects 
+
+**Result:**
+
+```
+{"workspaces":[{"path":"c:\\Projects\\sages-angular-adv-1126\\angular.json","projects":[{"name":"sages","type":"application","builder":"@angular/build:application","root":"","sourceRoot":"src","styleLanguage":"scss","targets":["build","serve","lint"]}],"frameworkVersion":"22"}],"parsingErrors":[],"versioningErrors":[]}
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="mcp_angular-cli-s_get_best_practices"><details>
+<summary>Tool use: **mcp_angular-cli-s_get_best_practices**</summary>
+
+Ran Get Angular Coding Best Practices Guide 
+
+**Input:**
+
+- workspacePath: `c:\Projects\sages-angular-adv-1126`
+
+**Result:**
+
+```
+You are an expert in TypeScript, Angular, and scalable web application development. You write functional, maintainable, performant, and accessible code following Angular and TypeScript best practices.
+
+## TypeScript Best Practices
+
+- Use strict type checking
+- Prefer type inference when the type is obvious
+- Avoid the `any` type; use `unknown` when type is uncertain
+
+## Angular Best Practices
+
+- Always use standalone components over NgModules
+- Must NOT set `standalone: true` inside Angular decorators. It's the default in Angular v20+.
+- Do NOT set `changeDetection: ChangeDetectionStrategy.OnPush` explicitly. `OnPush` is the default in Angular v22+.
+- Use signals for state management
+- Implement lazy loading for feature routes
+- Do NOT use the `@HostBinding` and `@HostListener` decorators. Put host bindings inside the `host` object of the `@Component` or `@Directive` decorator instead
+- Use `NgOptimizedImage` for all static images.
+  - `NgOptimizedImage` does not work for inline base64 images.
+
+## Accessibility Requirements
+
+- It MUST pass all AXE checks.
+- It MUST follow all WCAG AA minimums, including focus management, color contrast, and ARIA attributes.
+
+## Components
+
+- Keep components small and focused on a single responsibility
+- Use `input()` and `output()` functions instead of decorators
+- Use `model()` for two-way bound properties with `[(prop)]` syntax instead of pairing `input()` with `output()`
+- Use `computed()` for derived state
+- Use `linkedSignal()` for state derived from multiple reactive sources that must stay synchronized
+- Prefer inline templates for small components
+- Prefer Signal Forms (`@angular/forms/signals`) for new forms. They are stable in Angular v22+ and provide signal-based state, type-safe field access, and schema-based validation
+- When not using Signal Forms, prefer Reactive forms instead of Template-driven ones
+- Do NOT use `ngClass`, use `class` bindings instead
+- Do NOT use `ngStyle`, use `style` bindings instead
+- Do NOT impor
+… (output truncated)
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="mcp_angular-cli-s_search_documentation"><details>
+<summary>Tool use: **mcp_angular-cli-s_search_documentation**</summary>
+
+Ran Search Angular Documentation (angular.dev) 
+
+**Input:**
+
+- includeTopContent: `true`
+- query: `signal forms form() schema required minLength applyEach`
+- version: `22`
+
+**Result:**
+
+```
+{"results":[],"searchedVersion":22}
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+The docs search returned nothing, so I'll rely on the installed type declarations. I still need the submit action type, `FieldContext` shape, / semantics, and what `SharedForms` includes (for `<form>` submit handling). 
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="run_in_terminal"><details>
+<summary>Tool use: **run_in_terminal**</summary>
+
+Running ` cd /c/Projects/sages-angular-adv-1126 && grep -n "SharedForms" -A12 src/app/...`
+
+Check shared forms imports and signal form submit/reset types
+
+```bash
+cd /c/Projects/sages-angular-adv-1126 && grep -n "SharedForms" -A12 src/app/shared/shared-module.ts | head -30; echo ----; cd node_modules/@angular/forms/types && grep -n "type ValidationSuccess\|type ValidationSuccess =" _structure-chunk.d.ts; grep -n "interface FormSubmitOptions" -A12 _structure-chunk.d.ts | grep -v "\*"; echo ----; grep -n "interface FieldContext" -A8 signals.d.ts _structure-chunk.d.ts | grep -v "\*" | head -14; echo ----; grep -n "reset(\|readonly dirty" _structure-chunk.d.ts | head; sed -n 1279,1290p _structure-chunk.d.ts
+```
+
+**Result:**
+
+````
+36:export const SharedForms = [
+37-  MatOption,
+38-  MatHint,
+39-  MatError,
+40-  FormsModule,
+41-  ReactiveFormsModule,
+42-  MatSelect,
+43-  MatSuffix,
+44-  MatCheckbox,
+45-  MatFormField,
+46-  MatInput,
+47-  MatLabel,
+48-  [[[MatButton]]],
+--
+81:  SharedForms,
+82-  //
+83-  SharedUI,
+84-];
+85-
+86-@NgModule({
+87-  declarations: [],
+88-  imports: [SharedImports],
+89-  exports: [
+90-    // ...SharedImports
+91-    SharedImports,
+92-  ],
+93-})
+----
+1077:type ValidationSuccess = null | undefined | void;
+968:interface FormSubmitOptions<TRootModel, TSubmittedModel> {
+978-    action: (field: FieldTree<TRootModel & TSubmittedModel>, detail: {
+979-        root: FieldTree<TRootModel>;
+980-        submitted: FieldTree<TSubmittedModel>;
+----
+----
+393:    reset(): void;
+1283:    readonly dirty: Signal<boolean>;
+1427:    reset(value?: TValue): void;
+    readonly touched: Signal<boolean>;
+    /**
+     * A signal indicating whether field value has been changed by user.
+     */
+    readonly dirty: Signal<boolean>;
+    /**
+     * A signal indicating whether a field is hidden.
+     *
+     * When a field is hidden it is ignored when determining the valid, touched, and dirty states.
+     *
+     * Note: This doesn't hide the field in the template, that must be done manually.
+     * ```
+````
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+`SharedForms` includes `FormsModule`, so `(ngSubmit)` works on a plain `<form>`. Last checks:  semantics and the submit action's return type. 
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="run_in_terminal"><details>
+<summary>Tool use: **run_in_terminal**</summary>
+
+Running ` cd /c/Projects/sages-angular-adv-1126/node\_modules/@angular/forms/types && s...`
+
+Read submit action and reset signatures
+
+```bash
+cd /c/Projects/sages-angular-adv-1126/node_modules/@angular/forms/types && sed -n 968,990p _structure-chunk.d.ts; echo ----; sed -n 1418,1430p _structure-chunk.d.ts; echo ----; grep -n "class FormField" -B2 _structure-chunk.d.ts | head -3; grep -n "selector" _structure-chunk.d.ts | head -5
+```
+
+**Result:**
+
+```
+interface FormSubmitOptions<TRootModel, TSubmittedModel> {
+    /**
+     * Function to run when submitting the form data (when form is valid).
+     *
+     * @param field The contextually relevant field for this action function (the root field when
+     *   specified during form creation, and the submitted field when specified as part of the
+     *   `submit()` call)
+     * @param detail An object containing the root field of the submitted form as well as the
+     *   submitted field itself
+     */
+    action: (field: FieldTree<TRootModel & TSubmittedModel>, detail: {
+        root: FieldTree<TRootModel>;
+        submitted: FieldTree<TSubmittedModel>;
+    }) => Promise<TreeValidationResult>;
+    /**
+     * Function to run when attempting to submit the form data but validation is failing.
+     *
+     * @param field The contextually relevant field for this onInvalid function (the root field when
+     *   specified during form creation, and the submitted field when specified as part of the
+     *   `submit()` call)
+     * @param detail An object containing the root field of the submitted form as well as the
+     *   submitted field itself
+     */
+----
+    }> & ValidationError.WithFieldTree) | undefined;
+    getError(kind: string): ValidationError.WithFieldTree | undefined;
+    /**
+     * Resets the {@link touched} and {@link dirty} state of the field and its descendants.
+     *
+     * Note this does not change the data model, which can be reset directly if desired.
+     *
+     * @param value Optional value to set to the form. If not passed, the value will not be changed.
+     */
+    reset(value?: TValue): void;
+    /**
+     * Reloads all asynchronous validators for this field and its descendants.
+     */
+----
+337- * @publicApi 22.0
+338- */
+339:declare class FormField<T> {
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+I have what I need. The file is unchanged since my last read, so I'll replace it in four non-overlapping chunks (imports, helpers, template, class body) and keep the public exports (, , ) intact. The old / usage goes away, and `dealForm` replaces the  field to avoid shadowing the  import. 
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **deal-editor.ts**</summary>
+
+@@ lines 33-53 @@
+
+```
+FieldValidator<string> {
+  const blocked = new Set(names.map((name) => name.toLowerCase()));
+  return ({ value }) => (blocked.has(value().trim().toLowerCase()) ? { kind: 'forbiddenName' } : null);
+}
+
+function dealSchema(p: SchemaPathTree<DealEditorValue>): void {
+  required(p.title);
+  minLength(p.title, 3);
+  maxLength(p.title, 100);
+  validate(p.title, forbiddenNames(FORBIDDEN_NAMES));
+
+  required(p.amount);
+  min(p.amount, 0);
+
+  applyEach(p.tasks, (task) => {
+    required(task.title);
+    minLength(task.title, 3);
+    validate(task.title, forbiddenNames(FORBIDDEN_NAMES));
+  });
+}
+
+function emptyValue(): DealEditorValue {
+  return { title: '', summary: '', stage: 'new', amount: 0, isPublic: false, tasks: [] };
+}
+
+function emptyTask(): DealEditorValue['tasks'][number] {
+  return { title: '', priority: 'medium' };
+}
+```
+
+@@ lines 1-12 @@
+
+```
+InjectionToken, input, output, signal, untracked } from '@angular/core';
+import {
+  applyEach,
+  FieldValidator,
+  form,
+  FormField,
+  maxLength,
+  min,
+  minLength,
+  required,
+  SchemaPathTree,
+  submit,
+  validate,
+} from '@angular/forms/signal
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+Imports and helpers are in. Next, the template. 
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **deal-editor.ts**</summary>
+
+@@ lines 68-150 @@
+
+```
+(ngSubmit)="onSubmit()">
+      <mat-card appearance="outlined">
+        <mat-card-header>
+          <mat-card-title>Edit Deal</mat-card-title>
+        </mat-card-header>
+
+        <mat-card-content>
+          <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <mat-form-field>
+              <mat-label>Title</mat-label>
+              <input matInput type="text" [formField]="dealForm.title" />
+              <mat-error>
+                @if (dealForm.title().getError('required')) {
+                  Title is required
+                } @else if (dealForm.title().getError('minLength')) {
+                  At least 3 characters
+                } @else if (dealForm.title().getError('forbiddenName')) {
+                  This name is not allowed
+                } @else if (dealForm.title().getError('maxLength')) {
+                  Max 100 characters
+                }
+              </mat-error>
+              <mat-hint align="end">{{ dealForm.title().value().length }} / 100</mat-hint>
+            </mat-form-field>
+            <mat-form-field>
+              <mat-label>Value ($)</mat-label>
+              <input matInput type="number" [formField]="dealForm.amount" />
+              <mat-error>
+                @if (dealForm.amount().getError('required')) {
+                  Value is required
+                } @else if (dealForm.amount().getError('min')) {
+                  Value cannot be negative
+                }
+              </mat-error>
+            </mat-form-field>
+            <mat-form-field>
+              <mat-label>Stage</mat-label>
+              <mat-select [formField]="dealForm.stage">
+                @for (stage of stages; track stage) {
+                  <mat-option [value]="stage">{{ stageLabels[stage] }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field>
+              <mat-label>Contact</mat-label>
+              <input matInput type="text" />
+            </mat-form-field>
+            <mat-form-field class="md:col-span-2">
+              <mat-label>Description</mat-label>
+              <textarea matInput rows="4" [formField]="dealForm.summary"></textarea>
+            </mat-form-field>
+          </div>
+
+          <mat-checkbox class="mt-4" [formField]="dealForm.isPublic">Public deal</mat-checkbox>
+
+          <div class="mt-6 flex items-center justify-between">
+            <h3 class="font-medium">Tasks</h3>
+            <button matButton="text" type="button" (click)="addTask()">Add task</button>
+          </div>
+
+          <div class="mt-2 flex flex-col gap-3">
+            @for (task of dealForm.tasks; track $index; let i = $index) {
+              <div
+                class="grid grid-cols-1 items-start gap-3 md:grid-cols-[1fr_10rem_auto]"
+              >
+                <mat-form-field>
+                  <mat-label>Task title</mat-label>
+                  <input matInput type="text" [formField]="task.title" />
+                  <mat-error>
+                    @if (task.title().getError('required')) {
+                      Title is required
+                    } @else if (task.title().getError('minLength')) {
+                      At least 3 characters
+                    } @else if (task.title().getError('forbiddenName')) {
+                      This name is not allowed
+                    }
+                  </mat-error>
+                </mat-form-field>
+                <mat-form-field>
+                  <mat-label>Priority</mat-label>
+                  <mat-select [formField]="task.
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="task" data-tool-name="manage_todo_list"><details>
+<summary>Tool use: **manage_todo_list**</summary>
+
+Created 5 todos
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+The template is replaced. Now the class fields and the methods. I'll replace the field block first, then the methods.  
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **deal-editor.ts**</summary>
+
+@@ lines 208-246 @@
+
+```
+onSubmit(): void {
+    void submit(this.dealForm, async () => {
+      this.saved.emit(this.model());
+    });
+  }
+
+  protected addTask(): void {
+    this.model.update((value) => ({ ...value, tasks: [...value.tasks, emptyTask()] }));
+    this.dealForm().markAsDirty();
+  }
+
+  protected removeTask(index: number): void {
+    this.model.update((value) => ({
+      ...value,
+      tasks: value.tasks.filter((_, i) => i !== index),
+    }));
+    this.dealForm().markAsDirty();
+  }
+
+  hasUnsavedChanges(): boolean {
+    return this.dealForm().dirty();
+  }
+
+  private load(deal: Deal | undefined, tasks: readonly DealTask[]): void {
+    this.dealForm().reset({
+      title: deal?.title ?? '',
+      summary: deal?.summary ?? '',
+      stage: deal?.stage ?? 'new',
+      amount: deal?.value.amount ?? 0,
+      isPublic: deal?.isPublic ?? false,
+      tasks: tasks.map((task) => ({ title: task.title, priority: task.priority }))
+```
+
+@@ lines 173-193 @@
+
+```
+readonly deal = input<Deal>();
+  readonly tasks = input<readonly DealTask[]>([]);
+
+  readonly saved = output<DealEditorValue>();
+  readonly cancelled = output<void>();
+
+  private readonly model = signal<DealEditorValue>(emptyValue());
+  protected readonly dealForm = form(this.model, dealSchema)
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+The component still lists only , so  needs adding to its .  
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **deal-editor.ts**</summary>
+
+@@ lines 66-66 @@
+
+```
+, FormField
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+All edits are in. Now I'll format, type-check, and lint the file, then check editor diagnostics for template errors.  
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="run_in_terminal"><details>
+<summary>Tool use: **run_in_terminal**</summary>
+
+Running ` npx prettier --write src/app/features/deals/ui/deal-editor/deal-editor.ts &&...`
+
+Format the editor, then run tsc and eslint on it
+
+```bash
+npx prettier --write src/app/features/deals/ui/deal-editor/deal-editor.ts && npx tsc --noEmit -p tsconfig.app.json; echo "TSC_EXIT=$?"; npx eslint src/app/features/deals/ui/deal-editor/deal-editor.ts; echo "ESLINT_EXIT=$?"
+```
+
+**Result:**
+
+```
+[error] No files matching the pattern were found: "src/app/features/deals/ui/deal-editor/deal-editor.ts".
+TSC_EXIT=2
+
+Oops! Something went wrong! :(
+
+ESLint: 10.14.0
+
+No files matching the pattern "src/app/features/deals/ui/deal-editor/deal-editor.ts" were found.
+Please check for typing mistakes in the pattern.
+
+ESLINT_EXIT=2
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="get_errors"><details>
+<summary>Tool use: **get_errors**</summary>
+
+Checked `deal-editor.ts`, `deals-list.page.ts`, no problems found
+
+**Input:**
+
+- filePaths:
+
+```
+[
+  "c:\\Projects\\sages-angular-adv-1126\\src\\app\\features\\deals\\ui\\deal-editor\\deal-editor.ts",
+  "c:\\Projects\\sages-angular-adv-1126\\src\\app\\features\\deals\\pages\\deals-list\\deals-list.page.ts"
+]
+```
+
+
+**Result:**
+
+```
+<errors path="c:\\Projects\\sages-angular-adv-1126\\src\\app\\features\\deals\\ui\\deal-editor\\deal-editor.ts">
+No errors found
+</errors>
+<errors path="c:\\Projects\\sages-angular-adv-1126\\src\\app\\features\\deals\\pages\\deals-list\\deals-list.page.ts">
+No errors found
+</errors>
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+The shell's working directory is still inside `node_modules` from the earlier lookups, so the relative paths failed. I'll rerun from the project root.   
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="run_in_terminal"><details>
+<summary>Tool use: **run_in_terminal**</summary>
+
+Running ` cd /c/Projects/sages-angular-adv-1126 && npx prettier --write src/app/featur...`
+
+Return to project root, format, then run tsc and eslint
+
+```bash
+cd /c/Projects/sages-angular-adv-1126 && npx prettier --write src/app/features/deals/ui/deal-editor/deal-editor.ts && npx tsc --noEmit -p tsconfig.app.json; echo "TSC_EXIT=$?"; npx eslint src/app/features/deals/ui/deal-editor/deal-editor.ts; echo "ESLINT_EXIT=$?"
+```
+
+**Result:**
+
+```
+src/app/features/deals/ui/deal-editor/deal-editor.ts 392ms
+TSC_EXIT=0
+ESLINT_EXIT=0
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+`tsc` and `eslint` pass on the file. I'll read the final class section once to confirm the constructor and methods are intact after the chunked edits.    
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="read" data-tool-name="read_file"><details>
+<summary>Tool use: **read_file**</summary>
+
+Read `deal-editor.ts`, lines 140 to 235
+
+**Input:**
+
+- endLine: `235`
+- filePath: `c:\Projects\sages-angular-adv-1126\src\app\features\deals\ui\deal-editor\deal-editor.ts`
+- startLine: `140`
+
+**Result:**
+
+```
+                    } @else if (task.title().getError('forbiddenName')) {
+                      This name is not allowed
+                    }
+                  </mat-error>
+                </mat-form-field>
+                <mat-form-field>
+                  <mat-label>Priority</mat-label>
+                  <mat-select [formField]="task.priority">
+                    @for (priority of priorities; track priority) {
+                      <mat-option [value]="priority">{{ priorityLabels[priority] }}</mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
+                <button matButton="text" type="button" class="mt-2" (click)="removeTask(i)">
+                  Remove
+                </button>
+              </div>
+            } @empty {
+              <p class="text-sm">No tasks yet</p>
+            }
+          </div>
+        </mat-card-content>
+        <mat-card-actions align="end">
+          <button matButton="text" type="button" (click)="cancelled.emit()">Cancel</button>
+          <button matButton="filled" type="submit">Save</button>
+        </mat-card-actions>
+      </mat-card>
+    </form>
+  `,
+  providers: [{ provide: IHaveUnsavedChanges, useExisting: DealEditor }],
+})
+export class DealEditor implements IHaveUnsavedChanges {
+  readonly deal = input<Deal>();
+  readonly tasks = input<readonly DealTask[]>([]);
+
+  readonly saved = output<DealEditorValue>();
+  readonly cancelled = output<void>();
+
+  private readonly model = signal<DealEditorValue>(emptyValue());
+  protected readonly dealForm = form(this.model, dealSchema);
+
+  protected readonly stages = Object.keys(DEAL_STAGE_LABELS) as DealStage[];
+  protected readonly stageLabels = DEAL_STAGE_LABELS;
+  protected readonly priorities = Object.keys(TASK_PRIORITY_LABELS) as TaskPriority[];
+  protected readonly priorityLabels = TASK_PRIORITY_LABELS;
+
+  constructor() {
+    effect(() => {
+      const deal = this.deal();
+      const tasks = this.tasks();
+      untracked(() => thi
+… (output truncated)
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+The deal editor now uses Signal Forms. `prettier`, `tsc --noEmit -p tsconfig.app.json`, and `eslint` pass on `src/app/features/deals/ui/deal-editor/deal-editor.ts`, and the editor reports no diagnostics.
+
+- **Form state:** a  model feeds . Validation lives in  (required, min length, max length, min value, and the forbidden-names check on titles).
+- **Template:** `[formField]` bindings replace `formControlName`. Errors are read with `getError(kind)` inside the existing `mat-error` blocks.
+- **Tasks:** add and remove update the model signal. The `@for` loop iterates .
+- **Save and cancel:** Save emits  from the model. Cancel is unchanged.
+- **Unsaved changes:**  reads `dealForm().dirty()`.
+
+Template bindings are not type-checked by `tsc`, so `ng serve` is the next check. I haven't run it or opened the browser, since that needs your go-ahead.
+
+Still open, from before this change:
+- The Contact input is still unbound.
+- `onSaveDeal()` on the list page is still a TODO.
+- `onSaveNewDeal()` still throws "Method not implemented."
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="task" data-tool-name="manage_todo_list"><details>
+<summary>Tool use: **manage_todo_list**</summary>
+
+Completed: *Rewrite to Angular Signal Forms* (5/5)
+</details></tool-use>
+
+---
+
+_**User (2026-11-06 10:49:33Z)**_
+
+can we use linkedSignal instead of effect safetly??
+
+---
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+I'll check the current file first, then the Signal Forms typings for how  and  behave.  
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="copilot_findTextInFiles"><details>
+<summary>Tool use: **copilot_findTextInFiles**</summary>
+
+No matches found. Your search pattern might be excluded completely by either the search.exclude settings or .*ignore files.
+If you believe that it should have results, you can check into the .*ignore files and the exclude setting (here are some excluded patterns for reference:[**/node_modules,**/bower_components,**/*.code-search]).
+Then if you want to include those files you can call the tool again by setting "includeIgnoredFiles" to true.
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="copilot_readFile"><details>
+<summary>Tool use: **copilot_readFile**</summary>
+
+Read `deal-editor.ts`, lines 1 to 80
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+The file's imports still match what I left, so no outside edits there. The typings search came back empty because `node_modules` is excluded by default. I'll rerun it with ignored files included.   
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="copilot_findTextInFiles"><details>
+<summary>Tool use: **copilot_findTextInFiles**</summary>
+
+Searched for regex `dirty|reset\(|markAsDirty|touched` (`**/node_modules/@angular/forms/types/**`), 149 results
+</details></tool-use>
