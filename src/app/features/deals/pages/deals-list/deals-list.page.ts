@@ -21,6 +21,7 @@ import { DealTasksCard } from '../../ui/deal-tasks-card/deal-tasks-card';
 import { DealsFilter } from '../../ui/deals-filter/deals-filter';
 import { lastValueFrom } from 'rxjs';
 
+import { rxResource } from '@angular/core/rxjs-interop';
 type DealViewMode = 'details' | 'editor' | 'creator';
 
 @Component({
@@ -44,8 +45,8 @@ type DealViewMode = 'details' | 'editor' | 'creator';
         <app-deal-master-list
           appMasterDetailList
           [deals]="filteredDeals()"
-          [selectedId]="selectedDealId()"
-          (dealSelected)="onSelectDeal($event)"
+          [selectedId]="selectedDealId() ?? null"
+          (dealSelected)="onSelectDeal($event ?? undefined)"
         >
           <ng-container *appDealItemTpl="let deal; selected as isSelected">
             <app-deal-list-item [deal]="deal" [selected]="isSelected" />
@@ -113,25 +114,25 @@ export class DealsPage {
   protected readonly viewMode = signal<'details' | 'editor' | 'creator'>('details');
 
   protected readonly filterText = signal('');
-  protected readonly selectedDealId = signal<string | null>(null);
+  protected readonly selectedDealId = signal<string | undefined>(undefined);
 
-  dealsResource = resource<Deal[], { q: string }>({
+  dealsResource = rxResource<Deal[], { q: string }>({
     params: () => ({ q: this.filterText() }),
-    loader: ({ params: { q } }) => {
-      return lastValueFrom(this.store.fetchDeals(q)); // no abort!
+    stream: ({ params: { q } }) => {
+      return this.store.fetchDeals(q);
     },
     defaultValue: [],
   });
   filteredDeals = computed(() => this.dealsResource.value());
 
-  selectedDealResource = resource<Deal, string | undefined>({
+  selectedDealResource = rxResource<Deal, string | undefined>({
     params: ({ chain }) => {
       chain(this.dealsResource);
 
-      return this.selectedDealId() ?? undefined; // run only if params!
+      return this.selectedDealId();
     },
-    loader: ({ params: id, abortSignal: signal }) => {
-      return this.store.fetchDealById(id, { signal });
+    stream: ({ params: id }) => {
+      return this.store.fetchDealById(id);
     },
   });
 
@@ -148,7 +149,7 @@ export class DealsPage {
 
   editorRef = viewChild(IHaveUnsavedChanges);
 
-  protected onSelectDeal(dealId: string | null): void {
+  protected onSelectDeal(dealId?: string): void {
     if (this.editorRef()?.hasUnsavedChanges()) return;
 
     this.selectedDealId.set(dealId);

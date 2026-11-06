@@ -92,20 +92,10 @@ export class DealsStore {
     // .subscribe().unsubscribe()
   }
 
-  async fetchDealById(id = '', init?: RequestInit) {
-    // API Service:
-    const resp = await fetch(`http://localhost:3000/api/deals/${id}`, {
-      ...init,
-      headers: { ...init?.headers, Authorization: `Bearer ${'mock-access-u1'}` },
+  fetchDealById(id = '', init?: RequestInit) {
+    return this.http.get<Deal>(`http://localhost:3000/api/deals/${id}`, {
+      headers: { Authorization: `Bearer ${'mock-access-u1'}` },
     });
-
-    if (!resp.ok) {
-      const e = await resp.json();
-      return Promise.reject(new Error(e.error.message));
-    }
-    const data = await resp.json();
-
-    return data;
   }
 }
 
