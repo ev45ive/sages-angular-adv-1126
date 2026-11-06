@@ -87,19 +87,21 @@ export class DealsStore {
 
     return data.items;
   }
-  async fetchDealById(id = '') {
+
+  async fetchDealById(id = '', init?: RequestInit) {
+    
     // API Service:
     const resp = await fetch(`http://localhost:3000/api/deals/${id}`, {
-      headers: { Authorization: `Bearer ${'mock-access-u1'}` },
+      ...init,
+      headers: { ...init?.headers, Authorization: `Bearer ${'mock-access-u1'}` },
     });
-
+    
     if (!resp.ok) {
       const e = await resp.json();
       return Promise.reject(new Error(e.error.message));
     }
     const data = await resp.json();
-
-    await delay(2000 * Math.random()); // Responses can arrive out of order!
+    
 
     return data;
   }

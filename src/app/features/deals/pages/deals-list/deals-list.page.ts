@@ -122,14 +122,17 @@ export class DealsPage {
 
   selectedDeal = signal<Deal | undefined>(undefined);
 
-  private loadSelectedDeal = effect(async () => {
+  private loadSelectedDeal = effect(async (onCleanup) => {
     const id = this.selectedDealId();
     if (!id) return;
 
-    const deal = await this.store.fetchDealById(id);
+    const huston = new AbortController();
+    onCleanup(() => huston.abort('Cancelled')); // on effect ReRun + onDestroy()
+
+    const deal = await this.store.fetchDealById(id, { signal: huston.signal });
     // loading / error ?
 
-    this.selectedDeal.set(deal)
+    this.selectedDeal.set(deal);
   });
 
   private onInit = effect(() => {

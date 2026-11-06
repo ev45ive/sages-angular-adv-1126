@@ -22,6 +22,11 @@ const PORT = process.env['PORT'] ?? 3000;
 app.use(cors());
 app.use(express.json());
 
+app.use(async (req, res, next) => {
+  await delay(200 + 2000 * Math.random()); // Responses can arrive out of order!
+  next();
+});
+
 // ─── OpenAPI / Swagger UI ─────────────────────────────
 const openapiPath = join(__dirname, '..', 'openapi.yaml');
 const openapiDoc = YAML.parse(readFileSync(openapiPath, 'utf-8'));
@@ -41,3 +46,7 @@ app.listen(PORT, () => {
   console.log(`🚀 CRM API server running at http://localhost:${PORT}/api`);
   console.log(`📖 Swagger UI at http://localhost:${PORT}/api-docs`);
 });
+
+export function delay(t = 500): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, t));
+}
