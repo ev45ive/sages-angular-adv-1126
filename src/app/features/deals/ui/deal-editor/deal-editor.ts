@@ -1,4 +1,4 @@
-import { Component, effect, input, output, signal } from '@angular/core';
+import { Component, effect, input, linkedSignal, output, signal } from '@angular/core';
 import { SharedForms, SharedImports } from '@shared';
 import { Deal } from '../../model/deal.model';
 import { FormsModule } from '@angular/forms';
@@ -57,16 +57,20 @@ export class DealEditor {
 
   readonly deal = input<Deal>(); // External Readable
 
-  readonly draft = signal<DealFormDraft>(emptyDeal()); // Private ReadWrite
+  readonly draft = linkedSignal<DealFormDraft>(() =>
+    // this.deal() // immutable reference - only replace! 
+    structuredClone({ ...emptyDeal(), ...this.deal() }), // Mutable Copy
+  );
 
+  // readonly draft = signal<DealFormDraft>(emptyDeal()); // Private ReadWrite
 
-  // Async
-  _copy = effect(() => {
-    // this.draft.set({ ...emptyDeal(), ...this.deal() }); // Money is still shared!
-    // this.draft.set({ ...emptyDeal(), ...this.deal() }); // Money is still shared!
+  // // Async
+  // _copy = effect(() => {
+  //   // this.draft.set({ ...emptyDeal(), ...this.deal() }); // Money is still shared!
+  //   // this.draft.set({ ...emptyDeal(), ...this.deal() }); // Money is still shared!
 
-    this.draft.set(structuredClone(this.deal()!));
-  });
+  //   this.draft.set(structuredClone(this.deal()!));
+  // });
 
   readonly saved = output<void>();
   readonly cancelled = output<void>();

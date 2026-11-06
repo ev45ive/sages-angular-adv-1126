@@ -110,7 +110,7 @@ export class DealsPage {
 
   protected onSelectDeal(dealId: string | null): void {
     this.selectedDealId.set(dealId);
-    this.viewMode.set('details');
+    // this.viewMode.set('details');
   }
 
   protected onCreateDeal(): void {
