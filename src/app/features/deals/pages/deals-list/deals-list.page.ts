@@ -1,4 +1,12 @@
-import { Component, computed, inject, signal, SimpleChanges, viewChild } from '@angular/core';
+import {
+  Component,
+  computed,
+  effect,
+  inject,
+  signal,
+  SimpleChanges,
+  viewChild,
+} from '@angular/core';
 import { MasterDetailLayout, NeverPipe, SharedModule } from '@shared';
 import { DealsStore } from '../../data/deals.store';
 import { Deal } from '../../model/deal.model';
@@ -52,6 +60,13 @@ type DealViewMode = 'details' | 'editor' | 'creator';
           </button>
         </app-deal-master-list>
 
+        @if (error()) {
+          <p class="text-red-500">{{ error()?.message }}</p>
+        }
+        @if (isLoading()) {
+          <p class="text-blue-500">Loading ...</p>
+        }
+
         @let mode = viewMode();
 
         @if (mode === 'details') {
@@ -86,30 +101,50 @@ type DealViewMode = 'details' | 'editor' | 'creator';
   providers: [DealsStore], // Components (Type) lifecycle
 })
 export class DealsPage {
-  onSaveNewDeal() {
-    throw new Error('Method not implemented.');
-  }
   // private readonly store = new DealsStore(new DealsAPI( new DealsConfig() )); // Concrete Coupling
   private readonly store = inject(DealsStore); // Abstract Dependency
 
   // protected readonly viewMode = signal<DealViewMode>('details');
-  protected readonly viewMode = signal<'details' | 'editor' | 'creator'>('editor');
+  protected readonly viewMode = signal<'details' | 'editor' | 'creator'>('details');
 
   protected readonly filterText = signal('');
   protected readonly selectedDealId = signal<string | null>(null);
 
-  protected readonly filteredDeals = computed(() => {
-    return this.store.filterDeals(this.filterText());
+  error = signal<Error | null>(null);
+  isLoading = signal<boolean>(false);
+  deals = signal<Deal[]>([]);
+
+  filteredDeals = computed(() => this.deals());
+
+  // protected readonly filteredDeals = computed(() => {
+  //   return this.store.filterDeals(this.filterText());
+  // });
+
+  private onInit = effect(() => {
+    this.isLoading.set(true);
+
+    const query = this.filterText();
+
+    this.store
+      .fetchDeals(query)
+      .then((data) => this.deals.set(data))
+      .catch((e) => this.error.set(e))
+      .finally(() => this.isLoading.set(false));
   });
 
+  //
   // Angular Component Lifecycle - Chain of responsibility - walk down/up init/check
+  //
+  // ngOnChanges(changes: SimpleChanges): void {}
+  // ngOnInit(): void {} // v- recursive walk descendants
+  //   ngDoCheck(): void {}
+  //     ngAfterContentInit(): void {}
+  //       ngAfterViewInit(): void {} // ^- walk back ancestors
+  // ngOnDestroy(): void {}
 
-  ngOnChanges(changes: SimpleChanges): void {}
-  ngOnInit(): void {} // v- recursive walk descendants
-    ngDoCheck(): void {}
-      ngAfterContentInit(): void {}
-        ngAfterViewInit(): void {} // ^- walk back ancestors
-  ngOnDestroy(): void {}
+  onSaveNewDeal() {
+    throw new Error('Method not implemented.');
+  }
 
   protected readonly selectedDeal = computed<Deal | undefined>(() =>
     this.filteredDeals().find((deal) => deal.id === this.selectedDealId()),
