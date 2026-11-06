@@ -2,7 +2,7 @@ import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
 import { inject, InjectionToken } from '@angular/core';
 
 export const API_URL = new InjectionToken('API_URL', {
-  factory: () => 'http://localhost:3000/api', // TODO: enviroment.ts
+  factory: () => 'http://localhost:3000/api/', // TODO: enviroment.ts
 });
 
 export const Auth = new InjectionToken('Auth', {
@@ -39,7 +39,7 @@ export const AuthInterceptor: HttpInterceptorFn = (req, next) => {
 };
 
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { EMPTY, Observable, timer } from 'rxjs';
+import { EMPTY, Observable, pipe, timer } from 'rxjs';
 import { catchError, retry, timeout } from 'rxjs/operators';
 
 export const ErrorInterceptor: HttpInterceptorFn = (req, next) => {
@@ -47,7 +47,28 @@ export const ErrorInterceptor: HttpInterceptorFn = (req, next) => {
   const notifications = inject(MatSnackBar);
 
   return next(req).pipe(
-    retry({
+    httpErrorHandler(),
+    catchError((error) => {
+      notifications.open(error.message, 'Dismiss', {
+        horizontalPosition: 'right',
+        verticalPosition: 'top',
+      });
+
+      // return new Observable()
+      // return EMPTY
+      throw error;
+    }),
+  );
+};
+
+// Chain of responsibility
+
+// HttpClient.next = IntA
+// IntA.next = IntB
+// IntB.next = IntC
+// IntC.next = HttpHandler ->  Observable< Resp.. > .pipe()  .subcribe()
+
+export const httpErrorHandler = <T>(options?: {}) => pipe( retry<T>({
       count: 3,
       delay(error, retryCount) {
         const RETRYABLE_HTTP_CODES = [
@@ -74,22 +95,4 @@ export const ErrorInterceptor: HttpInterceptorFn = (req, next) => {
 
       throw new Error(message);
     }),
-    catchError((error) => {
-      notifications.open(error.message, 'Dismiss', {
-        horizontalPosition: 'right',
-        verticalPosition: 'top',
-      });
-
-      // return new Observable()
-      // return EMPTY
-      throw error;
-    }),
   );
-};
-
-// Chain of responsibility
-
-// HttpClient.next = IntA
-// IntA.next = IntB
-// IntB.next = IntC
-// IntC.next = HttpHandler ->  Observable< Resp.. > .pipe()  .subcribe()
