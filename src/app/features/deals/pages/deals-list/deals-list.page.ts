@@ -4,7 +4,7 @@ import { DealsStore } from '../../data/deals.store';
 import { Deal } from '../../model/deal.model';
 import { TaskPriority } from '../../model/deal-task.model';
 import { DealDetailsCard } from '../../ui/deal-details-card/deal-details-card';
-import { DealEditor } from '../../ui/deal-editor/deal-editor';
+import { DealEditor, IHaveUnsavedChanges } from '../../ui/deal-editor/deal-editor';
 import { DealItemTpl } from '../../ui/deal-item-tpl/deal-item-tpl';
 import { DealListItem } from '../../ui/deal-list-item/deal-list-item';
 import { DealMasterList } from '../../ui/deal-master-list/deal-master-list';
@@ -109,10 +109,12 @@ export class DealsPage {
     return deal ? this.store.getTasksForDeal(deal.id) : [];
   });
 
-  editorRef = viewChild<DealEditor>('editorRef');
+  // editorRef = viewChild<DealEditor>('editorRef');
+  // editorRef = viewChild<IHaveUnsavedChanges>(DealEditor);
+  editorRef = viewChild(IHaveUnsavedChanges);
 
   protected onSelectDeal(dealId: string | null): void {
-    if(this.editorRef()?.hasUnsavedChanges()) return;
+    if (this.editorRef()?.hasUnsavedChanges()) return;
 
     this.selectedDealId.set(dealId);
   }

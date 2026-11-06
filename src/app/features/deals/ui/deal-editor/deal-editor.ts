@@ -3,6 +3,10 @@ import { SharedForms, SharedImports } from '@shared';
 import { Deal } from '../../model/deal.model';
 import { ControlContainer, FormsModule, NgForm } from '@angular/forms';
 
+export interface IHaveUnsavedChanges {
+  hasUnsavedChanges(): boolean;
+}
+
 @Component({
   selector: 'app-deal-editor',
   imports: [SharedImports, FormsModule, SharedForms],
@@ -68,7 +72,7 @@ import { ControlContainer, FormsModule, NgForm } from '@angular/forms';
     </form>
   `,
 })
-export class DealEditor {
+export class DealEditor  implements IHaveUnsavedChanges{
   submit() {
     const formRef = this.formRef();
     // this.form()?.getControl('title').setValue('')
