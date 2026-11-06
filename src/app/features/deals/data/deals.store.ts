@@ -1,110 +1,163 @@
-import { computed, inject, Service, signal } from '@angular/core';
-import { Account } from '../model/account.model';
-import { Contact } from '../model/contact.model';
-import { Deal } from '../model/deal.model';
-import { DealTask, TaskPriority } from '../model/deal-task.model';
-import { SEED_ACCOUNTS, SEED_CONTACTS, SEED_DEALS, SEED_TASKS } from './deals-seed';
-import { HttpClient } from '@angular/common/http';
-import { map, Observable } from 'rxjs';
+import { inject } from '@angular/core';
+import { tapResponse } from '@ngrx/operators';
+import { patchState, signalStore, withMethods } from '@ngrx/signals';
+import {
+  addEntity,
+  setEntity,
+  updateEntity,
+  upsertEntities,
+  upsertEntity,
+  withEntities,
+} from '@ngrx/signals/entities';
+import { rxMethod } from '@ngrx/signals/rxjs-interop';
+import {
+  cacheInvalidate,
+  loadingError,
+  loadingFinish,
+  loadingStart,
+  withLoadingState,
+  withStaleWhileRevalidate,
+} from '@shared';
+import { debounceTime, exhaustMap, filter, groupBy, mergeMap, pipe, switchMap } from 'rxjs';
+import { Deal, DealChanges, DealDraft } from '../model/deal.model';
+import { DealsApi } from './deals-api';
+import { withDealSelectors } from './with-deal-selectors';
 
-// @Injectable({providedIn:'root'}) // default o root lifecycle if non other available
+const TTL_MS = 60_000;
+// Collapses repeated Save clicks into one request
+const SAVE_DEBOUNCE_MS = 300;
 
-@Service()
-export class DealsStore {
-  // Read-Write Side - Private to Owner (my wallet!)
-  private readonly dealsState = signal<Deal[]>(SEED_DEALS);
+// Loading id of the in-flight createDeal request
+export const NEW_DEAL_ID = 'new-deal';
 
-  // Normalized Entity Primary Index - id -> Entity
-  private readonly dealsState2 = signal<Readonly<Record<Deal['id'], Deal>>>({
-    d1: SEED_DEALS[0],
-    d2: SEED_DEALS[1],
-    /* id: { value: null, loading: true  } */
-  });
-  pageAdealsIds = signal<Deal['id'][]>(['d1', 'd2']);
-  dealsByNameIds = signal<Deal['id'][]>(['d1', 'd2']);
-  
-  dealsByName = computed(() => this.dealsByNameIds().map((id) => this.dealsState2()[id]));
-
-  // private readonly tasksState = signal<DealTask[]>(SEED_TASKS);
-  private readonly tasksState = signal<ReadonlyArray<DealTask>>(SEED_TASKS);
-
-  private readonly accountsState = signal<Account[]>(SEED_ACCOUNTS);
-  private readonly contactsState = signal<Contact[]>(SEED_CONTACTS);
-
-  // Read-Side: Public API
-  readonly accounts = this.accountsState.asReadonly();
-  readonly contacts = this.contactsState.asReadonly();
-
-  filterDeals(text: string): Deal[] {
-    const query = text.trim().toLowerCase();
-    if (!query) return this.dealsState();
-
-    return this.dealsState().filter((deal) =>
-      [deal.title, this.accountName(deal.accountId), this.contactName(deal.contactId)].some(
-        (value) => value.toLowerCase().includes(query),
-      ),
-    );
-  }
-
-  getTasksForDeal(dealId: string): DealTask[] {
-    return this.tasksState().filter((task) => task.dealId === dealId);
-  }
-
-  addTask(dealId: string, title: string, priority: TaskPriority): void {
-    const task: DealTask = { id: crypto.randomUUID(), dealId, title, priority, done: false };
-
-    // Mutating Signal() State
-    const tasks = this.tasksState();
-
-    // Mutation - content changes, Container Reference is the same
-    // tasks.push(task); // Compile Error - READONLYArray!
-
-    // tasks.sort -> tasks.toSorted() // ES2025
-
-    // Referential stability - oldRef === newRef - same object -> no changes !!!!
-    // this.tasksState.set(tasks);
-    // this.tasksState.update((tasks) => tasks);
-
-    // // Same content -> new container ref -> maybe has changes
-    this.tasksState.set([...tasks]);
-
-    // Clean - no mutations - Change By COPY
-    // this.tasksState.update((tasks) => [...tasks, task]);
-  }
-
-  toggleTaskDone(taskId: string): void {
-    this.tasksState.update((tasks) =>
-      tasks.map((task) => (task.id === taskId ? { ...task, done: !task.done } : task)),
-    );
-  }
-
-  accountName(id: string): string {
-    return this.accountsState().find((account) => account.id === id)?.name ?? '';
-  }
-
-  contactName(id: string): string {
-    return this.contactsState().find((contact) => contact.id === id)?.fullName ?? '';
-  }
-
-  http = inject(HttpClient);
-
-  fetchDeals(query = ''): Observable<Deal[]> {
-    return this.http
-      .get<PagingObject<Deal>>(`deals`, {
-        params: { query },
-      })
-      .pipe(map((data) => data.items));
-  }
-
-  fetchDealById(id = '') {
-    return this.http.get<Deal>(`deals/${id}`, {});
-  }
-}
-
-type PagingObject<T> = {
-  items: T[];
+export const dealsCacheKey = {
+  list: 'deals:list',
+  byContact: (contactId: string) => `deals:byContact:${contactId}`,
+  byId: (id: string) => `deal:${id}`,
 };
 
-export function delay(t = 500): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, t));
+export interface CreateDealCommand {
+  draft: DealDraft;
+  onCreated?: (deal: Deal) => void;
 }
+
+export interface UpdateDealCommand {
+  id: string;
+  changes: DealChanges;
+  onSaved?: (deal: Deal) => void;
+}
+
+export const DealsStore = signalStore(
+  { providedIn: 'root' },
+  withEntities<Deal>(),
+  withLoadingState(),
+  withStaleWhileRevalidate({ ttlMs: TTL_MS }),
+  withDealSelectors(),
+
+  withMethods((store, api = inject(DealsApi)) => {
+    const upsertDeals = (deals: Deal[]) => patchState(store, upsertEntities(deals));
+
+    return {
+      loadDeals: rxMethod<void>(
+        pipe(
+          switchMap(() =>
+            store._swr({ key: dealsCacheKey.list, source: () => api.list(), onData: upsertDeals }),
+          ),
+        ),
+      ),
+
+      loadDealsByContact: rxMethod<string | undefined>(
+        pipe(
+          filter((contactId): contactId is string => contactId !== undefined),
+          switchMap((contactId) =>
+            store._swr({
+              key: dealsCacheKey.byContact(contactId),
+              source: () => api.list({ contactId }),
+              onData: upsertDeals,
+            }),
+          ),
+        ),
+      ),
+
+      loadDeal: rxMethod<string | undefined>(
+        pipe(
+          filter((id): id is string => id !== undefined),
+          switchMap((id) =>
+            store._swr({
+              key: dealsCacheKey.byId(id),
+              loadingId: id,
+              source: () => api.getById(id),
+              onData: (deal) => patchState(store, upsertEntity(deal)),
+            }),
+          ),
+        ),
+      ),
+
+      createDeal: rxMethod<CreateDealCommand>(
+        pipe(
+          debounceTime(SAVE_DEBOUNCE_MS),
+          // Clicks while a request is running are ignored
+          exhaustMap(({ draft, onCreated }) => {
+            patchState(store, loadingStart(NEW_DEAL_ID));
+
+            return api.create(draft).pipe(
+              tapResponse({
+                next: (deal) => {
+                  patchState(
+                    store,
+                    addEntity(deal),
+                    cacheInvalidate(dealsCacheKey.list),
+                    cacheInvalidate(dealsCacheKey.byContact(deal.contactId)),
+                  );
+                  onCreated?.(deal);
+                },
+                error: (error) => patchState(store, loadingError(error)),
+                finalize: () => patchState(store, loadingFinish(NEW_DEAL_ID)),
+              }),
+            );
+          }),
+        ),
+      ),
+
+      // Debounce and exhaust run per deal id, so saving two deals never drops one
+      updateDeal: rxMethod<UpdateDealCommand>(
+        pipe(
+          groupBy((command) => command.id),
+          mergeMap((commands$) =>
+            commands$.pipe(
+              debounceTime(SAVE_DEBOUNCE_MS),
+              exhaustMap(({ id, changes, onSaved }) => {
+                const original: Deal | undefined = store.entityMap()[id];
+                patchState(store, loadingStart(id), updateEntity<Deal>({ id, changes }));
+
+                return api.update(id, changes).pipe(
+                  tapResponse({
+                    next: (deal) => {
+                      patchState(
+                        store,
+                        upsertEntity(deal),
+                        cacheInvalidate(dealsCacheKey.byContact(deal.contactId)),
+                      );
+                      if (original && original.contactId !== deal.contactId) {
+                        patchState(
+                          store,
+                          cacheInvalidate(dealsCacheKey.byContact(original.contactId)),
+                        );
+                      }
+                      onSaved?.(deal);
+                    },
+                    error: (error) => {
+                      if (original) patchState(store, setEntity(original));
+                      patchState(store, loadingError(error));
+                    },
+                    finalize: () => patchState(store, loadingFinish(id)),
+                  }),
+                );
+              }),
+            ),
+          ),
+        ),
+      ),
+    };
+  }),
+);

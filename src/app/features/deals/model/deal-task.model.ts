@@ -15,3 +15,11 @@ export interface DealTask {
   priority: TaskPriority;
   done: boolean;
 }
+
+export interface TaskDraft {
+  title: string;
+  priority: TaskPriority;
+  dueDate?: string;
+}
+
+export type TaskChanges = Partial<Omit<DealTask, 'id' | 'dealId'>>;

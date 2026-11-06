@@ -19,7 +19,11 @@ export interface Deal {
   summary: string;
   stage: DealStage;
   value: Money;
-  accountId: string;
   contactId: string;
   isPublic: boolean;
 }
+
+// Fields the user provides when creating a deal
+export type DealDraft = Omit<Deal, 'id'>;
+
+export type DealChanges = Partial<DealDraft>;
