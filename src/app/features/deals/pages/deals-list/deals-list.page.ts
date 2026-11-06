@@ -3,6 +3,7 @@ import {
   computed,
   effect,
   inject,
+  resource,
   signal,
   SimpleChanges,
   viewChild,
@@ -60,10 +61,10 @@ type DealViewMode = 'details' | 'editor' | 'creator';
           </button>
         </app-deal-master-list>
 
-        @if (error()) {
-          <p class="text-red-500">{{ error()?.message }}</p>
+        @if (selectedDealResource.error(); as error) {
+          <p class="text-red-500">{{ error.message }}</p>
         }
-        @if (isLoading()) {
+        @if (selectedDealResource.isLoading()) {
           <p class="text-blue-500">Loading ...</p>
         }
 
@@ -71,9 +72,12 @@ type DealViewMode = 'details' | 'editor' | 'creator';
 
         @if (mode === 'details') {
           <div>
-            <app-deal-details-card [deal]="selectedDeal()" (editRequested)="onEditDeal()">
-              <!-- <div empty-state>No deals found </div> -->
+            <app-deal-details-card
+              [deal]="selectedDealResource.value()"
+              (editRequested)="onEditDeal()"
+            >
             </app-deal-details-card>
+            <!--  -->
             <app-deal-tasks-card
               class="mt-4"
               [tasks]="selectedTasks()"
@@ -110,60 +114,29 @@ export class DealsPage {
   protected readonly filterText = signal('');
   protected readonly selectedDealId = signal<string | null>(null);
 
-  error = signal<Error | null>(null);
-  isLoading = signal<boolean>(false);
-  deals = signal<Deal[]>([]);
+  dealsResource = resource<Deal[], { q: string }>({
+    params: () => ({ q: this.filterText() }),
+    loader: ({ params: { q }, abortSignal: signal }) => this.store.fetchDeals(q, { signal }),
+    defaultValue: [],
+  });
+  filteredDeals = computed(() => this.dealsResource.value());
 
-  filteredDeals = computed(() => this.deals());
+  selectedDealResource = resource<Deal, string | undefined>({
+    params: ({ chain }) => {
+      chain(this.dealsResource);
 
-  // protected readonly filteredDeals = computed(() => {
-  //   return this.store.filterDeals(this.filterText());
-  // });
-
-  selectedDeal = signal<Deal | undefined>(undefined);
-
-  private loadSelectedDeal = effect(async (onCleanup) => {
-    const id = this.selectedDealId();
-    if (!id) return;
-
-    const huston = new AbortController();
-    onCleanup(() => huston.abort('Cancelled')); // on effect ReRun + onDestroy()
-
-    const deal = await this.store.fetchDealById(id, { signal: huston.signal });
-    // loading / error ?
-
-    this.selectedDeal.set(deal);
+      return this.selectedDealId() ?? undefined; // run only if params!
+    },
+    loader: ({ params: id, abortSignal: signal }) => {
+      return this.store.fetchDealById(id, { signal });
+    },
   });
 
-  private onInit = effect(() => {
-    this.isLoading.set(true);
-
-    const query = this.filterText();
-
-    this.store
-      .fetchDeals(query)
-      .then((data) => this.deals.set(data))
-      .catch((e) => this.error.set(e))
-      .finally(() => this.isLoading.set(false));
-  });
-
-  //
-  // Angular Component Lifecycle - Chain of responsibility - walk down/up init/check
-  //
-  // ngOnChanges(changes: SimpleChanges): void {}
-  // ngOnInit(): void {} // v- recursive walk descendants
-  //   ngDoCheck(): void {}
-  //     ngAfterContentInit(): void {}
-  //       ngAfterViewInit(): void {} // ^- walk back ancestors
-  // ngOnDestroy(): void {}
+  selectedDeal = computed(() => this.selectedDealResource.value());
 
   onSaveNewDeal() {
     throw new Error('Method not implemented.');
   }
-
-  // protected readonly selectedDeal = computed<Deal | undefined>(() =>
-  //   this.filteredDeals().find((deal) => deal.id === this.selectedDealId()),
-  // );
 
   protected readonly selectedTasks = computed(() => {
     const deal = this.selectedDeal();

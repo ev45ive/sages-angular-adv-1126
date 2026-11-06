@@ -73,10 +73,11 @@ export class DealsStore {
     return this.contactsState().find((contact) => contact.id === id)?.fullName ?? '';
   }
 
-  async fetchDeals(query = '') {
+  async fetchDeals(query = '', init?: RequestInit) {
     // API Service:
     const resp = await fetch(`http://localhost:3000/api/deals?query=${query}`, {
-      headers: { Authorization: `Bearer ${'mock-access-u1'}` },
+      ...init,
+      headers: { ...init?.headers, Authorization: `Bearer ${'mock-access-u1'}` },
     });
 
     if (!resp.ok) {
@@ -89,19 +90,17 @@ export class DealsStore {
   }
 
   async fetchDealById(id = '', init?: RequestInit) {
-    
     // API Service:
     const resp = await fetch(`http://localhost:3000/api/deals/${id}`, {
       ...init,
       headers: { ...init?.headers, Authorization: `Bearer ${'mock-access-u1'}` },
     });
-    
+
     if (!resp.ok) {
       const e = await resp.json();
       return Promise.reject(new Error(e.error.message));
     }
     const data = await resp.json();
-    
 
     return data;
   }
