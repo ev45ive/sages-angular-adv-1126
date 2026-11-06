@@ -1,29 +1,29 @@
-import { Component, computed, inject, input } from '@angular/core';
-import { rxResource } from '@angular/core/rxjs-interop';
+import { Component, inject, input } from '@angular/core';
 import { SharedForms } from '@shared';
 import { ContactsStore } from '../../data/contacts.store';
-import { Contact } from '../../model/contact.model';
 import { ContactFullDetailsCard } from '../../ui/contact-full-details-card/contact-full-details-card';
+import { ContactRelatedDeals } from '../../ui/contact-related-deals/contact-related-deals';
 
 @Component({
   selector: 'app-contact-details-page',
-  imports: [...SharedForms, ContactFullDetailsCard],
+  imports: [...SharedForms, ContactFullDetailsCard, ContactRelatedDeals],
   template: `
     <main class="flex flex-col gap-4 bg-surface p-4 text-on-surface">
       <div>
         <button matButton="text" type="button" (click)="back()">Back to search</button>
       </div>
 
-      @if (contactResource.isLoading()) {
+      @if (loading()) {
         <p class="text-body-md">Loading ...</p>
       }
 
-      @if (errorMessage(); as message) {
+      @if (error(); as message) {
         <p role="alert" class="text-body-md text-error">{{ message }}</p>
       }
 
-      @if (contactResource.value(); as contact) {
-        <app-contact-full-details-card [contact]="contact" />
+      @if (contact(); as value) {
+        <app-contact-full-details-card [contact]="value" />
+        <app-contact-related-deals [deals]="relatedDeals()" [loading]="relatedDealsLoading()" />
       }
     </main>
   `,
@@ -34,16 +34,16 @@ export class ContactDetailsPage {
   // Bound from the :contactId route param (withComponentInputBinding)
   readonly contactId = input.required<string>();
 
-  protected readonly contactResource = rxResource<Contact, string>({
-    params: () => this.contactId(),
-    stream: ({ params: id }) => this.store.getById(id),
-  });
+  protected readonly contact = this.store.selectContactById(this.contactId);
+  protected readonly loading = this.store.selectLoadingById(this.contactId);
+  protected readonly error = this.store.selectError;
+  protected readonly relatedDeals = this.store.selectRelatedDeals(this.contactId);
+  protected readonly relatedDealsLoading = this.store.selectRelatedDealsLoading(this.contactId);
 
-  protected readonly errorMessage = computed(() => {
-    const error = this.contactResource.error();
-    if (!error) return null;
-    return error instanceof Error ? error.message : 'Unexpected error';
-  });
+  constructor() {
+    this.store.loadContact(this.contactId);
+    this.store.loadRelatedDeals(this.contactId);
+  }
 
   protected back(): void {
     history.back();

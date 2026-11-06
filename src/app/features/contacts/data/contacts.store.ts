@@ -58,6 +58,12 @@ export const ContactsStore = signalStore(
         return (result?.ids ?? []).map((id) => contacts[id]);
       }),
 
+    // True once the query has an answer, so "no results" is not shown before it arrives
+    selectSearched: (query: () => string) => computed(() => query() in store.searchByQuery()),
+
+    selectSearchLoading: (query: () => string) =>
+      store.selectLoadingById(() => contactsCacheKey.search(query())),
+
     // Results are stored per query, so overlapping searches cannot overwrite each other
     search: rxMethod<string>(
       pipe(
