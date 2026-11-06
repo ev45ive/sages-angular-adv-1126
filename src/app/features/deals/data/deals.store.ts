@@ -1,6 +1,6 @@
-import { inject } from '@angular/core';
+import { computed, inject } from '@angular/core';
 import { tapResponse } from '@ngrx/operators';
-import { patchState, signalStore, withMethods } from '@ngrx/signals';
+import { patchState, signalStore, withComputed, withMethods } from '@ngrx/signals';
 import {
   addEntity,
   setEntity,
@@ -53,6 +53,10 @@ export const DealsStore = signalStore(
   withLoadingState(),
   withStaleWhileRevalidate({ ttlMs: TTL_MS }),
   withDealSelectors(),
+  withComputed(({ inFlightIds }) => ({
+    listLoading: computed(() => inFlightIds().includes(dealsCacheKey.list)),
+    creating: computed(() => inFlightIds().includes(NEW_DEAL_ID)),
+  })),
 
   withMethods((store, api = inject(DealsApi)) => {
     const upsertDeals = (deals: Deal[]) => patchState(store, upsertEntities(deals));

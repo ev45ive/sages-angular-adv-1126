@@ -10,7 +10,7 @@ import { CreateTaskCommand, DeleteTaskCommand, TasksStore, UpdateTaskCommand } f
 type Selector<T> = (id: () => string | undefined) => Signal<T>;
 
 export interface DealListSource {
-  readonly selectLoading: Signal<boolean>;
+  readonly listLoading: Signal<boolean>;
   readonly selectError: Signal<string | null>;
   selectFilteredDeals(query: () => string | undefined): Signal<Deal[]>;
   readonly loadDeals: RxMethod<void>;
@@ -34,7 +34,7 @@ export interface DealEditSource {
 
 export interface DealCreateSource {
   readonly selectError: Signal<string | null>;
-  readonly selectLoadingById: Selector<boolean>;
+  readonly creating: Signal<boolean>;
   readonly createDeal: RxMethod<CreateDealCommand>;
 }
 

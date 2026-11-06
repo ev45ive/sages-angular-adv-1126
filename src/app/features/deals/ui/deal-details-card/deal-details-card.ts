@@ -2,13 +2,11 @@ import { CurrencyPipe } from '@angular/common';
 import { Component, input, output } from '@angular/core';
 import { SharedImports } from '@shared';
 import { Deal } from '../../model/deal.model';
-import { AccountNamePipe } from '../pipes/account-name-pipe';
 import { DealStageBadge } from '../deal-stage-badge/deal-stage-badge';
-import { ContactNamePipe } from '../pipes/contact-name-pipe';
 
 @Component({
   selector: 'app-deal-details-card',
-  imports: [SharedImports, AccountNamePipe, ContactNamePipe, CurrencyPipe, DealStageBadge],
+  imports: [SharedImports, CurrencyPipe, DealStageBadge],
   styles: `
     :host {
       display: block;
@@ -18,7 +16,7 @@ import { ContactNamePipe } from '../pipes/contact-name-pipe';
     <mat-card appearance="outlined">
       @if (deal(); as deal) {
         <mat-card-header>
-          <mat-card-title>{{ deal.title }} — {{ deal.accountId | accountName }}</mat-card-title>
+          <mat-card-title>{{ deal.title }}</mat-card-title>
           <mat-card-subtitle>{{ deal.summary }}</mat-card-subtitle>
         </mat-card-header>
         <mat-card-content>
@@ -32,7 +30,7 @@ import { ContactNamePipe } from '../pipes/contact-name-pipe';
             </div>
             <div>
               <dt class="meta">Contact</dt>
-              <dd class="mt-1 text-title-sm">{{ deal.contactId | contactName }}</dd>
+              <dd class="mt-1 text-title-sm">{{ contactName() ?? deal.contactId }}</dd>
             </div>
             <div>
               <dt class="meta">Public</dt>
@@ -55,5 +53,7 @@ import { ContactNamePipe } from '../pipes/contact-name-pipe';
 })
 export class DealDetailsCard {
   readonly deal = input<Deal>();
+  // Shown instead of the raw contact id once known
+  readonly contactName = input<string>();
   readonly editRequested = output<void>();
 }

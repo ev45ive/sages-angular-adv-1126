@@ -1,12 +1,4 @@
-import {
-  Component,
-  effect,
-  InjectionToken,
-  input,
-  linkedSignal,
-  output,
-  untracked,
-} from '@angular/core';
+import { Component, effect, input, linkedSignal, output, untracked } from '@angular/core';
 import {
   form,
   FormField,
@@ -14,21 +6,19 @@ import {
   submit,
   validateStandardSchema,
 } from '@angular/forms/signals';
-import { SharedImports } from '@shared';
+import { HasUnsavedChanges, SharedImports } from '@shared';
 import { z } from 'zod';
-import { Deal, DEAL_STAGE_LABELS, DealStage } from '../../model/deal.model';
+import { ContactOption } from '../../data/contact-directory.port';
+import { Deal, DEAL_STAGE_LABELS, DealDraft, DealStage } from '../../model/deal.model';
 import { DealTask, TASK_PRIORITY_LABELS, TaskPriority } from '../../model/deal-task.model';
-
-export interface IHaveUnsavedChanges {
-  hasUnsavedChanges(): boolean;
-}
-export const IHaveUnsavedChanges = new InjectionToken<IHaveUnsavedChanges>('IHaveUnsavedChanges');
+import { ContactPicker } from '../contact-picker/contact-picker';
 
 export interface DealEditorValue {
   title: string;
   summary: string;
   stage: DealStage;
   amount: number;
+  contactId: string;
   isPublic: boolean;
   tasks: { title: string; priority: TaskPriority }[];
 }
@@ -46,6 +36,7 @@ const dealZod = z.object({
     .max(100, 'Max 100 characters')
     .refine(notForbidden, 'This name is not allowed'),
   amount: z.number({ error: 'Value is required' }).min(0, 'Value cannot be negative'),
+  contactId: z.string().min(1, 'Contact is required'),
   tasks: z.array(
     z.object({
       title: z
@@ -67,6 +58,7 @@ function toValue(deal: Deal | undefined, tasks: readonly DealTask[]): DealEditor
     summary: deal?.summary ?? '',
     stage: deal?.stage ?? 'new',
     amount: deal?.value.amount ?? 0,
+    contactId: deal?.contactId ?? '',
     isPublic: deal?.isPublic ?? false,
     tasks: tasks.map((task) => ({ title: task.title, priority: task.priority })),
   };
@@ -78,12 +70,12 @@ function emptyTask(): DealEditorValue['tasks'][number] {
 
 @Component({
   selector: 'app-deal-editor',
-  imports: [SharedImports, FormField],
+  imports: [SharedImports, FormField, ContactPicker],
   template: `
     <form (ngSubmit)="onSubmit()">
       <mat-card appearance="outlined">
         <mat-card-header>
-          <mat-card-title>Edit Deal</mat-card-title>
+          <mat-card-title>{{ heading() }}</mat-card-title>
         </mat-card-header>
 
         <mat-card-content>
@@ -107,10 +99,13 @@ function emptyTask(): DealEditorValue['tasks'][number] {
                 }
               </mat-select>
             </mat-form-field>
-            <mat-form-field>
-              <mat-label>Contact</mat-label>
-              <input matInput type="text" />
-            </mat-form-field>
+            <app-contact-picker
+              [formField]="dealForm.contactId"
+              [options]="contactOptions()"
+              [selectedLabel]="contactLabel()"
+              [loading]="contactLoading()"
+              (searched)="contactSearch.emit($event)"
+            />
             <mat-form-field class="md:col-span-2">
               <mat-label>Description</mat-label>
               <textarea matInput rows="4" [formField]="dealForm.summary"></textarea>
@@ -119,51 +114,60 @@ function emptyTask(): DealEditorValue['tasks'][number] {
 
           <mat-checkbox class="mt-4" [formField]="dealForm.isPublic">Public deal</mat-checkbox>
 
-          <div class="mt-6 flex items-center justify-between">
-            <h3 class="font-medium">Tasks</h3>
-            <button matButton="text" type="button" (click)="addTask()">Add task</button>
-          </div>
+          @if (showTasks()) {
+            <div class="mt-6 flex items-center justify-between">
+              <h3 class="font-medium">Tasks</h3>
+              <button matButton="text" type="button" (click)="addTask()">Add task</button>
+            </div>
 
-          <div class="mt-2 flex flex-col gap-3">
-            @for (task of dealForm.tasks; track $index; let i = $index) {
-              <div class="grid grid-cols-1 items-start gap-3 md:grid-cols-[1fr_10rem_auto]">
-                <mat-form-field>
-                  <mat-label>Task title</mat-label>
-                  <input matInput type="text" [formField]="task.title" />
-                  <mat-error>{{ task.title().errors()[0]?.message }}</mat-error>
-                </mat-form-field>
-                <mat-form-field>
-                  <mat-label>Priority</mat-label>
-                  <mat-select [formField]="task.priority">
-                    @for (priority of priorities; track priority) {
-                      <mat-option [value]="priority">{{ priorityLabels[priority] }}</mat-option>
-                    }
-                  </mat-select>
-                </mat-form-field>
-                <button matButton="text" type="button" class="mt-2" (click)="removeTask(i)">
-                  Remove
-                </button>
-              </div>
-            } @empty {
-              <p class="text-sm">No tasks yet</p>
-            }
-          </div>
+            <div class="mt-2 flex flex-col gap-3">
+              @for (task of dealForm.tasks; track $index; let i = $index) {
+                <div class="grid grid-cols-1 items-start gap-3 md:grid-cols-[1fr_10rem_auto]">
+                  <mat-form-field>
+                    <mat-label>Task title</mat-label>
+                    <input matInput type="text" [formField]="task.title" />
+                    <mat-error>{{ task.title().errors()[0]?.message }}</mat-error>
+                  </mat-form-field>
+                  <mat-form-field>
+                    <mat-label>Priority</mat-label>
+                    <mat-select [formField]="task.priority">
+                      @for (priority of priorities; track priority) {
+                        <mat-option [value]="priority">{{ priorityLabels[priority] }}</mat-option>
+                      }
+                    </mat-select>
+                  </mat-form-field>
+                  <button matButton="text" type="button" class="mt-2" (click)="removeTask(i)">
+                    Remove
+                  </button>
+                </div>
+              } @empty {
+                <p class="text-sm">No tasks yet</p>
+              }
+            </div>
+          }
         </mat-card-content>
         <mat-card-actions align="end">
           <button matButton="text" type="button" (click)="cancelled.emit()">Cancel</button>
-          <button matButton="filled" type="submit">Save</button>
+          <button matButton="filled" type="submit" [disabled]="saving()">Save</button>
         </mat-card-actions>
       </mat-card>
     </form>
   `,
-  providers: [{ provide: IHaveUnsavedChanges, useExisting: DealEditor }],
 })
-export class DealEditor implements IHaveUnsavedChanges {
+export class DealEditor implements HasUnsavedChanges {
   readonly deal = input<Deal>();
   readonly tasks = input<readonly DealTask[]>([]);
+  readonly heading = input('Edit Deal');
+  // Tasks need a saved deal, so the create page turns them off
+  readonly showTasks = input(true);
+  readonly saving = input(false);
+  readonly contactOptions = input<readonly ContactOption[]>([]);
+  readonly contactLabel = input('');
+  readonly contactLoading = input(false);
 
   readonly saved = output<DealEditorValue>();
   readonly cancelled = output<void>();
+  readonly contactSearch = output<string>();
 
   private readonly model = linkedSignal(() => toValue(this.deal(), this.tasks()));
   protected readonly dealForm = form(this.model, dealSchema);
@@ -204,18 +208,20 @@ export class DealEditor implements IHaveUnsavedChanges {
   hasUnsavedChanges(): boolean {
     return this.dealForm().dirty();
   }
+
+  // Lets the parent leave the page right after saving without tripping the unsaved-changes guard
+  markPristine(): void {
+    this.dealForm().reset();
+  }
 }
 
-export type PartialPartial<T, F extends keyof T> = Omit<T, F> & Partial<Pick<T, F>>;
-
-export type DealFormDraft = PartialPartial<Deal, 'id' | 'accountId' | 'contactId'>;
-
-export function emptyDeal(): DealFormDraft {
+export function toDealDraft(value: DealEditorValue): DealDraft {
   return {
-    title: '',
-    summary: '',
-    stage: 'new',
-    value: { amount: 0, currency: 'USD' },
-    isPublic: false,
+    title: value.title,
+    summary: value.summary,
+    stage: value.stage,
+    value: { amount: value.amount, currency: 'USD' },
+    contactId: value.contactId,
+    isPublic: value.isPublic,
   };
 }

@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule, JsonPipe } from '@angular/common';
 
+import { MatAutocomplete, MatAutocompleteTrigger } from '@angular/material/autocomplete';
 import { MatButton } from '@angular/material/button';
 import {
   MatCard,
@@ -25,7 +26,6 @@ import {
 } from '@angular/material/list';
 import { MatOption, MatSelect } from '@angular/material/select';
 import { MatToolbar } from '@angular/material/toolbar';
-import { MatLineModule } from '@angular/material/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { NeverPipe } from './pipes/never-pipe';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -34,6 +34,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 // ]
 
 export const SharedForms = [
+  MatAutocomplete,
+  MatAutocompleteTrigger,
   MatOption,
   MatHint,
   MatError,
