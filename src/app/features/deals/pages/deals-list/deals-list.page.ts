@@ -1,8 +1,10 @@
 import {
   Component,
   computed,
+  debounced,
   effect,
   inject,
+  linkedSignal,
   resource,
   signal,
   SimpleChanges,
@@ -21,7 +23,8 @@ import { DealTasksCard } from '../../ui/deal-tasks-card/deal-tasks-card';
 import { DealsFilter } from '../../ui/deals-filter/deals-filter';
 import { lastValueFrom } from 'rxjs';
 
-import { rxResource } from '@angular/core/rxjs-interop';
+import { rxResource, toSignal } from '@angular/core/rxjs-interop';
+import { ActivatedRoute, Router } from '@angular/router';
 type DealViewMode = 'details' | 'editor' | 'creator';
 
 @Component({
@@ -53,6 +56,7 @@ type DealViewMode = 'details' | 'editor' | 'creator';
           </ng-container>
 
           <app-deals-filter app-master-list-header [(value)]="filterText" />
+
           <button
             app-master-list-footer
             matButton="outlined"
@@ -104,20 +108,40 @@ type DealViewMode = 'details' | 'editor' | 'creator';
       </app-master-detail-layout>
     </main>
   `,
-  providers: [DealsStore], // Components (Type) lifecycle
+  providers: [DealsStore],
 })
 export class DealsPage {
-  // private readonly store = new DealsStore(new DealsAPI( new DealsConfig() )); // Concrete Coupling
-  private readonly store = inject(DealsStore); // Abstract Dependency
+  private readonly store = inject(DealsStore);
+  protected readonly viewMode = signal<DealViewMode>('details');
 
-  // protected readonly viewMode = signal<DealViewMode>('details');
-  protected readonly viewMode = signal<'details' | 'editor' | 'creator'>('details');
+  router = inject(Router);
+  route = inject(ActivatedRoute);
 
-  protected readonly filterText = signal('');
-  protected readonly selectedDealId = signal<string | undefined>(undefined);
+  /*  */
+  queryParams = toSignal(this.route.queryParams, { initialValue: { dealFilter: '', dealId: '' } });
+
+  // Set Siganls initial value from URL
+  filterText = linkedSignal<string>(() => this.queryParams().dealFilter ?? '');
+  selectedDealId = linkedSignal<string | undefined>(() => this.queryParams().dealId);
+
+  // Debouce search
+  filterTextDebouced = debounced(() => this.filterText(), 300);
+
+  // Sync URL with search filter
+  dealsURL = effect(() => {
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: {
+        dealFilter: this.filterTextDebouced.value(),
+        dealId: this.selectedDealId(),
+      },
+    });
+  });
+
+  /*  */
 
   dealsResource = rxResource<Deal[], { q: string }>({
-    params: () => ({ q: this.filterText() }),
+    params: () => ({ q: this.filterTextDebouced.value() }),
     stream: ({ params: { q } }) => {
       return this.store.fetchDeals(q);
     },
