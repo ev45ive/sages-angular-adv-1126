@@ -1,4 +1,12 @@
-import { Component, computed, contentChild, input, output, TemplateRef } from '@angular/core';
+import {
+  Component,
+  computed,
+  contentChild,
+  input,
+  output,
+  TemplateRef,
+  viewChild,
+} from '@angular/core';
 import { NgTemplateOutlet } from '@angular/common';
 import { Listbox, Option } from '@angular/aria/listbox';
 import { Deal } from '../../model/deal.model';
@@ -38,23 +46,31 @@ import { DealItemContext, DealItemTpl } from '../deal-item-tpl/deal-item-tpl';
     </div>
 
     @if (deals().length === 0) {
-      <p class="mt-3 px-3 text-body-md text-on-surface-variant">No deals match the filter</p>
+      <ng-container *ngTemplateOutlet="emptyTpl()"></ng-container>
     }
+    <ng-template #empty>
+      <p class="mt-3 px-3 text-body-md text-on-surface-variant">No deals match the filter</p>
+    </ng-template>
 
     <ng-content select="[app-master-list-footer]"> </ng-content>
   `,
 })
 export class DealMasterList {
   readonly deals = input.required<Deal[]>();
-  
+
+  // Parent may override #empty template (contentChild()), default to local (viewChild()) 
+  empty = viewChild<TemplateRef<unknown>>('empty');
+  emptyOverride = contentChild<TemplateRef<unknown>>('empty');
+  emptyTpl = computed(() => this.emptyOverride() ?? this.empty());
+
   // <app-deal-master-list [itemTplInput]="templateReferece" />
-  readonly itemTplInput = input<TemplateRef<DealItemContext>>()
+  readonly itemTplInput = input<TemplateRef<DealItemContext>>();
 
   readonly itemTpl = contentChild.required(DealItemTpl);
-  
+
   readonly selectedId = input<string | null>(null);
   readonly dealSelected = output<string | null>();
-  
+
   protected readonly selectedValue = computed(() => {
     return [this.selectedId()];
   });
