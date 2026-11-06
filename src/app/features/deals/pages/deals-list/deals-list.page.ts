@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal, viewChild } from '@angular/core';
 import { MasterDetailLayout, NeverPipe, SharedModule } from '@shared';
 import { DealsStore } from '../../data/deals.store';
 import { Deal } from '../../model/deal.model';
@@ -34,7 +34,7 @@ type DealViewMode = 'details' | 'editor' | 'creator';
         <app-deal-master-list
           appMasterDetailList
           [deals]="filteredDeals()"
-          [selectedId]="selectedDeal()?.id ?? null"
+          [selectedId]="selectedDealId()"
           (dealSelected)="onSelectDeal($event)"
         >
           <ng-container *appDealItemTpl="let deal; selected as isSelected">
@@ -69,12 +69,13 @@ type DealViewMode = 'details' | 'editor' | 'creator';
           </div>
         } @else if (mode === 'editor') {
           <app-deal-editor
+            #editorRef
             [deal]="selectedDeal()"
             (saved)="onSaveDeal()"
             (cancelled)="onCancelEdit()"
           />
         } @else if (mode === 'creator') {
-          <app-deal-editor (saved)="onSaveNewDeal()" (cancelled)="onCancelEdit()" />
+          <app-deal-editor #editorRef (saved)="onSaveNewDeal()" (cancelled)="onCancelEdit()" />
         } @else {
           {{ mode | never: 'Invalid View Mode' }}
         }
@@ -108,29 +109,16 @@ export class DealsPage {
     return deal ? this.store.getTasksForDeal(deal.id) : [];
   });
 
+  editorRef = viewChild<DealEditor>('editorRef');
+
   protected onSelectDeal(dealId: string | null): void {
+    if(this.editorRef()?.hasUnsavedChanges()) return;
+
     this.selectedDealId.set(dealId);
-    // this.viewMode.set('details');
   }
 
   protected onCreateDeal(): void {
     this.viewMode.set('creator');
-
-    const mode = this.viewMode(); // : 'details' | 'editor' | 'creator';
-
-    if (mode === 'details') {
-    } else if (mode === 'creator') {
-    } else if (mode === 'editor') {
-    } else {
-      // mode satisfies never; // never
-      exhaustivenessCheck(mode);
-
-      const x = 123; // Unreachable code detected
-    }
-
-    function exhaustivenessCheck(value: never, message = 'Invalid value ' + value): never {
-      throw new Error(message);
-    }
   }
 
   protected onEditDeal(): void {

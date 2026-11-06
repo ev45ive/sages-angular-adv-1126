@@ -1,7 +1,7 @@
 import { Component, effect, input, linkedSignal, output, signal, viewChild } from '@angular/core';
 import { SharedForms, SharedImports } from '@shared';
 import { Deal } from '../../model/deal.model';
-import { FormsModule, NgForm } from '@angular/forms';
+import { ControlContainer, FormsModule, NgForm } from '@angular/forms';
 
 @Component({
   selector: 'app-deal-editor',
@@ -55,7 +55,8 @@ import { FormsModule, NgForm } from '@angular/forms';
               <textarea matInput rows="4"></textarea>
             </mat-form-field>
           </div>
-<pre>{{formRef.value | json}}</pre>
+
+          <pre>{{ formRef.value | json }}</pre>
         </mat-card-content>
         <mat-card-actions align="end">
           <button matButton="text" type="button" (click)="cancelled.emit()">Cancel</button>
@@ -69,7 +70,7 @@ import { FormsModule, NgForm } from '@angular/forms';
 })
 export class DealEditor {
   submit() {
-    const formRef = this.form();
+    const formRef = this.formRef();
     // this.form()?.getControl('title').setValue('')
 
     if (!formRef || formRef?.invalid) return;
@@ -82,9 +83,18 @@ export class DealEditor {
     // formRef.control.patchValue({})
 
     const draft = formRef.value;
+
+    debugger;
   }
 
-  form = viewChild<NgForm>('formRef');
+  hasUnsavedChanges() {
+    return !!this.formRef()?.dirty;
+  }
+
+  // form = viewChild<NgForm>('formRef');
+  // form = viewChild(NgForm);
+
+  formRef = viewChild(ControlContainer);
 
   readonly deal = input<Deal>(); // External Readable
 
