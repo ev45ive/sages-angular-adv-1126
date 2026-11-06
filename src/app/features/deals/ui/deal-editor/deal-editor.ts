@@ -1,7 +1,7 @@
-import { Component, input, output } from '@angular/core';
+import { Component, input, output, signal } from '@angular/core';
 import { SharedForms, SharedImports } from '@shared';
 import { Deal } from '../../model/deal.model';
-import { FormsModule } from '@angular/forms'; 
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-deal-editor',
@@ -55,6 +55,29 @@ import { FormsModule } from '@angular/forms';
 export class DealEditor {
   // Stub: fields are unbound; no persistence yet
   readonly deal = input<Deal>();
+
+  readonly draft = signal<DealFormDraft>(emptyDeal());
+
   readonly saved = output<void>();
   readonly cancelled = output<void>();
+}
+
+// Concrete EXAMPLE
+// export type DealFormDraft = Omit<Deal, 'id' | 'accountId' | 'contactId'> &
+//   Partial<Pick<Deal, 'accountId' | 'contactId'>>;
+
+// Abstract for EXAMPLE
+export type PartialPartial<T, F extends keyof T> = Omit<T, F> & Partial<Pick<T, F>>;
+
+// Abstract Usage for EXAMPLE
+export type DealFormDraft = PartialPartial<Deal, 'id' | 'accountId' | 'contactId'>;
+
+export function emptyDeal(): DealFormDraft {
+  return {
+    title: '',
+    summary: '',
+    stage: 'new',
+    value: { amount: 0, currency: 'USD' },
+    isPublic: false,
+  };
 }
