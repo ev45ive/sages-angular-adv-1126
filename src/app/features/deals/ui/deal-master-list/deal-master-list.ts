@@ -15,19 +15,18 @@ import { DealItemContext, DealItemTpl } from '../deal-item-tpl/deal-item-tpl';
 @Component({
   selector: 'app-deal-master-list',
   imports: [Listbox, Option, NgTemplateOutlet],
-  styles: `
-    :host {
-      display: block;
-    }
-  `,
+  styles: ``,
+  host: { class: 'grid gap-5' },
   template: `
-    <ng-content select="[app-master-list-header]"> Deals List </ng-content>
+    <div class="grid gap-2">
+      <ng-content select="[app-master-list-header]"> Deals List </ng-content>
+    </div>
 
     <div
       ngListbox
       aria-label="Deals"
       selectionMode="follow"
-      class="mt-3 flex flex-col gap-1"
+      class=" flex flex-col gap-1"
       [value]="selectedValue()"
       (valueChange)="onValueChange($event)"
     >
@@ -52,13 +51,15 @@ import { DealItemContext, DealItemTpl } from '../deal-item-tpl/deal-item-tpl';
       <p class="mt-3 px-3 text-body-md text-on-surface-variant">No deals match the filter</p>
     </ng-template>
 
-    <ng-content select="[app-master-list-footer]"> </ng-content>
+    <div class="grid gap-2">
+      <ng-content select="[app-master-list-footer]"> </ng-content>
+    </div>
   `,
 })
 export class DealMasterList {
   readonly deals = input.required<Deal[]>();
 
-  // Parent may override #empty template (contentChild()), default to local (viewChild()) 
+  // Parent may override #empty template (contentChild()), default to local (viewChild())
   empty = viewChild<TemplateRef<unknown>>('empty');
   emptyOverride = contentChild<TemplateRef<unknown>>('empty');
   emptyTpl = computed(() => this.emptyOverride() ?? this.empty());

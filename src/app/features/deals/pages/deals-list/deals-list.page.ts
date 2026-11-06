@@ -41,9 +41,8 @@ type DealViewMode = 'details' | 'editor' | 'creator';
           </ng-container>
 
           <app-deals-filter app-master-list-header [(value)]="filterText" />
-
           <button
-            app-master-list-header
+            app-master-list-footer
             matButton="outlined"
             type="button"
             (click)="onCreateDeal()"
