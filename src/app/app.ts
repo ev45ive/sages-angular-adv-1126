@@ -13,13 +13,13 @@ import { SharedUI } from './shared';
         <nav aria-label="Main" class="flex gap-4">
           <a
             routerLink="/contacts"
-            routerLinkActive="text-primary font-semibold"
+            routerLinkActive="text-primary "
             ariaCurrentWhenActive="page"
             >Contacts</a
           >
           <a
             routerLink="/deals"
-            routerLinkActive="text-primary font-semibold"
+            routerLinkActive="text-primary "
             ariaCurrentWhenActive="page"
             >Deals</a
           >

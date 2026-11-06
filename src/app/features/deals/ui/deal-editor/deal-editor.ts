@@ -1,4 +1,4 @@
-import { Component, effect, input, linkedSignal, output, untracked } from '@angular/core';
+import { Component, computed, effect, input, linkedSignal, output, untracked } from '@angular/core';
 import {
   form,
   FormField,
@@ -169,7 +169,11 @@ export class DealEditor implements HasUnsavedChanges {
   readonly cancelled = output<void>();
   readonly contactSearch = output<string>();
 
-  private readonly model = linkedSignal(() => toValue(this.deal(), this.tasks()));
+  // Compared by content: a late response with unchanged data must not wipe what the user typed
+  private readonly source = computed(() => toValue(this.deal(), this.tasks()), {
+    equal: (a, b) => JSON.stringify(a) === JSON.stringify(b),
+  });
+  private readonly model = linkedSignal(() => this.source());
   protected readonly dealForm = form(this.model, dealSchema);
 
   protected readonly stages = Object.keys(DEAL_STAGE_LABELS) as DealStage[];
@@ -180,8 +184,7 @@ export class DealEditor implements HasUnsavedChanges {
   constructor() {
     // Tracks only the inputs, so user edits do not clear dirty state.
     effect(() => {
-      this.deal();
-      this.tasks();
+      this.source();
       untracked(() => this.dealForm().reset());
     });
   }

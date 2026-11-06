@@ -24,7 +24,7 @@ import { DealItemContext, DealItemTpl } from '../deal-item-tpl/deal-item-tpl';
 
     <div
       ngListbox
-      selectionMode="explicit"
+      selectionMode="explicit"dodaj
       focusMode="activedescendant"
       aria-label="Deals"
       class=" flex flex-col gap-1"
