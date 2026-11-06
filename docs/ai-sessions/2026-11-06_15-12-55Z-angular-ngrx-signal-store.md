@@ -3132,3 +3132,13041 @@ _**Agent (copilot/claude-sonnet-5.5)**_
 
 Created 7 todos
 </details></tool-use>
+
+---
+
+_**User (2026-11-06 15:42:19Z)**_
+
+ 1. withRouterConfig({     paramsInheritanceStrategy: 'always' // <-- Merges parent and child params  
+ 2.  A
+ 3.  ttl + SWR in signalStoreFeature ?
+
++  contact-picker ui component using contacts store?
++ add POST /deals to server and client debounced mutation logic
+
+
+---
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="search" data-tool-name="grep_search"><details>
+<summary>Tool use: **grep_search**</summary>
+
+No matches found. Your search pattern might be excluded completely by either the search.exclude settings or .*ignore files.
+If you believe that it should have results, you can check into the .*ignore files and the exclude setting (here are some excluded patterns for reference:[**/node_modules,**/bower_components,**/*.code-search]).
+Then if you want to include those files you can call the tool again by setting "includeIgnoredFiles" to true.
+
+**Input:**
+
+- includePattern: `node_modules/@angular/forms/types/**`
+- isRegexp: `true`
+- query: `interface FormValueControl|interface FormUiControl|paramsInheritanceStrategy`
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="search" data-tool-name="grep_search"><details>
+<summary>Tool use: **grep_search**</summary>
+
+No matches found. Your search pattern might be excluded completely by either the search.exclude settings or .*ignore files.
+If you believe that it should have results, you can check into the .*ignore files and the exclude setting (here are some excluded patterns for reference:[**/node_modules,**/bower_components,**/*.code-search]).
+Then if you want to include those files you can call the tool again by setting "includeIgnoredFiles" to true.
+
+**Input:**
+
+- includePattern: `node_modules/@angular/router/types/**`
+- isRegexp: `true`
+- query: `paramsInheritanceStrategy`
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="search" data-tool-name="grep_search"><details>
+<summary>Tool use: **grep_search**</summary>
+
+No matches found. Your search pattern might be excluded completely by either the search.exclude settings or .*ignore files.
+If you believe that it should have results, you can check into the .*ignore files and the exclude setting (here are some excluded patterns for reference:[**/node_modules,**/bower_components,**/*.code-search]).
+Then if you want to include those files you can call the tool again by setting "includeIgnoredFiles" to true.
+
+**Input:**
+
+- includePattern: `src/app/app.config.ts`
+- isRegexp: `false`
+- query: `withRouterConfig`
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="search" data-tool-name="grep_search"><details>
+<summary>Tool use: **grep_search**</summary>
+
+Searched for regex `interface FormValueControl|interface FormUiControl` (`**/node_modules/@angular/forms/**/*.d.ts`), 2 results
+
+**Input:**
+
+- includeIgnoredFiles: `true`
+- includePattern: `node_modules/@angular/forms/**/*.d.ts`
+- isRegexp: `true`
+- query: `interface FormValueControl|interface FormUiControl`
+
+**Result:**
+
+```
+Found 2 matches in 1 file for "interface FormValueControl|interface FormUiControl"
+
+node_modules/@angular/forms/types/signals.d.ts
+531:interface FormUiControl<TValue> {
+646:interface FormValueControl<TValue> extends FormUiControl<TValue> {
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="search" data-tool-name="grep_search"><details>
+<summary>Tool use: **grep_search**</summary>
+
+Searched for text `paramsInheritanceStrategy` (`**/node_modules/@angular/router/**/*.d.ts`), 2 results
+
+**Input:**
+
+- includeIgnoredFiles: `true`
+- includePattern: `node_modules/@angular/router/**/*.d.ts`
+- isRegexp: `false`
+- query: `paramsInheritanceStrategy`
+
+**Result:**
+
+```
+Found 2 matches in 2 files for "paramsInheritanceStrategy"
+
+node_modules/@angular/router/types/_router_module-chunk.d.ts
+704:    paramsInheritanceStrategy?: 'emptyOnly' | 'always';
+
+node_modules/@angular/router/types/router.d.ts
+358: *         withRouterConfig({paramsInheritanceStrategy: 'always'}))
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="vscode_askQuestions"><details>
+<summary>Tool use: **vscode_askQuestions**</summary>
+
+Analyzing your answers...
+
+**Input:**
+
+- questions:
+
+```
+[
+  {
+    "header": "Contact picker vs import cycle",
+    "message": "The picker is needed in the deals editor (contactId is required by POST /deals), but contacts -\u003e deals only. Deals must not import @feature/contacts.",
+    "options": [
+      {
+        "description": "Domain-free ContactPicker-style autocomplete in shared (inputs: options, value; outputs: search, picked) used as a Signal Forms custom control (FormValueControl). Deals defines a CONTACT_DIRECTORY port token (search, name by id, load). app.config.ts (root) provides it with ContactsStore. This also replaces the deals-local ContactRefsApi/Store. Cost: ContactsStore is imported statically from app.config (ADR-0004 lazy-routes nuance).",
+        "label": "Port inversion: token in deals, provided at root (Recommended)"
+      },
+      {
+        "description": "Picker lives in contacts/ui and is exported from @feature/contacts; deals editor imports it. Creates a circular barrel dependency with contacts -\u003e deals.",
+        "label": "Allow deals \u003c-\u003e contacts cycle"
+      },
+      {
+        "description": "Keep ContactRefs and a deals-local picker that calls GET /contacts?q= via its own ContactsLookupApi (duplicates contacts data, not normalized with the contacts store).",
+        "label": "Deals-local picker + own API, no contacts store"
+      }
+    ],
+    "question": "How should the contact picker (using the contacts store) be reachable from the deals editor?",
+    "recommended": true
+  },
+  {
+    "header": "Debounced mutation meaning",
+    "message": "Server POST /deals will be added in any case (store.createDeal, route, openapi DealCreateRequest, regenerate api.model.ts, DealsApi.create, create page wired to the editor).",
+    "options": [
+      {
+        "description": "Editor changes patch the entity optimistically at once and are PUT after an idle period, coalesced per deal id (groupBy id + debounceTime + switchMap), with revert on error and a saving/saved flag. Create uses exhaustMap (no double POST), not debounce.",
+        "label": "Debounced autosave of edits, exhaustMap for create (Recommended)"
+      },
+      {
+        "description": "Keep explicit Save button for edit; no debounce, only exhaustMap on create/update.",
+        "label": "No debounce, only de-duplicated submits"
+      },
+      {
+        "description": "Autosave also for create (draft saved after idle, then PUT)",
+        "label": "Debounced draft autosave for create too"
+      }
+    ],
+    "question": "What should 'debounced mutation logic' mean?",
+    "recommended": true
+  },
+  {
+    "header": "TTL + SWR scope",
+    "message": "Yes, feasible as a domain-free signalStoreFeature in shared/store: per-key fetchedAt metadata, ttl config, injectable clock for tests, a revalidating flag separate from loading, and prefix invalidation after mutations. Fresh -\u003e skip fetch; stale -\u003e serve cached entities immediately and refetch in background without spinner; error during revalidation keeps cached data.",
+    "options": [
+      {
+        "description": "Deals list/by-contact/by-id, tasks per deal, contacts search/by-id. Default TTL 60 s, configurable per store; mutations (create/update/delete) invalidate affected keys.",
+        "label": "All read loaders, TTL 60 s (Recommended)"
+      },
+      {
+        "description": "Only the entity lists (deals, contacts search), single-entity loads always refetch.",
+        "label": "Lists only"
+      }
+    ],
+    "question": "Which loaders get TTL + stale-while-revalidate, and what default TTL?",
+    "recommended": true
+  }
+]
+```
+
+
+**Result:**
+
+```
+{"answers":{"Contact picker vs import cycle":{"selected":[],"freeText":"1 + lazy injection token factory ?","skipped":false},"Debounced mutation meaning":{"selected":[],"freeText":"sorry, no autosave. debounce only requests if [save] is clicked multiple  times in a row ","skipped":false},"TTL + SWR scope":{"selected":["All read loaders, TTL 60 s (Recommended)"],"freeText":null,"skipped":false}}}
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="memory"><details>
+<summary>Tool use: **memory**</summary>
+
+Deleted memory `plan.md`
+
+**Input:**
+
+- command: `delete`
+- path: `/memories/session/plan.md`
+
+**Result:**
+
+```
+Successfully deleted /memories/session/plan.md
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="memory"><details>
+<summary>Tool use: **memory**</summary>
+
+Created memory file `plan.md`
+
+**Input:**
+
+- command: `create`
+- file_text:
+
+```
+## Plan: NgRx Signal Stores (deals, tasks, contacts) v2
+
+### Confirmed decisions
+- contacts -> deals only. Deals owns port tokens (DEALS_BY_CONTACT public; CONTACT_DIRECTORY for contact lookup); contacts implements CONTACT_DIRECTORY via ContactDirectoryAdapter; root wiring (src/app/contact-directory.provider.ts, in app.config) provides token with a LAZY facade (dynamic import('@feature/contacts') on first use, rootInjector.get(adapter)). Port = data signals + plain-value commands (no nested computeds, no injection context needed). Default: token lives in deals barrel; verify with ng build that deals/contacts store chunks stay lazy; fallback = generic lookup token in shared.
+- Feature-local API services: DealsApi (list/getById/create/update), TasksApi, ContactsApi. DTO<->model mapping inside API service. ContactRefs store DROPPED (replaced by CONTACT_DIRECTORY).
+- Server: GET /deals?contactId=, POST /deals (DealCreateRequest, 201, 400 on missing title/contactId or unknown contact), openapi + npm run openapi.
+- Router: app.config provideRouter(..., withComponentInputBinding(), withRouterConfig({paramsInheritanceStrategy:'always'})). Only merges parent params INTO children (global effect); layout derives selected id from deepest child snapshot params in router.routerState (merged by 'always') via NavigationEnd.
+- Routes: layout '' > [ '' placeholder, 'new' create, ':dealId' (componentless) > [ '' DealDetailsPage(card + outlet) > '' DealTasksPage, 'edit' DealEditPage ] ]. canDeactivate guard on new + edit.
+- Ports: compile-time narrowing only (typed interfaces + root-factory tokens).
+- TTL + SWR: shared/store feature withStaleWhileRevalidate({ttlMs: 60_000}) for all read loaders; CLOCK token for tests; per-key fetchedAt; cold -> blocking loading; fresh -> skip; stale -> serve cache, background revalidate flag (no spinner), error keeps cache; mutations mark keys stale (fetchedAt 0). Private `_swr(key, source, onData)` member. Contacts keep searchByQuery: Record<q,{ids,total}> (server-side matching needs per-query ids).
+- Save debounce (no autosave): create = debounceTime(300) + exhaustMap; update = groupBy(id) -> debounceTime(300) + exhaustMap; optimistic patch after debounce, revert on error; `saving` via selectLoadingById disables Save. Callbacks (onSuccess) for navigation after create/update.
+- Contact picker: presentational deals/ui ContactPicker (mat-autocomplete) implementing FormValueControl<string> (verified in @angular/forms/signals), inputs options/loading/selectedLabel, debounced `searched` output; pages inject CONTACT_DIRECTORY and feed the editor; editor gets contactId field (zod required), `showTasks`/title inputs (create hides tasks).
+- Editor persists deal fields only (no task diff); accounts + seed + pipes removed; Deal.accountId removed; contact name from directory.optionsById.
+- Reference bugs not to copy from sages-opi-angular-gr2 withLoadingState: loadingFinish resets error; updater types mismatch; mixed styles; withFeature wrapper; keyed by dealId.
+
+### Phases
+0 deps (@ngrx/signals, @ngrx/operators 22.0.1)
+1 shared: with-loading-state, with-stale-while-revalidate + clock, unsaved-changes guard
+2 server: contactId filter + POST /deals + openapi regen
+3 app.config router config
+4 deals data: APIs, stores (SWR), ports, index exports
+5 contacts data: ContactsApi, ContactsStore + withRelatedDeals, ContactDirectoryAdapter, root lazy provider
+6 UI: deals routed pages, editor + ContactPicker, create page, contacts pages + related deals list
+7 specs; verification (prettier, tsc, eslint, module-boundaries skill, ng test, ng build chunk check, manual w/ ask)
+
+```
+
+- path: `/memories/session/plan.md`
+
+**Result:**
+
+```
+File created successfully at: /memories/session/plan.md
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+## Plan: NgRx Signal Stores for Deals, Tasks and Contacts (v2)
+
+Normalized `@ngrx/signals` entity stores, root-scoped, fed by feature-local API services. They get TTL + stale-while-revalidate caching, debounced save, and a contact picker. Contacts import deals only. Deals reach contacts through a lazily loaded token, so neither import direction forms a cycle.
+
+On your questions: a lazy token factory and TTL + SWR as a `signalStoreFeature` are both feasible and are in the plan below.
+
+**Steps**
+
+*Phase 0 – Dependency*
+1. Install `@ngrx/signals` and `@ngrx/operators` (22.0.1).
+
+*Phase 1 – Shared infra (parallel with Phases 2 and 3)*
+2. `src/app/shared/store/with-loading-state.ts`:
+   - `withLoadingState()` is a `signalStoreFeature` with `inFlightIds`, , `selectLoading`, `selectError` and `selectLoadingById`.
+   - The curried updaters `loadingStart(id)`, `loadingFinish(id)` and `loadingError(error)` use one export style.
+   - Fixes over the attached version: `finish` no longer clears , updater types match what they return, and loading is keyed by entity id.
+3. `src/app/shared/store/with-stale-while-revalidate.ts`, with a `CLOCK` token (defaults to `Date.now`) so tests can control time:
+   - `withStaleWhileRevalidate({ ttlMs: 60_000 })` keeps `cacheMeta: Record<key, { fetchedAt }>` and `revalidatingKeys`.
+   - A private `_swr(key, source, onData)` decides the path per key:
+     - **cold** (no entry): blocking load with the loading flag.
+     - **fresh** (age < ttl): skip the fetch.
+     - **stale**: serve cached entities at once and refetch in the background. This sets `revalidating`, not the spinner, and an error keeps the cached data.
+   - Curried updaters: `cacheHit(key)`, `cacheInvalidate(prefix)` (sets `fetchedAt` to 0, so it counts as stale but keeps the data), `revalidatingStart(key)` and `revalidatingFinish(key)`.
+   - Selectors: `selectRevalidating(key)` and `selectIsFresh(key)`.
+4. `src/app/shared/guards/unsaved-changes.guard.ts`: a functional `canDeactivate` guard plus the `HasUnsavedChanges` interface, moved from `IHaveUnsavedChanges` in `deal-editor.ts`. Export all new shared pieces from `index.ts`.
+
+*Phase 2 – Server (parallel with 1 and 3)*
+5. `GET /deals?contactId=`: change  in `store.ts` and read the query in `deals.ts`.
+6. `POST /deals` in the same files, plus `DealCreateRequest` in `types.ts`:
+   - Required:  and . Optional with defaults:  0,  `new`,  empty,  false.
+   - Returns 201 with the , or 400 using the existing error envelope when a field is missing or the contact is unknown.
+7. Update `openapi.yaml` with the  parameter, the  operation and the `DealCreateRequest` schema, then run `npm run openapi`.
+
+*Phase 3 – Router config (parallel with 1 and 2)*
+8. In `app.config.ts`, add `withRouterConfig({ paramsInheritanceStrategy: 'always' })` next to `withComponentInputBinding()`.
+   - It only passes parent params down to children. It does not give a layout route its child's params.
+   - It is a global setting, so I'll check the contacts routes still bind  and .
+
+*Phase 4 – Deals data (depends on 1 and 2)*
+9. API services made with `ng g s` in `features/deals/data/`:
+   - `DealsApi`: `list({ contactId?, query? })`, `getById`, `create`, `update`.
+   - `TasksApi`: `list`, `create`, `update`, .
+   - Both map DTO ↔ model:  ↔ `Money`,  ↔ ,  ↔ ,  ↔ , and the task  comes from the path.
+10.  (root-scoped), built from `withEntities<Deal>()`, `withLoadingState()` and `withStaleWhileRevalidate()`:
+    - Loaders: `loadDeals` and `loadDeal`, each running through `_swr` with keys like `deals:list:{query}`, `deals:byContact:{id}` and `deal:{id}`.
+    - `createDeal`: `debounceTime(300)`, then `exhaustMap`. On success it prepends the entity, marks `deals:list` and `deals:byContact:{contactId}` stale, and calls `onSuccess`.
+    - : `groupBy(id)`, then per id `debounceTime(300)` and `exhaustMap`. It patches optimistically after the debounce, reverts on error, and marks the affected `deals:byContact` keys stale.
+    - Selectors are computed from the entity map: `selectDealById`, `selectFilteredDeals` (title only) and `selectDealsByContactId`.
+11. `TasksStore`, same shape. It has `selectTasksByDealId` (open tasks first), the key `tasks:deal:{id}`, an optimistic  with revert, `createTask` and .
+12. Extract `withDealSelectors()` and `withTaskSelectors()`, constrained with `type<EntityState<…>>()`.
+13. `features/deals/data/deals.ports.ts`: explicit interfaces plus root-factory tokens for `DealListSource`, `DealDetailsSource`, `DealEditorSource`, `TasksReader`, `TasksCommands` and `DealsByContactSource`.
+14. `CONTACT_DIRECTORY` port in the same file. It is data signals plus plain-value commands, so a lazy implementation needs no nested computeds or injection context:
+    - `optionsById`, `searchResults` (keyed by query) and `loading` signals.
+    - `search(q)` and `load(id)` commands.
+    - `ContactOption` is `{ id, label, description? }`.
+15. `features/deals/index.ts` exports , the tokens and port interfaces, and the , `DealStage` and `DEAL_STAGE_LABELS` types.
+
+*Phase 5 – Contacts data (depends on 4)*
+16. Move the current `ContactsStore` (HttpClient) into `data/contacts-api.ts` as `ContactsApi`.
+17. New root-scoped `ContactsStore`:
+    - Built from entities, `withLoadingState()`, SWR, and `searchByQuery: Record<q, { ids, total }>`, which a curried `setSearchResult` updater writes.
+    - Methods: `search` and `loadContact` (both through `_swr`, keyed `contacts:search:{q}` and `contact:{id}`), and selectors `selectSearchResults(q)` and `selectContactById`.
+    - A `withRelatedDeals()` feature injects `DEALS_BY_CONTACT` and exposes `selectRelatedDeals` and `loadRelatedDeals`.
+18. `ContactDirectoryAdapter` implements `CONTACT_DIRECTORY` over `ContactsStore`, mapping  to `ContactOption`. Export it from `features/contacts/index.ts`.
+19. Root wiring in a new `src/app/contact-directory.provider.ts`, included in `app.config.ts`. A factory creates a facade:
+    - On first use it runs `import('@feature/contacts')` and takes the adapter from the root injector.
+    - Before the import resolves, the signals expose empty values and commands queue in order.
+    - Contacts and their store stay in a lazy chunk, which keeps ADR-0004 intact.
+
+*Phase 6 – UI (depends on 4 and 5)*
+20. Deals pages, generated with `ng g c` and renamed to `*.page.ts`:
+    - `DealsLayoutPage`: master list, filter and outlet. `dealFilter` is an input. The selected id comes from the router's deepest child params, updated on `NavigationEnd`. It replaces the URL-sync `effect`.
+    - `DealPlaceholderPage`, `DealDetailsPage` (details card plus nested outlet), `DealTasksPage`, `DealEditPage` and `DealCreatePage`.
+    - `deals.routes.ts` uses the structure from the decisions list below.
+21. `ContactPicker` in `features/deals/ui/contact-picker/`: a presentational `mat-autocomplete` that implements .
+    - Inputs: , `loading` and `selectedLabel`.
+    - A debounced `searched` output.
+    - The pages inject `CONTACT_DIRECTORY` and pass it to the editor.
+22. `DealEditor` changes:
+    - Add a  field with a zod rule "Contact is required", replace the placeholder Contact input with the picker, and update `DealEditorValue`, `toValue` and `DealFormDraft`.
+    - Add inputs `saving` (disables Save),  and `showTasks`. Create mode hides tasks, because they need a deal id.
+    - Save uses the debounced store methods.
+23. Remove `deals-seed.ts`, the deals `account` and  models, and  and . Drop . Update `DealListItem`, and give `DealDetailsCard` a  input fed from `optionsById`.
+24. Contacts UI:
+    - Add `ContactRelatedDeals` (`ng g c`), a presentational list using the  type from `@feature/deals` and `routerLink` to `/deals/:id`.
+    - Rewire `ContactSearchPage` and `ContactDetailsPage` to the store, replacing `rxResource`.
+    - In , remove `providers: [ContactsStore]` and the empty `resolve`.
+
+*Phase 7 – Specs (parallel with 6)*
+25. Specs, using fake APIs and a fake `CLOCK`:
+    - `with-loading-state`: a finished request keeps its error.
+    - `with-stale-while-revalidate`: cold loads with the spinner, fresh skips the fetch, stale serves the cache and sets only the revalidating flag, and an error keeps the data.
+    - : selectors update after an upsert, and double-clicking save sends one request.
+    - : optimistic update, then revert on error.
+    - : related deals update when a deal changes.
+    - The lazy directory: queued commands and empty signals before the import resolves.
+
+**Relevant files**
+- `deals.store.ts` — replaced.
+- `deals-list.page.ts` — becomes the layout page.
+- `deal-editor.ts` — contact field, `saving`, `showTasks` and guard interface changes.
+- `deals.routes.ts` and `index.ts`.
+- `contacts.store.ts` — split into `ContactsApi` and the new store.
+- `contacts.routes.ts`.
+- `app.config.ts` and the new `src/app/contact-directory.provider.ts`.
+- `index.ts`.
+- `store.ts`, `deals.ts`, `types.ts` and `openapi.yaml`.
+- `package.json`.
+
+**Verification**
+1. `npx prettier --write`, then `npx tsc --noEmit -p tsconfig.app.json`, then `npx eslint` on the changed files, then the module-boundaries skill.
+2. `npx ng test --watch=false`.
+3. `npx ng build`, then check that the contacts and deals store code sits in lazy chunks and not in the main bundle. If it lands in main, move the directory token to a generic lookup in `shared`.
+4. Manual flows with the server and `ng serve` running (browser tools only after asking you):
+   - Visiting a deal twice within 60 s makes no second request. Past 60 s it renders instantly and refetches without a spinner.
+   - Clicking Save five times quickly sends one `PUT` or `POST`.
+   - Creating a deal for contact `c1` shows it on `/contacts/c1` at once.
+   - Changing a deal's stage updates the list, the details card and the contact's related deals without a refetch.
+   - The picker searches contacts, and a deep link to `/deals/d1/edit` shows the contact label.
+   - Leaving a dirty edit page is blocked by the guard.
+
+**Decisions**
+- No autosave. Debounce only protects Save and Create from repeated clicks.
+- Excluded: task diffing in the editor, creating tasks while creating a deal, accounts, and server  filtering.
+- The token factory is lazy, but the hand-off to the deals editor is still compile-time typed through `CONTACT_DIRECTORY`.
+- Per-query id lists are kept only for contact search. Deals lists use client-side predicates over the entity map.
+
+**Further Considerations**
+1. Where `CONTACT_DIRECTORY` lives. Option A (recommended): in the deals barrel, with a bundle check in verification. Option B: a generic lookup token in `shared`. It is safer for bundling, but a domain-neutral name is awkward.
+2. Race on first use. Option A (recommended): queue the commands until the contacts chunk loads. Option B: make the commands return a `Promise`, which complicates call sites.
+3. Memory in `searchByQuery`. Option A (recommended): leave it unbounded, since TTL marks entries stale but does not evict them. Option B: add an LRU cap of about 20 queries.
+
+Tell me if any decision above should change, or approve it and switch back to Agent mode to start implementing.
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="task" data-tool-name="manage_todo_list"><details>
+<summary>Tool use: **manage_todo_list**</summary>
+
+Created 3 todos
+</details></tool-use>
+
+---
+
+_**User (2026-11-06 15:56:28Z)**_
+
+1. A
+2. A
+3. B
+
+Implement, commit WIP after each phase with its files only is possible
+
+---
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="run_in_terminal"><details>
+<summary>Tool use: **run_in_terminal**</summary>
+
+Running ` git status --short && git log --oneline | head -5 && git branch --show-current`
+
+Check working tree state and branch before committing phase by phase
+
+```bash
+git status --short && git log --oneline | head -5 && git branch --show-current
+```
+
+**Result:**
+
+```
+ M docs/ai-sessions/2026-11-06_15-12-55Z-angular-ngrx-signal-store.md
+94398db Signal Store plan
+92b5eb5 Fixes
+735d87e Slajdy
+13b56b0 Bound from the :contactId route param (withComponentInputBinding)
+ca873fa Contacts Feature
+main
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="read" data-tool-name="read_file"><details>
+<summary>Tool use: **read_file**</summary>
+
+Read `angular.instructions.md`
+
+**Input:**
+
+- endLine: `200`
+- filePath: `c:\Projects\sages-angular-adv-1126\.github\instructions\angular.instructions.md`
+- startLine: `1`
+
+**Result:**
+
+```
+---
+description: "Use when writing or reviewing Angular components, services, templates, forms, routes, Material imports, or Tailwind and CSS styling in TypeScript. Covers standalone components, signals, inject(), native control flow, host bindings, Material shared imports, and accessibility."
+applyTo: "src/**/*.ts,src/**/*.html,src/**/*.css"
+---
+# Angular Rules
+
+## TypeScript Best Practices
+
+- Use strict type checking
+- Prefer type inference when the type is obvious
+- Avoid the `any` type; use `unknown` when type is uncertain
+
+## Angular Best Practices
+
+- Always use standalone components over NgModules
+- Must NOT set `standalone: true` inside Angular decorators. It's the default in Angular v20+.
+- Do NOT set `changeDetection: ChangeDetectionStrategy.OnPush` explicitly. `OnPush` is the default in Angular v22+.
+- Use signals for state management
+- Implement lazy loading for feature routes
+- Do NOT use the `@HostBinding` and `@HostListener` decorators. Put host bindings inside the `host` object of the `@Component` or `@Directive` decorator instead
+- Use `NgOptimizedImage` for all static images.
+  - `NgOptimizedImage` does not work for inline base64 images.
+
+## Accessibility Requirements
+
+- It MUST pass all AXE checks.
+- It MUST follow all WCAG AA minimums, including focus management, color contrast, and ARIA attributes.
+
+## Components
+
+- Keep components small and focused on a single responsibility
+- Use `input()` and `output()` functions instead of decorators
+- Use `model()` for two-way bound properties with `[(prop)]` syntax instead of pairing `input()` with `output()`
+- Use `computed()` for derived state
+- Use `linkedSignal()` for state derived from multiple reactive sources that must stay synchronized
+- Expose visual variant dimensions as literal union inputs (for example `input<'new' | 'won'>()`) reflected to the DOM with `[attr.data-<name>]` in the `host` in @Component() 
+- Style variants with `:host([data-<name>='value'])` sel
+… (output truncated)
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="read" data-tool-name="read_file"><details>
+<summary>Tool use: **read_file**</summary>
+
+Read `architecture.instructions.md`
+
+**Input:**
+
+- endLine: `200`
+- filePath: `c:\Projects\sages-angular-adv-1126\.github\instructions\architecture.instructions.md`
+- startLine: `1`
+
+**Result:**
+
+```
+---
+description: 'Use when adding or changing imports, routes, or files under src/app. Covers module layers (app, core, shared, features), allowed dependency directions, path aliases (@core, @shared, @feature/<name>), the index.ts public-API rule, new-feature setup, and Sheriff enforcement.'
+applyTo: 'src/app/**/*.ts'
+---
+
+# Architecture Rules
+
+## Dependency Directions
+
+- `app` may import from `core`, `shared`, and `features`.
+- `core` may import from `shared` only.
+- `features/<name>` may import from `shared` only, and from another feature only through that feature's `index.ts`.
+- `shared` imports from no other layer in `src/app`.
+- Forbidden: `features` to `core`, `core` to `features`, `shared` to `core` or `features`.
+
+## Public API
+
+- Import a module only through its `index.ts`, using its alias. Never import a deep file such as `features/deals/pages/...`.
+- Inside one module, relative imports are allowed.
+- Lazy routes load a feature through its alias, for example `import('@feature/deals')` (ADR-0004).
+
+## Path Aliases
+
+Defined in the `paths` of `tsconfig.json`.
+
+| Alias             | Target                             |
+| ----------------- | ---------------------------------- |
+| `@core`           | `src/app/core/index.ts`            |
+| `@shared`         | `src/app/shared/index.ts`          |
+| `@feature/<name>` | `src/app/features/<name>/index.ts` |
+
+- Alias names are fixed: `@core`, `@shared`, and `@feature/<name>`, where `<name>` is the feature folder name in kebab-case. Do not invent other aliases without the user's approval.
+- Do not use wildcard mappings such as `@feature/*`. Sheriff reports them as SH-001 errors, so each feature has its own explicit entry.
+- Across a module boundary, use the alias. Do not use `../` paths. For example, from `features/deals/` to shared code, use `@shared`, not `../../../shared`.
+- Relative imports are allowed only inside the same module: the same `core`, the same `shared`, or the same `features/<name>` folder.
+
+## Code Ge
+… (output truncated)
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="read" data-tool-name="read_file"><details>
+<summary>Tool use: **read_file**</summary>
+
+Read `workflow.instructions.md`
+
+**Input:**
+
+- endLine: `200`
+- filePath: `c:\Projects\sages-angular-adv-1126\.github\instructions\workflow.instructions.md`
+- startLine: `1`
+
+**Result:**
+
+```
+---
+description: "Use when generating Angular files with ng g schematics, finishing Angular or template changes, verifying a feature, running prettier, tsc, eslint, the ng serve dev server, or browser checks. Covers schematic generation, verification order, scope of fixes, and asking before browser tools."
+applyTo: "src/**"
+---
+
+# Workflow Rules
+
+## Code Generation
+
+- Never create files by hand that an `ng g` schematic can generate.
+- `ng g c <path>` already creates a folder named after the last segment. Pass the parent folder, not the folder plus name: `ng g c shared/badge` (creates `shared/badge/badge.ts`), not `ng g c shared/badge/badge` (creates `shared/badge/badge/badge.ts`).
+- Do not change schematic flags unless the user asks. Let defaults come from `angular.json`.
+- Prefer batch generation: prepare all needed `ng g` commands first, then run them together in one terminal call.
+
+## Verification Order
+
+- Format changed files with prettier: `npx prettier --write <files>`. Config is in `.prettierrc`.
+- Type-check with `npx tsc --noEmit -p tsconfig.app.json`.
+- Lint changed files only: `npx eslint <files>`.
+- Use the running `ng serve` session to check the build. Do not run `ng build` unless asked. If no session is running, ask before starting one.
+- Fix only problems in changed files, or problems that stop `ng serve` from rebuilding.
+- The editor's CSS linter reports `@theme` and `@apply` as errors. These are false positives from Tailwind at-rules.
+
+## Browser Checks
+
+- Ask before using `open_browser_page`, `click_element`, or any other browser tool to verify, debug, or fix.
+
+## Scope
+
+- Template-only requests: do not add logic beyond the `imports` array unless the user approves.
+- Do not create markdown files to document changes unless requested.
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="run_in_terminal"><details>
+<summary>Tool use: **run_in_terminal**</summary>
+
+Running ` npm i @ngrx/signals@^22 @ngrx/operators@^22 2>&1 | tail -8 && git status --s...`
+
+Install @ngrx/signals and @ngrx/operators
+
+```bash
+npm i @ngrx/signals@^22 @ngrx/operators@^22 2>&1 | tail -8 && git status --short
+```
+
+**Result:**
+
+```
+
+To address issues that do not require attention, run:
+  npm audit fix
+
+To address all issues (including breaking changes), run:
+  npm audit fix --force
+
+Run `npm audit` for details.
+ M docs/ai-sessions/2026-11-06_15-12-55Z-angular-ngrx-signal-store.md
+ M package-lock.json
+ M package.json
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="run_in_terminal"><details>
+<summary>Tool use: **run_in_terminal**</summary>
+
+Running ` git diff package.json | grep '^\[\+-\] ' ; git add package.json package-lock.js...`
+
+Commit only the dependency files
+
+```bash
+git diff package.json | grep '^[+-] ' ; git add package.json package-lock.json && git commit -q -m "WIP phase 0: add @ngrx/signals and @ngrx/operators" && git log --oneline | head -1
+```
+
+**Result:**
+
+```
+warning: in the working copy of 'package.json', LF will be replaced by CRLF the next time Git touches it
++    "@ngrx/operators": "^22.0.1",
++    "@ngrx/signals": "^22.0.1",
+warning: in the working copy of 'package-lock.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'package.json', LF will be replaced by CRLF the next time Git touches it
+b3811a5 WIP phase 0: add @ngrx/signals and @ngrx/operators
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="run_in_terminal"><details>
+<summary>Tool use: **run_in_terminal**</summary>
+
+Running ` cd node\_modules/@ngrx/signals && ls && cat package.json | grep -E '"version"...`
+
+Inspect installed @ngrx/signals package layout
+
+```bash
+cd node_modules/@ngrx/signals && ls && cat package.json | grep -E '"version"|exports' && ls types 2>/dev/null | head; grep -rhoE "export \{[^}]*\}" types/ngrx-signals.d.ts 2>/dev/null | head -5; ls entities rxjs-interop 2>/dev/null | head
+```
+
+**Result:**
+
+```
+fesm2022/  migrations/   README.md    schematics-core/
+LICENSE    package.json  schematics/  types/
+  "version": "22.0.1",
+  "exports": {
+ngrx-signals.d.ts
+ngrx-signals-entities.d.ts
+ngrx-signals-events.d.ts
+ngrx-signals-resource.d.ts
+ngrx-signals-rxjs-interop.d.ts
+ngrx-signals-testing.d.ts
+export { deepComputed, getState, isWritableStateSource, patchState, signalMethod, signalState, signalStore, signalStoreFeature, type, watchState, withComputed, withFeature, withHooks, withLinkedState, withMethods, withProps, withState }
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="run_in_terminal"><details>
+<summary>Tool use: **run_in_terminal**</summary>
+
+Running ` cd node\_modules/@ngrx/signals/types && grep -hoE "^export \\\{\[^\}\]\*\\\}" ngrx-si...`
+
+List entities/rxjs-interop exports and key types
+
+```bash
+cd node_modules/@ngrx/signals/types && grep -hoE "^export \{[^}]*\}" ngrx-signals-entities.d.ts ngrx-signals-rxjs-interop.d.ts ngrx-signals-testing.d.ts; grep -n "providedIn" ngrx-signals.d.ts | head; grep -n "type RxMethod" -A 6 ngrx-signals-rxjs-interop.d.ts; grep -n "PartialStateUpdater" ngrx-signals.d.ts | head -3
+```
+
+**Result:**
+
+```
+bash: cd: node_modules/@ngrx/signals/types: No such file or directory
+grep: ngrx-signals.d.ts: No such file or directory
+grep: ngrx-signals-rxjs-interop.d.ts: No such file or directory
+grep: ngrx-signals.d.ts: No such file or directory
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="run_in_terminal"><details>
+<summary>Tool use: **run_in_terminal**</summary>
+
+Running ` cd /c/Projects/sages-angular-adv-1126/node\_modules/@ngrx/signals/types && gr...`
+
+List entities/rxjs-interop exports and key types
+
+```bash
+cd /c/Projects/sages-angular-adv-1126/node_modules/@ngrx/signals/types && grep -hoE "^export \{[^}]*\}" ngrx-signals-entities.d.ts ngrx-signals-rxjs-interop.d.ts ngrx-signals-testing.d.ts; grep -n "type RxMethod" -A 6 ngrx-signals-rxjs-interop.d.ts; grep -n "type PartialStateUpdater" ngrx-signals.d.ts ngrx-signals-entities.d.ts; cd /c/Projects/sages-angular-adv-1126
+```
+
+**Result:**
+
+```
+export { addEntities, addEntity, entityConfig, prependEntities, prependEntity, removeAllEntities, removeEntities, removeEntity, setAllEntities, setEntities, setEntity, updateAllEntities, updateEntities, updateEntity, upsertEntities, upsertEntity, withEntities }
+export { rxMethod }
+export { unprotected }
+4:type RxMethodRef = {
+5-    destroy: () => void;
+6-};
+7:type RxMethod<Input> = ((input: Input | (() => Input) | Observable<Input>, config?: {
+8-    injector?: Injector;
+9-}) => RxMethodRef) & RxMethodRef;
+10-/**
+11- * @description
+12- *
+13- * Creates a reactive method for managing side effects by utilizing RxJS APIs.
+ngrx-signals.d.ts:96:type PartialStateUpdater<State extends object> = (state: State) => Partial<State>;
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="run_in_terminal"><details>
+<summary>Tool use: **run_in_terminal**</summary>
+
+Running ` cd /c/Projects/sages-angular-adv-1126/node\_modules/@ngrx/signals/types && gr...`
+
+Check exported types of @ngrx/signals
+
+```bash
+cd /c/Projects/sages-angular-adv-1126/node_modules/@ngrx/signals/types && grep -n "^export" ngrx-signals-rxjs-interop.d.ts ngrx-signals.d.ts | cut -c1-400; grep -n "declare function signalStore" ngrx-signals.d.ts | head -3; grep -n "StateSource\b" ngrx-signals.d.ts | head -5; cd /c/Projects/sages-angular-adv-1126
+```
+
+**Result:**
+
+```
+ngrx-signals-rxjs-interop.d.ts:53:export { rxMethod };
+ngrx-signals-rxjs-interop.d.ts:54:export type { RxMethod };
+ngrx-signals.d.ts:587:export { deepComputed, getState, isWritableStateSource, patchState, signalMethod, signalState, signalStore, signalStoreFeature, type, watchState, withComputed, withFeature, withHooks, withLinkedState, withMethods, withProps, withState };
+ngrx-signals.d.ts:588:export type { DeepSignal, DeepSignalOf, EmptyFeatureResult, PartialStateUpdater, Prettify, SignalMethod, SignalState, SignalStoreFeature, SignalStoreFeatureResult, SignalStoreFeatureType, StateSignals, StateSource, StateWatcher, WritableStateSource };
+270:declare function signalStore<F1 extends SignalStoreFeatureResult>(f1: SignalStoreFeature<EmptyFeatureResult, F1>): Type<SignalStoreMembers<F1> & StateSource<Prettify<OmitPrivate<F1['state']>>>>;
+271:declare function signalStore<F1 extends SignalStoreFeatureResult, F2 extends SignalStoreFeatureResult, R extends SignalStoreFeatureResult = F1 & F2>(f1: SignalStoreFeature<EmptyFeatureResult, F1>, f2: SignalStoreFeature<{} & F1, F2>): Type<SignalStoreMembers<R> & StateSource<Prettify<OmitPrivate<R['state']>>>>;
+272:declare function signalStore<F1 extends SignalStoreFeatureResult, F2 extends SignalStoreFeatureResult, F3 extends SignalStoreFeatureResult, R extends SignalStoreFeatureResult = F1 & F2 & F3>(f1: SignalStoreFeature<EmptyFeatureResult, F1>, f2: SignalStoreFeature<{} & F1, F2>, f3: SignalStoreFeature<F1 & F2, F3>): Type<SignalStoreMembers<R> & StateSource<Prettify<OmitPrivate<R['state']>>>>;
+86:type WritableStateSource<State extends object> = {
+91:type StateSource<State extends object> = {
+98:declare function isWritableStateSource<State extends object>(stateSource: StateSource<State>): stateSource is WritableStateSource<State>;
+123:declare function patchState<State extends object>(stateSource: WritableStateSource<State>, ...updaters: Array<Partial<NoInfer<State>> | PartialStateUpdater<NoInfer<State>>>): void;
+154:declare f
+… (output truncated)
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="read" data-tool-name="read_file"><details>
+<summary>Tool use: **read_file**</summary>
+
+Read `shared-module.ts`, lines 1 to 80
+
+**Input:**
+
+- endLine: `80`
+- filePath: `c:\Projects\sages-angular-adv-1126\src\app\shared\shared-module.ts`
+- startLine: `1`
+
+**Result:**
+
+```
+import { NgModule } from '@angular/core';
+import { CommonModule, JsonPipe } from '@angular/common';
+
+import { MatButton } from '@angular/material/button';
+import {
+  MatCard,
+  MatCardActions,
+  MatCardContent,
+  MatCardHeader,
+  MatCardSubtitle,
+  MatCardTitle,
+} from '@angular/material/card';
+import { MatCheckbox } from '@angular/material/checkbox';
+import { MatChip, MatChipSet } from '@angular/material/chips';
+import { MatError, MatFormField, MatHint, MatLabel, MatSuffix } from '@angular/material/form-field';
+import { MatIcon } from '@angular/material/icon';
+import { MatInput } from '@angular/material/input';
+import {
+  MatList,
+  MatListItem,
+  MatListItemIcon,
+  MatListItemLine,
+  MatListItemMeta,
+  MatListItemTitle,
+} from '@angular/material/list';
+import { MatOption, MatSelect } from '@angular/material/select';
+import { MatToolbar } from '@angular/material/toolbar';
+import { MatLineModule } from '@angular/material/core';
+import { RouterLink, RouterLinkActive } from '@angular/router';
+import { NeverPipe } from './pipes/never-pipe';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+
+// const SharedImports = [
+// ]
+
+export const SharedForms = [
+  MatOption,
+  MatHint,
+  MatError,
+  FormsModule,
+  ReactiveFormsModule,
+  MatSelect,
+  MatSuffix,
+  MatCheckbox,
+  MatFormField,
+  MatInput,
+  MatLabel,
+  [[[MatButton]]],
+];
+
+export const SharedUI = [
+  CommonModule,
+  NeverPipe,
+  JsonPipe,
+  MatButton,
+  MatCard,
+  MatCardActions,
+  MatCardContent,
+  MatCardHeader,
+  MatCardSubtitle,
+  MatCardTitle,
+
+  MatChip,
+  MatChipSet,
+  MatIcon,
+  MatList,
+  // MatLineModule,
+  MatListItem,
+  MatListItemLine,
+  MatListItemMeta,
+  MatListItemTitle,
+  MatListItemIcon,
+  MatToolbar,
+
+  RouterLink,
+  RouterLinkActive,
+];
+
+export const SharedImports = [
+  CommonModule,
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="read" data-tool-name="read_file"><details>
+<summary>Tool use: **read_file**</summary>
+
+Read `never-pipe.ts`
+
+**Input:**
+
+- endLine: `80`
+- filePath: `c:\Projects\sages-angular-adv-1126\src\app\shared\pipes\never-pipe.ts`
+- startLine: `1`
+
+**Result:**
+
+```
+import { Pipe, PipeTransform } from '@angular/core';
+
+@Pipe({
+  name: 'never',
+})
+export class NeverPipe implements PipeTransform {
+  transform(value: never, message = 'Invalid value ' + value): never {
+    throw new Error(message);
+  }
+}
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="run_in_terminal"><details>
+<summary>Tool use: **run_in_terminal**</summary>
+
+Running ` cd /c/Projects/sages-angular-adv-1126/node\_modules/@ngrx/operators/types && ...`
+
+Check tapResponse signature
+
+```bash
+cd /c/Projects/sages-angular-adv-1126/node_modules/@ngrx/operators/types && ls && grep -n "tapResponse" -B2 -A12 ngrx-operators.d.ts | head -60; cd /c/Projects/sages-angular-adv-1126
+```
+
+**Result:**
+
+````
+ngrx-operators.d.ts
+12-/**
+13- * `mapResponse` is a map operator with included error handling.
+14: * It is similar to `tapResponse`, but allows to map the response as well.
+15- *
+16- * The main use case is for NgRx Effects which requires an action to be dispatched.
+17- *
+18- * @usageNotes
+19- * ```ts
+20- * export const loadAllUsers = createEffect((
+21- *   actions$ = inject(Actions),
+22- *   usersService = inject(UsersService)
+23- * ) => {
+24- *   return actions$.pipe(
+25- *     ofType(UsersPageActions.opened),
+26- *     exhaustMap(() => {
+--
+59- *     exhaustMap(() =>
+60- *       this.usersService.getAll().pipe(
+61: *         tapResponse({
+62- *           next: (users) => this.users.set(users),
+63- *           error: (error: HttpErrorResponse) => this.logError(error.message),
+64- *           finalize: () => this.isLoading.set(false),
+65- *         })
+66- *       )
+67- *     )
+68- *   )
+69- * );
+70- * ```
+71- */
+72:declare function tapResponse<T, E = unknown>(observer: TapResponseObserver<T, E>): (source$: Observable<T>) => Observable<T>;
+73-
+74:export { concatLatestFrom, mapResponse, tapResponse };
+````
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="create_file"><details>
+<summary>Tool use: **create_file**</summary>
+
+Created `with-loading-state.ts`
+
+**Input:**
+
+- content:
+
+```
+import { computed } from '@angular/core';
+import {
+  PartialStateUpdater,
+  signalStoreFeature,
+  withComputed,
+  withMethods,
+  withState,
+} from '@ngrx/signals';
+
+export type LoadingState = {
+  // One entry per running request; the same id may appear more than once
+  inFlightIds: string[];
+  error: string | null;
+};
+
+export const withLoadingState = () =>
+  signalStoreFeature(
+    withState<LoadingState>({ inFlightIds: [], error: null }),
+    withComputed(({ inFlightIds, error }) => ({
+      selectLoading: computed(() => inFlightIds().length > 0),
+      selectError: computed(() => error()),
+    })),
+    withMethods(({ inFlightIds }) => ({
+      selectLoadingById(id: () => string | undefined) {
+        return computed(() => {
+          const key = id();
+          return key !== undefined && inFlightIds().includes(key);
+        });
+      },
+    })),
+  );
+
+// Curried updaters: call with the argument, pass the result to patchState()
+export const loadingStart =
+  (id: string): PartialStateUpdater<LoadingState> =>
+  (state) => ({ inFlightIds: [...state.inFlightIds, id], error: null });
+
+// Keeps `error`, so a failure set just before `finalize` stays visible
+export const loadingFinish =
+  (id: string): PartialStateUpdater<LoadingState> =>
+  (state) => {
+    const index = state.inFlightIds.indexOf(id);
+    if (index < 0) return {};
+    return { inFlightIds: state.inFlightIds.filter((_, i) => i !== index) };
+  };
+
+export const loadingError =
+  (error: unknown): PartialStateUpdater<LoadingState> =>
+  () => ({ error: error instanceof Error ? error.message : 'Operation failed' });
+
+```
+
+- filePath: `c:\Projects\sages-angular-adv-1126\src\app\shared\store\with-loading-state.ts`
+
+**Result:**
+
+```
+The following files were successfully edited:
+c:\Projects\sages-angular-adv-1126\src\app\shared\store\with-loading-state.ts
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **with-loading-state.ts**</summary>
+
+@@ lines 1-1 @@
+
+```
+import { computed } from '@angular/core';
+import {
+  PartialStateUpdater,
+  signalStoreFeature,
+  withComputed,
+  withMethods,
+  withState,
+} from '@ngrx/signals';
+
+export type LoadingState = {
+  // One entry per running request; the same id may appear more than once
+  inFlightIds: string[];
+  error: string | null;
+};
+
+export const withLoadingState = () =>
+  signalStoreFeature(
+    withState<LoadingState>({ inFlightIds: [], error: null }),
+    withComputed(({ inFlightIds, error }) => ({
+      selectLoading: computed(() => inFlightIds().length > 0),
+      selectError: computed(() => error()),
+    })),
+    withMethods(({ inFlightIds }) => ({
+      selectLoadingById(id: () => string | undefined) {
+        return computed(() => {
+          const key = id();
+          return key !== undefined && inFlightIds().includes(key);
+        });
+      },
+    })),
+  );
+
+// Curried updaters: call with the argument, pass the result to patchState()
+export const loadingStart =
+  (id: string): PartialStateUpdater<LoadingState> =>
+  (state) => ({ inFlightIds: [...state.inFlightIds, id], error: null });
+
+// Keeps `error`, so a failure set just before `finalize` stays visible
+export const loadingFinish =
+  (id: string): PartialStateUpdater<LoadingState> =>
+  (state) => {
+    const index = state.inFlightIds.indexOf(id);
+    if (index < 0) return {};
+    return { inFlightIds: state.inFlightIds.filter((_, i) => i !== index) };
+  };
+
+export const loadingError =
+  (error: unknown): PartialStateUpdater<LoadingState> =>
+  () => ({ error: error instanceof Error ? error.message : 'Operation failed' });
+
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="create_file"><details>
+<summary>Tool use: **create_file**</summary>
+
+Created `with-stale-while-revalidate.ts`
+
+**Input:**
+
+- content:
+
+```
+import { computed, inject, InjectionToken } from '@angular/core';
+import { tapResponse } from '@ngrx/operators';
+import {
+  PartialStateUpdater,
+  patchState,
+  signalStoreFeature,
+  type,
+  withMethods,
+  withProps,
+  withState,
+} from '@ngrx/signals';
+import { defer, EMPTY, Observable } from 'rxjs';
+import { LoadingState, loadingError, loadingFinish, loadingStart } from './with-loading-state';
+
+// Replaceable in tests to control time
+export const CLOCK = new InjectionToken<() => number>('CLOCK', {
+  providedIn: 'root',
+  factory: () => () => Date.now(),
+});
+
+export type SwrState = {
+  // key -> time of the last successful fetch
+  cacheMeta: Record<string, number>;
+  revalidatingKeys: string[];
+};
+
+// Older than any ttl, but still present, so cached data keeps being served
+const STALE = Number.NEGATIVE_INFINITY;
+
+export const cacheHit =
+  (key: string, at: number): PartialStateUpdater<SwrState> =>
+  (state) => ({ cacheMeta: { ...state.cacheMeta, [key]: at } });
+
+// Marks every cached key starting with `prefix` as stale; unknown keys stay cold
+export const cacheInvalidate =
+  (prefix: string): PartialStateUpdater<SwrState> =>
+  (state) => ({
+    cacheMeta: Object.fromEntries(
+      Object.entries(state.cacheMeta).map(([key, at]) => [key, key.startsWith(prefix) ? STALE : at]),
+    ),
+  });
+
+export const revalidatingStart =
+  (key: string): PartialStateUpdater<SwrState> =>
+  (state) => ({ revalidatingKeys: [...state.revalidatingKeys, key] });
+
+export const revalidatingFinish =
+  (key: string): PartialStateUpdater<SwrState> =>
+  (state) => {
+    const index = state.revalidatingKeys.indexOf(key);
+    if (index < 0) return {};
+    return { revalidatingKeys: state.revalidatingKeys.filter((_, i) => i !== index) };
+  };
+
+export type SwrRequest<T> = {
+  key: string;
+  // Id shown by selectLoadingById() during a cold load; defaults to `key`
+  loadingId?: string;
+  source: () => Observable<T>;
+  onData: (data: T) => void;
+};
+
+/**
+ * Time-to-live cache with stale-while-revalidate for rxMethod loaders.
+ * - cold key: blocking load (`inFlightIds`)
+ * - fresh key: no request
+ * - stale key: cached entities stay visible, refetch runs in the background (`revalidatingKeys`)
+ */
+export function withStaleWhileRevalidate(config: { ttlMs: number }) {
+  return signalStoreFeature(
+    { state: type<LoadingState>() },
+    withState<SwrState>({ cacheMeta: {}, revalidatingKeys: [] }),
+    withProps(() => ({ _now: inject(CLOCK) })),
+    withMethods((store) => ({
+      selectRevalidating(key: () => string | undefined) {
+        return computed(() => {
+          const value = key();
+          return value !== undefined && store.revalidatingKeys().includes(value);
+        });
+      },
+
+      _swr<T>({ key, loadingId = key, source, onData }: SwrRequest<T>): Observable<T> {
+        return defer(() => {
+          const fetchedAt: number | undefined = store.cacheMeta()[key];
+          if (fetchedAt !== undefined && store._now() - fetchedAt < config.ttlMs) return EMPTY;
+
+          const revalidating = fetchedAt !== undefined;
+          patchState(store, revalidating ? revalidatingStart(key) : loadingStart(loadingId));
+
+          return source().pipe(
+            tapResponse({
+              next: (data) => {
+                onData(data);
+                patchState(store, cacheHit(key, store._now()));
+              },
+              // Cached data stays; the next call retries
+              error: (error) => patchState(store, loadingError(error)),
+              finalize: () =>
+                patchState(store, revalidating ? revalidatingFinish(key) : loadingFinish(loadingId)),
+            }),
+          );
+        });
+      },
+    })),
+  );
+}
+
+```
+
+- filePath: `c:\Projects\sages-angular-adv-1126\src\app\shared\store\with-stale-while-revalidate.ts`
+
+**Result:**
+
+```
+The following files were successfully edited:
+c:\Projects\sages-angular-adv-1126\src\app\shared\store\with-stale-while-revalidate.ts
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **with-stale-while-revalidate.ts**</summary>
+
+@@ lines 1-1 @@
+
+```
+import { computed, inject, InjectionToken } from '@angular/core';
+import { tapResponse } from '@ngrx/operators';
+import {
+  PartialStateUpdater,
+  patchState,
+  signalStoreFeature,
+  type,
+  withMethods,
+  withProps,
+  withState,
+} from '@ngrx/signals';
+import { defer, EMPTY, Observable } from 'rxjs';
+import { LoadingState, loadingError, loadingFinish, loadingStart } from './with-loading-state';
+
+// Replaceable in tests to control time
+export const CLOCK = new InjectionToken<() => number>('CLOCK', {
+  providedIn: 'root',
+  factory: () => () => Date.now(),
+});
+
+export type SwrState = {
+  // key -> time of the last successful fetch
+  cacheMeta: Record<string, number>;
+  revalidatingKeys: string[];
+};
+
+// Older than any ttl, but still present, so cached data keeps being served
+const STALE = Number.NEGATIVE_INFINITY;
+
+export const cacheHit =
+  (key: string, at: number): PartialStateUpdater<SwrState> =>
+  (state) => ({ cacheMeta: { ...state.cacheMeta, [key]: at } });
+
+// Marks every cached key starting with `prefix` as stale; unknown keys stay cold
+export const cacheInvalidate =
+  (prefix: string): PartialStateUpdater<SwrState> =>
+  (state) => ({
+    cacheMeta: Object.fromEntries(
+      Object.entries(state.cacheMeta).map(([key, at]) => [key, key.startsWith(prefix) ? STALE : at]),
+    ),
+  });
+
+export const revalidatingStart =
+  (key: string): PartialStateUpdater<SwrState> =>
+  (state) => ({ revalidatingKeys: [...state.revalidatingKeys, key] });
+
+export const revalidatingFinish =
+  (key: string): PartialStateUpdater<SwrState> =>
+  (state) => {
+    const index = state.revalidatingKeys.indexOf(key);
+    if (index < 0) return {};
+    return { revalidatingKeys: state.revalidatingKeys.filter((_, i) => i !== index) };
+  };
+
+export type SwrRequest<T> = {
+  key: string;
+  // Id shown by selectLoadingById() during a cold load; defaults to `key`
+  loadingId?: string;
+  source: () => Observable<T>;
+  onData: (data: T) => void;
+};
+
+/**
+ * Time-to-live cache with stale-while-revalidate for rxMethod loaders.
+ * - cold key: blocking load (`inFlightIds`)
+ * - fresh key: no request
+ * - stale key: cached entities stay visible, refetch runs in the background (`revalidatingKeys`)
+ */
+export function withStaleWhileRevalidate(config: { ttlMs: number }) {
+  return signalStoreFeature(
+    { state: type<LoadingState>() },
+    withState<SwrState>({ cacheMeta: {}, revalidatingKeys: [] }),
+    withProps(() => ({ _now: inject(CLOCK) })),
+    withMethods((store) => ({
+      selectRevalidating(key: () => string | undefined) {
+        return computed(() => {
+          const value = key();
+          return value !== undefined && store.revalidatingKeys().includes(value);
+        });
+      },
+
+      _swr<T>({ key, loadingId = key, source, onData }: SwrRequest<T>): Observable<T> {
+        return defer(() => {
+          const fetchedAt: number | undefined = store.cacheMeta()[key];
+          if (fetchedAt !== undefined && store._now() - fetchedAt < config.ttlMs) return EMPTY;
+
+          const revalidating = fetchedAt !== undefined;
+          patchState(store, revalidating ? revalidatingStart(key) : loadingStart(loadingId));
+
+          return source().pipe(
+            tapResponse({
+              next: (data) => {
+                onData(data);
+                patchState(store, cacheHit(key, store._now()));
+              },
+              // Cached data stays; the next call retries
+              error: (error) => patchState(store, loadingError(error)),
+              finalize: () =>
+                patchState(store, revalidating ? revalidatingFinish(key) : loadingFinish(loadingId)),
+            }),
+          );
+        });
+      },
+    })),
+  );
+}
+
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="create_file"><details>
+<summary>Tool use: **create_file**</summary>
+
+Created `unsaved-changes.guard.ts`
+
+**Input:**
+
+- content:
+
+```
+import { DOCUMENT } from '@angular/common';
+import { inject } from '@angular/core';
+import { CanDeactivateFn } from '@angular/router';
+
+export interface HasUnsavedChanges {
+  hasUnsavedChanges(): boolean;
+}
+
+export const unsavedChangesGuard: CanDeactivateFn<HasUnsavedChanges> = (component) => {
+  if (!component.hasUnsavedChanges()) return true;
+  return inject(DOCUMENT).defaultView?.confirm('Discard unsaved changes?') ?? true;
+};
+
+```
+
+- filePath: `c:\Projects\sages-angular-adv-1126\src\app\shared\guards\unsaved-changes.guard.ts`
+
+**Result:**
+
+```
+The following files were successfully edited:
+c:\Projects\sages-angular-adv-1126\src\app\shared\guards\unsaved-changes.guard.ts
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **unsaved-changes.guard.ts**</summary>
+
+@@ lines 1-1 @@
+
+```
+import { DOCUMENT } from '@angular/common';
+import { inject } from '@angular/core';
+import { CanDeactivateFn } from '@angular/router';
+
+export interface HasUnsavedChanges {
+  hasUnsavedChanges(): boolean;
+}
+
+export const unsavedChangesGuard: CanDeactivateFn<HasUnsavedChanges> = (component) => {
+  if (!component.hasUnsavedChanges()) return true;
+  return inject(DOCUMENT).defaultView?.confirm('Discard unsaved changes?') ?? true;
+};
+
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **index.ts**</summary>
+
+@@ lines 5-5 @@
+
+```
+
+export * from './guards/unsaved-changes.guard';
+export * from './store/with-loading-state';
+export * from './store/with-stale-while-revalidate';
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="task" data-tool-name="manage_todo_list"><details>
+<summary>Tool use: **manage_todo_list**</summary>
+
+Created 3 todos
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="run_in_terminal"><details>
+<summary>Tool use: **run_in_terminal**</summary>
+
+Running ` cd /c/Projects/sages-angular-adv-1126 && find src -name "\*.spec.ts" | head; ...`
+
+Check existing spec setup and test runner
+
+```bash
+cd /c/Projects/sages-angular-adv-1126 && find src -name "*.spec.ts" | head; grep -n '"test"' -A 12 angular.json | head -30; cat tsconfig.spec.json; ls node_modules | grep -iE "^(vitest|jasmine|karma|jsdom|happy-dom)" 
+```
+
+**Result:**
+
+```
+/* To learn more about Typescript configuration file: https://www.typescriptlang.org/docs/handbook/tsconfig-json.html. */
+/* To learn more about Angular compiler options: https://angular.dev/reference/configs/angular-compiler-options. */
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "types": ["vitest/globals"]
+  },
+  "include": ["src/**/*.d.ts", "src/**/*.spec.ts"]
+}
+
+Command exited with code 1
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="search" data-tool-name="grep_search"><details>
+<summary>Tool use: **grep_search**</summary>
+
+Searched for regex `"(test|serve|lint|builder)"` (`**/angular.json`), 5 results
+
+**Input:**
+
+- includePattern: `angular.json`
+- isRegexp: `true`
+- query: `"(test|serve|lint|builder)"`
+
+**Result:**
+
+```
+Found 5 matches in 1 file for ""(test|serve|lint|builder)""
+
+angular.json
+47:          "builder": "@angular/build:application",
+92:        "serve": {
+93:          "builder": "@angular/build:dev-server",
+104:        "lint": {
+105:          "builder": "@angular-eslint/builder:lint",
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="run_in_terminal"><details>
+<summary>Tool use: **run_in_terminal**</summary>
+
+Running ` cd /c/Projects/sages-angular-adv-1126 && F="src/app/shared/index.ts src/app/...`
+
+Format, type-check and lint the Phase 1 files
+
+```bash
+cd /c/Projects/sages-angular-adv-1126 && F="src/app/shared/index.ts src/app/shared/guards/unsaved-changes.guard.ts src/app/shared/store/with-loading-state.ts src/app/shared/store/with-stale-while-revalidate.ts" && npx prettier --write $F && npx tsc --noEmit -p tsconfig.app.json; echo TSC=$?; npx eslint $F; echo ESLINT=$?
+```
+
+**Result:**
+
+```
+src/app/shared/index.ts 37ms (unchanged)
+src/app/shared/guards/unsaved-changes.guard.ts 17ms
+src/app/shared/store/with-loading-state.ts 26ms
+src/app/shared/store/with-stale-while-revalidate.ts 28ms
+TSC=0
+
+C:\Projects\sages-angular-adv-1126\src\app\shared\store\with-loading-state.ts
+  10:13  error  Use an `interface` instead of a `type`  @typescript-eslint/consistent-type-definitions
+
+C:\Projects\sages-angular-adv-1126\src\app\shared\store\with-stale-while-revalidate.ts
+  21:13  error  Use an `interface` instead of a `type`  @typescript-eslint/consistent-type-definitions
+  58:13  error  Use an `interface` instead of a `type`  @typescript-eslint/consistent-type-definitions
+
+✖ 3 problems (3 errors, 0 warnings)
+  3 errors and 0 warnings potentially fixable with the `--fix` option.
+
+ESLINT=1
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="run_in_terminal"><details>
+<summary>Tool use: **run_in_terminal**</summary>
+
+Running ` cd /c/Projects/sages-angular-adv-1126 && F="src/app/shared/store/with-loadin...`
+
+Auto-fix the type-to-interface lint errors and re-check types
+
+```bash
+cd /c/Projects/sages-angular-adv-1126 && F="src/app/shared/store/with-loading-state.ts src/app/shared/store/with-stale-while-revalidate.ts" && npx eslint --fix $F; echo ESLINT=$?; npx prettier --write $F >/dev/null; npx tsc --noEmit -p tsconfig.app.json; echo TSC=$?
+```
+
+**Result:**
+
+```
+ESLINT=0
+TSC=0
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="run_in_terminal"><details>
+<summary>Tool use: **run_in_terminal**</summary>
+
+Running ` cd /c/Projects/sages-angular-adv-1126 && git add src/app/shared/index.ts src...`
+
+Commit Phase 1 files only
+
+```bash
+cd /c/Projects/sages-angular-adv-1126 && git add src/app/shared/index.ts src/app/shared/guards src/app/shared/store && git commit -q -m "WIP phase 1: shared loading state, SWR cache feature, unsaved-changes guard" && git log --oneline | head -1 && git status --short
+```
+
+**Result:**
+
+```
+warning: in the working copy of 'src/app/shared/index.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/app/shared/guards/unsaved-changes.guard.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/app/shared/store/with-loading-state.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/app/shared/store/with-stale-while-revalidate.ts', LF will be replaced by CRLF the next time Git touches it
+7610294 WIP phase 1: shared loading state, SWR cache feature, unsaved-changes guard
+ M docs/ai-sessions/2026-11-06_15-12-55Z-angular-ngrx-signal-store.md
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="read" data-tool-name="read_file"><details>
+<summary>Tool use: **read_file**</summary>
+
+Read `store.ts`
+
+**Input:**
+
+- endLine: `140`
+- filePath: `c:\Projects\sages-angular-adv-1126\server\src\store.ts`
+- startLine: `1`
+
+**Result:**
+
+```
+import type {
+  Contact,
+  Deal,
+  DealRecord,
+  DealUpdateRequest,
+  PagingObject,
+  Task,
+  TaskCreateRequest,
+  TaskUpdateRequest,
+} from './types.js';
+import { mockContacts } from './data/mock-contacts.js';
+import { mockDeals } from './data/mock-deals.js';
+
+// ─── Helpers ──────────────────────────────────────────
+
+function clone<T>(obj: T): T {
+  return JSON.parse(JSON.stringify(obj));
+}
+
+function stripTasks(record: DealRecord): Deal {
+  const { tasks, ...deal } = record;
+  return deal;
+}
+
+// ─── Store ────────────────────────────────────────────
+
+class Store {
+  private contacts: Contact[] = clone(mockContacts);
+  private deals: DealRecord[] = clone(mockDeals);
+
+  // ── Contacts ──────────────────────────────────────
+
+  searchContacts(q?: string, offset = 0, limit = 20): PagingObject<Contact> {
+    let filtered = this.contacts;
+
+    if (q) {
+      const lower = q.toLowerCase();
+      filtered = this.contacts.filter(
+        (c) =>
+          c.firstName.toLowerCase().includes(lower) ||
+          c.lastName.toLowerCase().includes(lower) ||
+          c.email.toLowerCase().includes(lower) ||
+          c.company.toLowerCase().includes(lower),
+      );
+    }
+
+    return {
+      items: clone(filtered.slice(offset, offset + limit)),
+      total: filtered.length,
+      offset,
+      limit,
+    };
+  }
+
+  getContact(id: string): Contact | undefined {
+    const contact = this.contacts.find((c) => c.id === id);
+    return contact ? clone(contact) : undefined;
+  }
+
+  checkEmail(email: string): boolean {
+    return this.contacts.some((c) => c.email.toLowerCase() === email.toLowerCase());
+  }
+
+  // ── Deals (responses never include tasks) ─────────
+
+  getDeals(): PagingObject<Deal> {
+    const items = this.deals.map(stripTasks);
+    return {
+      items: clone(items),
+      total: items.length,
+      offset: 0,
+      limit: items.length,
+    };
+  }
+
+  getDeal(id: string): Deal | undefined {
+    const 
+… (output truncated)
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="read" data-tool-name="read_file"><details>
+<summary>Tool use: **read_file**</summary>
+
+Read `types.ts`
+
+**Input:**
+
+- endLine: `120`
+- filePath: `c:\Projects\sages-angular-adv-1126\server\src\types.ts`
+- startLine: `1`
+
+**Result:**
+
+```
+// ─── Contact ──────────────────────────────────────────
+
+export type ContactStatus = 'lead' | 'prospect' | 'customer' | 'churned';
+
+export interface Contact {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  company: string;
+  status: ContactStatus;
+  avatarUrl: string;
+  notes: string;
+  createdAt: string;
+}
+
+// ─── Deal ─────────────────────────────────────────────
+
+export type DealStage = 'new' | 'negotiation' | 'proposal' | 'closed-won' | 'closed-lost';
+
+/** API response shape — does NOT include tasks. */
+export interface Deal {
+  id: string;
+  title: string;
+  value: number;
+  stage: DealStage;
+  description: string;
+  contactId: string;
+  public: boolean;
+  createdAt: string;
+}
+
+/** Internal storage shape — includes embedded tasks. */
+export interface DealRecord extends Deal {
+  tasks: Task[];
+}
+
+export interface DealUpdateRequest {
+  title?: string;
+  value?: number;
+  stage?: DealStage;
+  description?: string;
+  contactId?: string;
+  public?: boolean;
+}
+
+// ─── Task ─────────────────────────────────────────────
+
+export type TaskPriority = 'low' | 'medium' | 'high';
+
+export interface Task {
+  id: string;
+  title: string;
+  dueDate: string;
+  priority: TaskPriority;
+  completed: boolean;
+}
+
+export interface TaskCreateRequest {
+  title: string;
+  dueDate?: string;
+  priority?: TaskPriority;
+}
+
+export interface TaskUpdateRequest {
+  title?: string;
+  dueDate?: string;
+  priority?: TaskPriority;
+  completed?: boolean;
+}
+
+// ─── Auth ─────────────────────────────────────────────
+
+export interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+export interface LoginResponse {
+  accessToken: string;
+  refreshToken: string;
+  expiresIn: number;
+}
+
+/** Public user info returned by GET /auth/me. */
+export interface AuthUser {
+  id: string;
+  email: string;
+  name: string;
+}
+
+/** Internal record with password for mock auth. */
+
+… (output truncated)
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="read" data-tool-name="read_file"><details>
+<summary>Tool use: **read_file**</summary>
+
+Read `tasks.ts`, lines 1 to 80
+
+**Input:**
+
+- endLine: `80`
+- filePath: `c:\Projects\sages-angular-adv-1126\server\src\routes\tasks.ts`
+- startLine: `1`
+
+**Result:**
+
+```
+import { Router } from 'express';
+import { store } from '../store.js';
+import { authMiddleware } from '../middleware/auth.js';
+import type { TaskCreateRequest, TaskUpdateRequest } from '../types.js';
+
+// mergeParams: true → inherits :dealId from the parent mount point
+const router = Router({ mergeParams: true });
+
+router.use(authMiddleware);
+
+/**
+ * GET /deals/:dealId/tasks
+ * List all tasks for a deal.
+ */
+router.get('/', (req, res) => {
+  const { dealId } = req.params as any;
+  const tasks = store.getTasks(dealId);
+
+  if (!tasks) {
+    res.status(404).json({
+      error: { status: 404, message: 'Deal not found', code: 'NOT_FOUND' },
+    });
+    return;
+  }
+
+  res.json(tasks);
+});
+
+/**
+ * POST /deals/:dealId/tasks
+ * Create a new task within a deal.
+ */
+router.post('/', (req, res) => {
+  const data = req.body as TaskCreateRequest;
+
+  if (!data.title) {
+    res.status(400).json({
+      error: { status: 400, message: 'Task title is required', code: 'VALIDATION_ERROR' },
+    });
+    return;
+  }
+
+  const task = store.addTask(req.params.dealId, data);
+
+  if (!task) {
+    res.status(404).json({
+      error: { status: 404, message: 'Deal not found', code: 'NOT_FOUND' },
+    });
+    return;
+  }
+
+  res.status(201).json(task);
+});
+
+/**
+ * PATCH /deals/:dealId/tasks/:taskId
+ * Update a task (toggle complete, edit fields).
+ */
+router.patch('/:taskId', (req, res) => {
+  const updated = store.updateTask(
+    req.params.dealId,
+    req.params.taskId,
+    req.body as TaskUpdateRequest,
+  );
+
+  if (!updated) {
+    res.status(404).json({
+      error: { status: 404, message: 'Task not found', code: 'NOT_FOUND' },
+    });
+    return;
+  }
+
+  res.json(updated);
+});
+
+/**
+ * DELETE /deals/:dealId/tasks/:taskId
+ * Remove a task from a deal.
+ */
+router.delete('/:taskId', (req, res) => {
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **types.ts**</summary>
+
+@@ lines 39-39 @@
+
+```
+CreateRequest {
+  title: string;
+  contactId: string;
+  value?: number;
+  stage?: DealStage;
+  description?: string;
+  public?: boolean;
+}
+
+export interface Deal
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+
+```
+
+```
+
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **store.ts**</summary>
+
+@@ lines 81-81 @@
+
+```
+createDeal(data: DealCreateRequest): Deal {
+    const record: DealRecord = {
+      id: crypto.randomUUID(),
+      title: data.title,
+      value: data.value ?? 0,
+      stage: data.stage ?? 'new',
+      description: data.description ?? '',
+      contactId: data.contactId,
+      public: data.public ?? false,
+      tasks: [],
+      createdAt: new Date().toISOString(),
+    };
+    this.deals.push(record);
+    return clone(stripTasks(record));
+  }
+
+  
+```
+
+@@ lines 66-67 @@
+
+```
+contactId?: string): PagingObject<Deal> {
+    const items = this.deals
+      .filter((d) => !contactId || d.contactId === contactId)
+      
+```
+
+@@ lines 4-4 @@
+
+```
+CreateRequest,
+  Deal
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+
+```
+
+```
+
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **deals.ts**</summary>
+
+@@ lines 4-15 @@
+
+```
+CreateRequest, DealStage, DealUpdateRequest } from '../types.js';
+
+const router = Router();
+
+router.use(authMiddleware);
+
+const STAGES: DealStage[] = ['new', 'negotiation', 'proposal', 'closed-won', 'closed-lost'];
+
+function validationError(res: import('express').Response, message: string): void {
+  res.status(400).json({ error: { status: 400, message, code: 'VALIDATION_ERROR' } });
+}
+
+/**
+ * GET /deals?contactId=
+ * List deals (without embedded tasks), optionally only those of one contact.
+ */
+router.get('/', (req, res) => {
+  const contactId = req.query.contactId as string | undefined;
+  res.json(store.getDeals(contactId));
+});
+
+/**
+ * POST /deals
+ * Create a deal. Tasks are managed via the /tasks sub-resource.
+ */
+router.post('/', (req, res) => {
+  const data = req.body as DealCreateRequest;
+
+  if (!data.title?.trim()) return validationError(res, 'Deal title is required');
+  if (!data.contactId) return validationError(res, 'Deal contactId is required');
+  if (!store.getContact(data.contactId)) return validationError(res, 'Contact not found');
+  if (data.stage && !STAGES.includes(data.stage)) return validationError(res, 'Invalid stage');
+  if (data.value !== undefined && !(data.value >= 0)) return validationError(res, 'Invalid value');
+
+  res.status(201).json(store.createDeal(data
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **deals.ts**</summary>
+
+@@ lines 12-12 @@ (deleted)
+
+@@ lines 1-1 @@
+
+```
+esponse, R
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="read" data-tool-name="read_file"><details>
+<summary>Tool use: **read_file**</summary>
+
+Read `openapi.yaml`, lines 150 to 200
+
+**Input:**
+
+- endLine: `200`
+- filePath: `c:\Projects\sages-angular-adv-1126\server\openapi.yaml`
+- startLine: `150`
+
+**Result:**
+
+```
+                $ref: '#/components/schemas/Contact'
+        '404':
+          description: Contact not found
+
+  # ─── DEALS ──────────────────────────────────────────
+
+  /deals:
+    get:
+      tags: [Deals]
+      summary: List all deals
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of deals (without embedded tasks)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagingObject_Deal'
+
+  /deals/{dealId}:
+    get:
+      tags: [Deals]
+      summary: Get deal by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: dealId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Deal details (without embedded tasks)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Deal'
+        '404':
+          description: Deal not found
+
+    put:
+      tags: [Deals]
+      summary: Update a deal
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: dealId
+          in: path
+          required: true
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **openapi.yaml**</summary>
+
+@@ lines 440-440 @@
+
+```
+CreateRequest:
+      type: object
+      required: [title, contactId]
+      properties:
+        title:
+          type: string
+        contactId:
+          type: string
+        value:
+          type: number
+          default: 0
+        stage:
+          type: string
+          enum: [new, negotiation, proposal, closed-won, closed-lost]
+          default: new
+        description:
+          type: string
+          default: ''
+        public:
+          type: boolean
+          default: false
+
+    Deal
+```
+
+@@ lines 159-168 @@
+
+```
+deals
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: contactId
+          in: query
+          description: Return only deals of this contact
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of deals (without embedded tasks)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagingObject_Deal'
+
+    post:
+      tags: [Deals]
+      summary: Create a deal
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DealCreateRequest'
+      responses:
+        '201':
+          description: Created deal
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Deal'
+        '400':
+          description: Validation error (missing title/contactId or unknown contact)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="run_in_terminal"><details>
+<summary>Tool use: **run_in_terminal**</summary>
+
+Running ` cd /c/Projects/sages-angular-adv-1126 && npm run openapi 2>&1 | tail -4; \(cd...`
+
+Regenerate api.model.ts and type-check the server
+
+```bash
+cd /c/Projects/sages-angular-adv-1126 && npm run openapi 2>&1 | tail -4; (cd server && npx tsc --noEmit -p . ; echo SERVER_TSC=$?); git status --short
+```
+
+**Result:**
+
+```
+> openapi-typescript ./server/openapi.yaml -o ./src/app/core/model/api.model.ts
+
+✨ openapi-typescript 7.13.0
+🚀 ./server/openapi.yaml → ./src/app/core/model/api.model.ts [60.9ms]
+src/routes/tasks.ts:43:41 - error TS2339: Property 'dealId' does not exist on type '{}'.
+
+43   const task = store.addTask(req.params.dealId, data);
+                                           ~~~~~~
+
+src/routes/tasks.ts:61:16 - error TS2339: Property 'dealId' does not exist on type '{ taskId: string; }'.
+
+61     req.params.dealId,
+                  ~~~~~~
+
+src/routes/tasks.ts:81:47 - error TS2339: Property 'dealId' does not exist on type '{ taskId: string; }'.
+
+81   const deleted = store.deleteTask(req.params.dealId, req.params.taskId);
+                                                 ~~~~~~
+
+
+Found 3 errors in the same file, starting at: src/routes/tasks.ts:43
+
+SERVER_TSC=2
+ M docs/ai-sessions/2026-11-06_15-12-55Z-angular-ngrx-signal-store.md
+ M server/openapi.yaml
+ M server/src/routes/deals.ts
+ M server/src/store.ts
+ M server/src/types.ts
+ M src/app/core/model/api.model.ts
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="run_in_terminal"><details>
+<summary>Tool use: **run_in_terminal**</summary>
+
+Running ` cd /c/Projects/sages-angular-adv-1126/server && npm start`
+
+Start the API server to smoke-test the new endpoints
+
+```bash
+cd /c/Projects/sages-angular-adv-1126/server && npm start
+```
+
+**Result:**
+
+```
+Command is running in terminal with ID=5fcf783c-1d11-4474-aec1-47a4c46f1498
+ Timed out waiting for the command to become idle. The command is still running, with output:
+$  cd /c/Projects/sages-angular-adv-1126/server && npm start
+
+> angular-erp-server@1.0.0 start
+> tsx watch src/index.ts
+
+🚀 CRM API server running at http://localhost:3000/api
+📖 Swagger UI at http://localhost:3000/api-docs
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="run_in_terminal"><details>
+<summary>Tool use: **run_in_terminal**</summary>
+
+Running ` cd /c/Projects/sages-angular-adv-1126 && H='Authorization: Bearer mock-acces...`
+
+Smoke-test GET ?contactId= and POST /deals
+
+```bash
+cd /c/Projects/sages-angular-adv-1126 && H='Authorization: Bearer mock-access-u1'; curl -s -H "$H" "http://localhost:3000/api/deals?contactId=c1"; echo; curl -s -H "$H" -H 'Content-Type: application/json' -X POST -d '{"title":"New deal","contactId":"c3","value":100}' http://localhost:3000/api/deals; echo; curl -s -H "$H" -H 'Content-Type: application/json' -X POST -d '{"title":"x","contactId":"nope"}' http://localhost:3000/api/deals; echo; curl -s -H "$H" "http://localhost:3000/api/deals?contactId=c3"
+```
+
+**Result:**
+
+```
+{"items":[{"id":"d1","title":"Enterprise License — Tech Solutions","value":48000,"stage":"negotiation","description":"Annual enterprise license for 50 seats. Awaiting legal review.","contactId":"c1","public":true,"createdAt":"2026-01-10T08:00:00Z"}],"total":1,"offset":0,"limit":1}
+{"id":"1a917613-6c33-498c-941d-db28b0621fbf","title":"New deal","value":100,"stage":"new","description":"","contactId":"c3","public":false,"createdAt":"2026-11-06T15:59:59.413Z"}
+{"error":{"status":400,"message":"Contact not found","code":"VALIDATION_ERROR"}}
+{"items":[{"id":"d3","title":"Design Workshop — Creative Agency","value":5000,"stage":"proposal","description":"One-week UX/UI workshop with deliverables.","contactId":"c3","public":true,"createdAt":"2026-02-01T16:00:00Z"},{"id":"1a917613-6c33-498c-941d-db28b0621fbf","title":"New deal","value":100,"stage":"new","description":"","contactId":"c3","public":false,"createdAt":"2026-11-06T15:59:59.413Z"
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="run_in_terminal"><details>
+<summary>Tool use: **run_in_terminal**</summary>
+
+Running ` cd /c/Projects/sages-angular-adv-1126 && git add server/openapi.yaml server/...`
+
+Commit Phase 2 files only
+
+```bash
+cd /c/Projects/sages-angular-adv-1126 && git add server/openapi.yaml server/src/routes/deals.ts server/src/store.ts server/src/types.ts src/app/core/model/api.model.ts && git commit -q -m "WIP phase 2: server deals contactId filter and POST /deals" 2>&1 | grep -v warning; git log --oneline | head -1
+```
+
+**Result:**
+
+```
+warning: in the working copy of 'src/app/core/model/api.model.ts', LF will be replaced by CRLF the next time Git touches it
+f3a4fc1 WIP phase 2: server deals contactId filter and POST /deals
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="read" data-tool-name="read_file"><details>
+<summary>Tool use: **read_file**</summary>
+
+Read `app.config.ts`
+
+**Input:**
+
+- endLine: `40`
+- filePath: `c:\Projects\sages-angular-adv-1126\src\app\app.config.ts`
+- startLine: `1`
+
+**Result:**
+
+```
+import {
+  ApplicationConfig,
+  provideBrowserGlobalErrorListeners,
+  provideZoneChangeDetection,
+} from '@angular/core';
+import { provideRouter, withComponentInputBinding } from '@angular/router';
+import { routes } from './app.routes';
+import { provideClientHydration } from '@angular/platform-browser';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { AuthInterceptor, ErrorInterceptor, URLInterceptor } from './core/http/index-interceptor';
+
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideBrowserGlobalErrorListeners(),
+    provideZoneChangeDetection({ eventCoalescing: true }),
+    
+    provideRouter(routes, withComponentInputBinding()), // :contactId -> contactId = input()
+
+    provideClientHydration(),
+
+    // Composite Providers
+    provideHttpClient(withInterceptors([URLInterceptor, AuthInterceptor, ErrorInterceptor])),
+
+    // DealsStore // App (siglneton lifecycle)
+  ],
+};
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **app.config.ts**</summary>
+
+@@ lines 17-17 @@
+
+```
+// :contactId -> contactId = input(); 'always' also passes parent params (:dealId) to child routes
+    provideRouter(
+      routes,
+      withComponentInputBinding(),
+      withRouterConfig({ paramsInheritanceStrategy: 'always' }),
+    ),
+```
+
+@@ lines 6-6 @@
+
+```
+, withRouterConfig
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="run_in_terminal"><details>
+<summary>Tool use: **run_in_terminal**</summary>
+
+Running ` cd /c/Projects/sages-angular-adv-1126 && npx prettier --write src/app/app.co...`
+
+Verify and commit Phase 3
+
+```bash
+cd /c/Projects/sages-angular-adv-1126 && npx prettier --write src/app/app.config.ts && npx tsc --noEmit -p tsconfig.app.json; echo TSC=$?; npx eslint src/app/app.config.ts; echo ESLINT=$?; git add src/app/app.config.ts && git commit -q -m "WIP phase 3: router paramsInheritanceStrategy always" 2>&1 | grep -v warning; git log --oneline | head -1
+```
+
+**Result:**
+
+```
+src/app/app.config.ts 64ms
+TSC=0
+
+C:\Projects\sages-angular-adv-1126\src\app\app.config.ts
+  10:1  error  './core/http/index-interceptor' is a deep import from a barrel module. Use the module's barrel file (index.ts) instead  @softarc/sheriff/encapsulation
+
+✖ 1 problem (1 error, 0 warnings)
+
+ESLINT=1
+warning: in the working copy of 'src/app/app.config.ts', LF will be replaced by CRLF the next time Git touches it
+e55e86e WIP phase 3: router paramsInheritanceStrategy always
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="multi_replace_string_in_file"><details>
+<summary>Tool use: **multi_replace_string_in_file**</summary>
+
+Multi-Replace String in Files
+
+**Input:**
+
+- explanation: `Drop accountId and add draft/changes types to deal models`
+- replacements: `[{"filePath": "c:\\Projects\\sages-angular-adv-1126\\src\\app\\features\\deals\\model\\deal.model.ts", "newString">: "  value: Money;\n  contactId: string;\n  isPublic: boolean;\n}\n\n// Fields the user provides when creating a deal\nexport type DealDraft = Omit<Deal, 'id'>;\n\nexport type DealChanges = Partial<DealDraft>;", "oldString": "  value: Money;\n  accountId: string;\n  contactId: string;\n  isPublic: boolean;\n}"}, {"filePath": "c:\\Projects\\sages-angular-adv-1126\\src\\app\\features\\deals\\model\\deal-task.model.ts", "newString": "  priority: TaskPriority;\n  done: boolean;\n}\n\nexport interface TaskDraft {\n  title: string;\n  priority: TaskPriority;\n  dueDate?: string;\n}\n\nexport type TaskChanges = Partial<Omit<DealTask, 'id' | 'dealId'>>;", "oldString": "  priority: TaskPriority;\n  done: boolean;\n}"}]`
+
+**Result:**
+
+```
+ERROR: Your input to the tool was invalid (must be array)
+Please check your input and try again.
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="task" data-tool-name="manage_todo_list"><details>
+<summary>Tool use: **manage_todo_list**</summary>
+
+Starting: *Add POST /deals to server and client with debounced mutation logic* (3/6)
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **deal.model.ts**</summary>
+
+@@ lines 22-25 @@
+
+```
+contactId: string;
+  isPublic: boolean;
+}
+
+// Fields the user provides when creating a deal
+export type DealDraft = Omit<Deal, 'id'>;
+
+export type DealChanges = Partial<DealDraft>;
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+
+```
+
+```
+
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **deal-task.model.ts**</summary>
+
+@@ lines 17-17 @@
+
+```
+
+
+export interface TaskDraft {
+  title: string;
+  priority: TaskPriority;
+  dueDate?: string;
+}
+
+export type TaskChanges = Partial<Omit<DealTask, 'id' | 'dealId'>>;
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="create_file"><details>
+<summary>Tool use: **create_file**</summary>
+
+Created `deals.mappers.ts`
+
+**Input:**
+
+- content:
+
+```
+import { Deal, DealChanges, DealDraft, DealStage } from '../model/deal.model';
+import { DealTask, TaskChanges, TaskDraft, TaskPriority } from '../model/deal-task.model';
+
+// Mirrors server/openapi.yaml. Features cannot import core/model, so the shapes are kept here.
+
+export interface DealDto {
+  id: string;
+  title: string;
+  value: number;
+  stage: DealStage;
+  description: string;
+  contactId: string;
+  public: boolean;
+  createdAt: string;
+}
+
+export interface PagedDto<T> {
+  items: T[];
+  total: number;
+  offset: number;
+  limit: number;
+}
+
+export interface DealCreateRequestDto {
+  title: string;
+  contactId: string;
+  value: number;
+  stage: DealStage;
+  description: string;
+  public: boolean;
+}
+
+export type DealUpdateRequestDto = Partial<DealCreateRequestDto>;
+
+export interface TaskDto {
+  id: string;
+  title: string;
+  dueDate?: string;
+  priority: TaskPriority;
+  completed: boolean;
+}
+
+export interface TaskCreateRequestDto {
+  title: string;
+  dueDate?: string;
+  priority?: TaskPriority;
+}
+
+export type TaskUpdateRequestDto = Partial<TaskCreateRequestDto> & { completed?: boolean };
+
+export function toDeal(dto: DealDto): Deal {
+  return {
+    id: dto.id,
+    title: dto.title,
+    summary: dto.description,
+    stage: dto.stage,
+    value: { amount: dto.value, currency: 'USD' },
+    contactId: dto.contactId,
+    isPublic: dto.public,
+  };
+}
+
+export function toDealCreateRequest(draft: DealDraft): DealCreateRequestDto {
+  return {
+    title: draft.title,
+    contactId: draft.contactId,
+    value: draft.value.amount,
+    stage: draft.stage,
+    description: draft.summary,
+    public: draft.isPublic,
+  };
+}
+
+// Only the fields present in `changes` are sent
+export function toDealUpdateRequest(changes: DealChanges): DealUpdateRequestDto {
+  return {
+    ...(changes.title !== undefined && { title: changes.title }),
+    ...(changes.contactId !== undefined && { contactId: changes.contactId }),
+    ...(changes.value !== undefined && { value: changes.value.amount }),
+    ...(changes.stage !== undefined && { stage: changes.stage }),
+    ...(changes.summary !== undefined && { description: changes.summary }),
+    ...(changes.isPublic !== undefined && { public: changes.isPublic }),
+  };
+}
+
+// The server does not repeat the deal id on a task
+export function toTask(dealId: string, dto: TaskDto): DealTask {
+  return {
+    id: dto.id,
+    dealId,
+    title: dto.title,
+    // The server stores a missing due date as ''
+    dueDate: dto.dueDate || undefined,
+    priority: dto.priority,
+    done: dto.completed,
+  };
+}
+
+export function toTaskCreateRequest(draft: TaskDraft): TaskCreateRequestDto {
+  return {
+    title: draft.title,
+    priority: draft.priority,
+    ...(draft.dueDate !== undefined && { dueDate: draft.dueDate }),
+  };
+}
+
+export function toTaskUpdateRequest(changes: TaskChanges): TaskUpdateRequestDto {
+  return {
+    ...(changes.title !== undefined && { title: changes.title }),
+    ...(changes.dueDate !== undefined && { dueDate: changes.dueDate }),
+    ...(changes.priority !== undefined && { priority: changes.priority }),
+    ...(changes.done !== undefined && { completed: changes.done }),
+  };
+}
+
+```
+
+- filePath: `c:\Projects\sages-angular-adv-1126\src\app\features\deals\data\deals.mappers.ts`
+
+**Result:**
+
+```
+The following files were successfully edited:
+c:\Projects\sages-angular-adv-1126\src\app\features\deals\data\deals.mappers.ts
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **deals.mappers.ts**</summary>
+
+@@ lines 1-1 @@
+
+```
+import { Deal, DealChanges, DealDraft, DealStage } from '../model/deal.model';
+import { DealTask, TaskChanges, TaskDraft, TaskPriority } from '../model/deal-task.model';
+
+// Mirrors server/openapi.yaml. Features cannot import core/model, so the shapes are kept here.
+
+export interface DealDto {
+  id: string;
+  title: string;
+  value: number;
+  stage: DealStage;
+  description: string;
+  contactId: string;
+  public: boolean;
+  createdAt: string;
+}
+
+export interface PagedDto<T> {
+  items: T[];
+  total: number;
+  offset: number;
+  limit: number;
+}
+
+export interface DealCreateRequestDto {
+  title: string;
+  contactId: string;
+  value: number;
+  stage: DealStage;
+  description: string;
+  public: boolean;
+}
+
+export type DealUpdateRequestDto = Partial<DealCreateRequestDto>;
+
+export interface TaskDto {
+  id: string;
+  title: string;
+  dueDate?: string;
+  priority: TaskPriority;
+  completed: boolean;
+}
+
+export interface TaskCreateRequestDto {
+  title: string;
+  dueDate?: string;
+  priority?: TaskPriority;
+}
+
+export type TaskUpdateRequestDto = Partial<TaskCreateRequestDto> & { completed?: boolean };
+
+export function toDeal(dto: DealDto): Deal {
+  return {
+    id: dto.id,
+    title: dto.title,
+    summary: dto.description,
+    stage: dto.stage,
+    value: { amount: dto.value, currency: 'USD' },
+    contactId: dto.contactId,
+    isPublic: dto.public,
+  };
+}
+
+export function toDealCreateRequest(draft: DealDraft): DealCreateRequestDto {
+  return {
+    title: draft.title,
+    contactId: draft.contactId,
+    value: draft.value.amount,
+    stage: draft.stage,
+    description: draft.summary,
+    public: draft.isPublic,
+  };
+}
+
+// Only the fields present in `changes` are sent
+export function toDealUpdateRequest(changes: DealChanges): DealUpdateRequestDto {
+  return {
+    ...(changes.title !== undefined && { title: changes.title }),
+    ...(changes.contactId !== undefined && { contactId: changes.contactId }),
+    ...(changes.value !== undefined && { value: changes.value.amount }),
+    ...(changes.stage !== undefined && { stage: changes.stage }),
+    ...(changes.summary !== undefined && { description: changes.summary }),
+    ...(changes.isPublic !== undefined && { public: changes.isPublic }),
+  };
+}
+
+// The server does not repeat the deal id on a task
+export function toTask(dealId: string, dto: TaskDto): DealTask {
+  return {
+    id: dto.id,
+    dealId,
+    title: dto.title,
+    // The server stores a missing due date as ''
+    dueDate: dto.dueDate || undefined,
+    priority: dto.priority,
+    done: dto.completed,
+  };
+}
+
+export function toTaskCreateRequest(draft: TaskDraft): TaskCreateRequestDto {
+  return {
+    title: draft.title,
+    priority: draft.priority,
+    ...(draft.dueDate !== undefined && { dueDate: draft.dueDate }),
+  };
+}
+
+export function toTaskUpdateRequest(changes: TaskChanges): TaskUpdateRequestDto {
+  return {
+    ...(changes.title !== undefined && { title: changes.title }),
+    ...(changes.dueDate !== undefined && { dueDate: changes.dueDate }),
+    ...(changes.priority !== undefined && { priority: changes.priority }),
+    ...(changes.done !== undefined && { completed: changes.done }),
+  };
+}
+
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="run_in_terminal"><details>
+<summary>Tool use: **run_in_terminal**</summary>
+
+Running ` cd /c/Projects/sages-angular-adv-1126 && npx ng g s features/deals/data/deal...`
+
+Generate the DealsApi and TasksApi service skeletons
+
+```bash
+cd /c/Projects/sages-angular-adv-1126 && npx ng g s features/deals/data/deals-api && npx ng g s features/deals/data/tasks-api && cat src/app/features/deals/data/deals-api.ts
+```
+
+**Result:**
+
+```
+CREATE src/app/features/deals/data/deals-api.ts (84 bytes)
+CREATE src/app/features/deals/data/tasks-api.ts (84 bytes)
+import { Service } from '@angular/core';
+
+@Service()
+export class DealsApi {}
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="create_file"><details>
+<summary>Tool use: **create_file**</summary>
+
+Created `deals-api.ts`
+
+**Input:**
+
+- content:
+
+```
+import { HttpClient } from '@angular/common/http';
+import { inject, Service } from '@angular/core';
+import { map, Observable } from 'rxjs';
+import { Deal, DealChanges, DealDraft } from '../model/deal.model';
+import {
+  DealDto,
+  PagedDto,
+  toDeal,
+  toDealCreateRequest,
+  toDealUpdateRequest,
+} from './deals.mappers';
+
+@Service()
+export class DealsApi {
+  private readonly http = inject(HttpClient);
+
+  list(filter: { contactId?: string } = {}): Observable<Deal[]> {
+    const params = filter.contactId ? { contactId: filter.contactId } : {};
+    return this.http
+      .get<PagedDto<DealDto>>('deals', { params })
+      .pipe(map((page) => page.items.map(toDeal)));
+  }
+
+  getById(id: string): Observable<Deal> {
+    return this.http.get<DealDto>(`deals/${encodeURIComponent(id)}`).pipe(map(toDeal));
+  }
+
+  create(draft: DealDraft): Observable<Deal> {
+    return this.http.post<DealDto>('deals', toDealCreateRequest(draft)).pipe(map(toDeal));
+  }
+
+  update(id: string, changes: DealChanges): Observable<Deal> {
+    return this.http
+      .put<DealDto>(`deals/${encodeURIComponent(id)}`, toDealUpdateRequest(changes))
+      .pipe(map(toDeal));
+  }
+}
+
+```
+
+- filePath: `c:\Projects\sages-angular-adv-1126\src\app\features\deals\data\deals-api.ts`
+
+**Result:**
+
+```
+ERROR while calling tool: File already exists. You must use an edit tool to modify it.
+Please check your input and try again.
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="create_file"><details>
+<summary>Tool use: **create_file**</summary>
+
+Created `tasks-api.ts`
+
+**Input:**
+
+- content:
+
+```
+import { HttpClient } from '@angular/common/http';
+import { inject, Service } from '@angular/core';
+import { map, Observable } from 'rxjs';
+import { DealTask, TaskChanges, TaskDraft } from '../model/deal-task.model';
+import { TaskDto, toTask, toTaskCreateRequest, toTaskUpdateRequest } from './deals.mappers';
+
+@Service()
+export class TasksApi {
+  private readonly http = inject(HttpClient);
+
+  list(dealId: string): Observable<DealTask[]> {
+    return this.http
+      .get<TaskDto[]>(this.url(dealId))
+      .pipe(map((tasks) => tasks.map((task) => toTask(dealId, task))));
+  }
+
+  create(dealId: string, draft: TaskDraft): Observable<DealTask> {
+    return this.http
+      .post<TaskDto>(this.url(dealId), toTaskCreateRequest(draft))
+      .pipe(map((task) => toTask(dealId, task)));
+  }
+
+  update(dealId: string, taskId: string, changes: TaskChanges): Observable<DealTask> {
+    return this.http
+      .patch<TaskDto>(this.url(dealId, taskId), toTaskUpdateRequest(changes))
+      .pipe(map((task) => toTask(dealId, task)));
+  }
+
+  delete(dealId: string, taskId: string): Observable<void> {
+    return this.http.delete<void>(this.url(dealId, taskId));
+  }
+
+  private url(dealId: string, taskId?: string): string {
+    const base = `deals/${encodeURIComponent(dealId)}/tasks`;
+    return taskId === undefined ? base : `${base}/${encodeURIComponent(taskId)}`;
+  }
+}
+
+```
+
+- filePath: `c:\Projects\sages-angular-adv-1126\src\app\features\deals\data\tasks-api.ts`
+
+**Result:**
+
+```
+ERROR while calling tool: File already exists. You must use an edit tool to modify it.
+Please check your input and try again.
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **deals-api.ts**</summary>
+
+@@ lines 1-4 @@
+
+```
+HttpClient } from '@angular/common/http';
+import { inject, Service } from '@angular/core';
+import { map, Observable } from 'rxjs';
+import { Deal, DealChanges, DealDraft } from '../model/deal.model';
+import {
+  DealDto,
+  PagedDto,
+  toDeal,
+  toDealCreateRequest,
+  toDealUpdateRequest,
+} from './deals.mappers';
+
+@Service()
+export class DealsApi {
+  private readonly http = inject(HttpClient);
+
+  list(filter: { contactId?: string } = {}): Observable<Deal[]> {
+    const params = filter.contactId ? { contactId: filter.contactId } : {};
+    return this.http
+      .get<PagedDto<DealDto>>('deals', { params })
+      .pipe(map((page) => page.items.map(toDeal)));
+  }
+
+  getById(id: string): Observable<Deal> {
+    return this.http.get<DealDto>(`deals/${encodeURIComponent(id)}`).pipe(map(toDeal));
+  }
+
+  create(draft: DealDraft): Observable<Deal> {
+    return this.http.post<DealDto>('deals', toDealCreateRequest(draft)).pipe(map(toDeal));
+  }
+
+  update(id: string, changes: DealChanges): Observable<Deal> {
+    return this.http
+      .put<DealDto>(`deals/${encodeURIComponent(id)}`, toDealUpdateRequest(changes))
+      .pipe(map(toDeal));
+  }
+
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+
+```
+
+```
+
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **tasks-api.ts**</summary>
+
+@@ lines 1-4 @@
+
+```
+HttpClient } from '@angular/common/http';
+import { inject, Service } from '@angular/core';
+import { map, Observable } from 'rxjs';
+import { DealTask, TaskChanges, TaskDraft } from '../model/deal-task.model';
+import { TaskDto, toTask, toTaskCreateRequest, toTaskUpdateRequest } from './deals.mappers';
+
+@Service()
+export class TasksApi {
+  private readonly http = inject(HttpClient);
+
+  list(dealId: string): Observable<DealTask[]> {
+    return this.http
+      .get<TaskDto[]>(this.url(dealId))
+      .pipe(map((tasks) => tasks.map((task) => toTask(dealId, task))));
+  }
+
+  create(dealId: string, draft: TaskDraft): Observable<DealTask> {
+    return this.http
+      .post<TaskDto>(this.url(dealId), toTaskCreateRequest(draft))
+      .pipe(map((task) => toTask(dealId, task)));
+  }
+
+  update(dealId: string, taskId: string, changes: TaskChanges): Observable<DealTask> {
+    return this.http
+      .patch<TaskDto>(this.url(dealId, taskId), toTaskUpdateRequest(changes))
+      .pipe(map((task) => toTask(dealId, task)));
+  }
+
+  delete(dealId: string, taskId: string): Observable<void> {
+    return this.http.delete<void>(this.url(dealId, taskId));
+  }
+
+  private url(dealId: string, taskId?: string): string {
+    const base = `deals/${encodeURIComponent(dealId)}/tasks`;
+    return taskId === undefined ? base : `${base}/${encodeURIComponent(taskId)}`;
+  }
+
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="run_in_terminal"><details>
+<summary>Tool use: **run_in_terminal**</summary>
+
+Running ` cd /c/Projects/sages-angular-adv-1126/node\_modules/@ngrx/signals/types && gr...`
+
+Check entities exports (EntityState, removeEntities)
+
+```bash
+cd /c/Projects/sages-angular-adv-1126/node_modules/@ngrx/signals/types && grep -n "^export" ngrx-signals-entities.d.ts | cut -c1-300; grep -n "type EntityState\b" -A 4 ngrx-signals-entities.d.ts; grep -n "declare function removeEntities" -A2 ngrx-signals-entities.d.ts | head; cd /c/Projects/sages-angular-adv-1126
+```
+
+**Result:**
+
+```
+323:export { addEntities, addEntity, entityConfig, prependEntities, prependEntity, removeAllEntities, removeEntities, removeEntity, setAllEntities, setEntities, setEntity, updateAllEntities, updateEntities, updateEntity, upsertEntities, upsertEntity, withEntities };
+324:export type { EntityChanges, EntityId, EntityMap, EntityProps, EntityState, NamedEntityProps, NamedEntityState, SelectEntityId };
+6:type EntityState<Entity> = {
+7-    entityMap: EntityMap<Entity>;
+8-    ids: EntityId[];
+9-};
+10-type NamedEntityState<Entity, Collection extends string> = {
+92:declare function removeEntities(ids: EntityId[]): PartialStateUpdater<EntityState<any>>;
+93:declare function removeEntities<Entity>(predicate: EntityPredicate<Entity>): PartialStateUpdater<EntityState<Entity>>;
+94:declare function removeEntities<Collection extends string>(ids: EntityId[], config: {
+95-    collection: Collection;
+96-}): PartialStateUpdater<NamedEntityState<any, Collection>>;
+97:declare function removeEntities<Collection extends string, State extends NamedEntityState<any, Collection>, Entity = State extends NamedEntityState<infer E, Collection> ? E : never>(predicate: EntityPredicate<Entity>, config: {
+98-    collection: Collection;
+99-}): PartialStateUpdater<State>;
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="create_file"><details>
+<summary>Tool use: **create_file**</summary>
+
+Created `with-deal-selectors.ts`
+
+**Input:**
+
+- content:
+
+```
+import { computed } from '@angular/core';
+import { signalStoreFeature, type, withMethods } from '@ngrx/signals';
+import { EntityProps, EntityState } from '@ngrx/signals/entities';
+import { Deal } from '../model/deal.model';
+
+// Selectors read the normalized entity map, so any entity change reaches every selector
+export function withDealSelectors() {
+  return signalStoreFeature(
+    { state: type<EntityState<Deal>>(), props: type<EntityProps<Deal>>() },
+    withMethods((store) => ({
+      selectDealById(id: () => string | undefined) {
+        return computed((): Deal | undefined => {
+          const key = id();
+          return key === undefined ? undefined : store.entityMap()[key];
+        });
+      },
+
+      selectFilteredDeals(query: () => string | undefined) {
+        return computed(() => {
+          const text = (query() ?? '').trim().toLowerCase();
+          const deals = store.entities();
+          return text ? deals.filter((deal) => deal.title.toLowerCase().includes(text)) : deals;
+        });
+      },
+
+      selectDealsByContactId(contactId: () => string | undefined) {
+        return computed(() => {
+          const key = contactId();
+          return key === undefined ? [] : store.entities().filter((deal) => deal.contactId === key);
+        });
+      },
+    })),
+  );
+}
+
+```
+
+- filePath: `c:\Projects\sages-angular-adv-1126\src\app\features\deals\data\with-deal-selectors.ts`
+
+**Result:**
+
+```
+The following files were successfully edited:
+c:\Projects\sages-angular-adv-1126\src\app\features\deals\data\with-deal-selectors.ts
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="create_file"><details>
+<summary>Tool use: **create_file**</summary>
+
+Created `with-task-selectors.ts`
+
+**Input:**
+
+- content:
+
+```
+import { computed } from '@angular/core';
+import { signalStoreFeature, type, withMethods } from '@ngrx/signals';
+import { EntityProps, EntityState } from '@ngrx/signals/entities';
+import { DealTask } from '../model/deal-task.model';
+
+export function withTaskSelectors() {
+  return signalStoreFeature(
+    { state: type<EntityState<DealTask>>(), props: type<EntityProps<DealTask>>() },
+    withMethods((store) => ({
+      // Open tasks first; the sort is stable, so insertion order is kept inside each group
+      selectTasksByDealId(dealId: () => string | undefined) {
+        return computed(() => {
+          const key = dealId();
+          if (key === undefined) return [];
+          return store
+            .entities()
+            .filter((task) => task.dealId === key)
+            .sort((a, b) => Number(a.done) - Number(b.done));
+        });
+      },
+    })),
+  );
+}
+
+```
+
+- filePath: `c:\Projects\sages-angular-adv-1126\src\app\features\deals\data\with-task-selectors.ts`
+
+**Result:**
+
+```
+The following files were successfully edited:
+c:\Projects\sages-angular-adv-1126\src\app\features\deals\data\with-task-selectors.ts
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **with-deal-selectors.ts**</summary>
+
+@@ lines 1-1 @@
+
+```
+import { computed } from '@angular/core';
+import { signalStoreFeature, type, withMethods } from '@ngrx/signals';
+import { EntityProps, EntityState } from '@ngrx/signals/entities';
+import { Deal } from '../model/deal.model';
+
+// Selectors read the normalized entity map, so any entity change reaches every selector
+export function withDealSelectors() {
+  return signalStoreFeature(
+    { state: type<EntityState<Deal>>(), props: type<EntityProps<Deal>>() },
+    withMethods((store) => ({
+      selectDealById(id: () => string | undefined) {
+        return computed((): Deal | undefined => {
+          const key = id();
+          return key === undefined ? undefined : store.entityMap()[key];
+        });
+      },
+
+      selectFilteredDeals(query: () => string | undefined) {
+        return computed(() => {
+          const text = (query() ?? '').trim().toLowerCase();
+          const deals = store.entities();
+          return text ? deals.filter((deal) => deal.title.toLowerCase().includes(text)) : deals;
+        });
+      },
+
+      selectDealsByContactId(contactId: () => string | undefined) {
+        return computed(() => {
+          const key = contactId();
+          return key === undefined ? [] : store.entities().filter((deal) => deal.contactId === key);
+        });
+      },
+    })),
+  );
+}
+
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **with-task-selectors.ts**</summary>
+
+@@ lines 1-1 @@
+
+```
+import { computed } from '@angular/core';
+import { signalStoreFeature, type, withMethods } from '@ngrx/signals';
+import { EntityProps, EntityState } from '@ngrx/signals/entities';
+import { DealTask } from '../model/deal-task.model';
+
+export function withTaskSelectors() {
+  return signalStoreFeature(
+    { state: type<EntityState<DealTask>>(), props: type<EntityProps<DealTask>>() },
+    withMethods((store) => ({
+      // Open tasks first; the sort is stable, so insertion order is kept inside each group
+      selectTasksByDealId(dealId: () => string | undefined) {
+        return computed(() => {
+          const key = dealId();
+          if (key === undefined) return [];
+          return store
+            .entities()
+            .filter((task) => task.dealId === key)
+            .sort((a, b) => Number(a.done) - Number(b.done));
+        });
+      },
+    })),
+  );
+}
+
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="search" data-tool-name="grep_search"><details>
+<summary>Tool use: **grep_search**</summary>
+
+Searched for regex `deals\.store|\bdelay\(|PagingObject` (`**/src/**`), 19 results
+
+**Input:**
+
+- includePattern: `src/**`
+- isRegexp: `true`
+- query: `deals\.store|\bdelay\(|PagingObject`
+
+**Result:**
+
+```
+Found 19 matches in 11 files for "deals\.store|\bdelay\(|PagingObject"
+
+server/src/index.ts
+26:  await delay(200 + 2000 * Math.random()); // Responses can arrive out of order!
+50:export function delay(t = 500): Promise<void> {
+
+server/src/store.ts
+7:  PagingObject,
+34:  searchContacts(q?: string, offset = 0, limit = 20): PagingObject<Contact> {
+67:  getDeals(contactId?: string): PagingObject<Deal> {
+
+server/src/types.ts
+109:export interface PagingObject<T> {
+
+src/app/core/http/index-interceptor.ts
+73:      delay(error, retryCount) {
+
+src/app/core/model/api.model.ts
+293:                        "application/json": components["schemas"]["PagingObject_Deal"];
+581:            contacts?: components["schemas"]["PagingObject_Contact"];
+583:        PagingObject_Contact: {
+625:        PagingObject_Deal: {
+
+src/app/features/contacts/model/contact.model.ts
+1:// Mirrors server/openapi.yaml (Contact, PagingObject_Contact, ContactSearchResponse).
+
+src/app/features/deals/data/deals.store.ts
+93:      .get<PagingObject<Deal>>(`deals`, {
+104:type PagingObject<T> = {
+108:export function delay(t = 500): Promise<void> {
+
+src/app/features/deals/deals.routes.ts
+2:import { DealsStore } from './data/deals.store';
+
+src/app/features/deals/pages/deals-list/deals-list.page.ts
+13:import { DealsStore } from '../../data/deals.store';
+
+src/app/features/deals/ui/pipes/account-name-pipe.ts
+2:import { DealsStore } from '../../data/deals.store';
+
+src/app/features/deals/ui/pipes/contact-name-pipe.ts
+2:import { DealsStore } from '../../data/deals.store';
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="run_in_terminal"><details>
+<summary>Tool use: **run_in_terminal**</summary>
+
+Running ` cd /c/Projects/sages-angular-adv-1126 && rm src/app/features/deals/data/deal...`
+
+Remove the old seed-based DealsStore before creating the new signal store
+
+```bash
+cd /c/Projects/sages-angular-adv-1126 && rm src/app/features/deals/data/deals.store.ts && ls src/app/features/deals/data
+```
+
+**Result:**
+
+```
+deals.mappers.ts  deals-seed.ts  with-deal-selectors.ts
+deals-api.ts      tasks-api.ts   with-task-selectors.ts
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="create_file"><details>
+<summary>Tool use: **create_file**</summary>
+
+Created `deals.store.ts`
+
+**Input:**
+
+- content:
+
+```
+import { inject } from '@angular/core';
+import { tapResponse } from '@ngrx/operators';
+import { patchState, signalStore, withMethods } from '@ngrx/signals';
+import {
+  addEntity,
+  setEntity,
+  updateEntity,
+  upsertEntities,
+  upsertEntity,
+  withEntities,
+} from '@ngrx/signals/entities';
+import { rxMethod } from '@ngrx/signals/rxjs-interop';
+import {
+  cacheInvalidate,
+  loadingError,
+  loadingFinish,
+  loadingStart,
+  withLoadingState,
+  withStaleWhileRevalidate,
+} from '@shared';
+import { debounceTime, exhaustMap, filter, groupBy, mergeMap, pipe, switchMap } from 'rxjs';
+import { Deal, DealChanges, DealDraft } from '../model/deal.model';
+import { DealsApi } from './deals-api';
+import { withDealSelectors } from './with-deal-selectors';
+
+const TTL_MS = 60_000;
+// Collapses repeated Save clicks into one request
+const SAVE_DEBOUNCE_MS = 300;
+
+// Loading id of the in-flight createDeal request
+export const NEW_DEAL_ID = 'new-deal';
+
+export const dealsCacheKey = {
+  list: 'deals:list',
+  byContact: (contactId: string) => `deals:byContact:${contactId}`,
+  byId: (id: string) => `deal:${id}`,
+};
+
+export interface CreateDealCommand {
+  draft: DealDraft;
+  onCreated?: (deal: Deal) => void;
+}
+
+export interface UpdateDealCommand {
+  id: string;
+  changes: DealChanges;
+  onSaved?: (deal: Deal) => void;
+}
+
+export const DealsStore = signalStore(
+  { providedIn: 'root' },
+  withEntities<Deal>(),
+  withLoadingState(),
+  withStaleWhileRevalidate({ ttlMs: TTL_MS }),
+  withDealSelectors(),
+
+  withMethods((store, api = inject(DealsApi)) => {
+    const upsertDeals = (deals: Deal[]) => patchState(store, upsertEntities(deals));
+
+    return {
+      loadDeals: rxMethod<void>(
+        pipe(
+          switchMap(() =>
+            store._swr({ key: dealsCacheKey.list, source: () => api.list(), onData: upsertDeals }),
+          ),
+        ),
+      ),
+
+      loadDealsByContact: rxMethod<string | undefined>(
+        pipe(
+          filter((contactId): contactId is string => contactId !== undefined),
+          switchMap((contactId) =>
+            store._swr({
+              key: dealsCacheKey.byContact(contactId),
+              source: () => api.list({ contactId }),
+              onData: upsertDeals,
+            }),
+          ),
+        ),
+      ),
+
+      loadDeal: rxMethod<string | undefined>(
+        pipe(
+          filter((id): id is string => id !== undefined),
+          switchMap((id) =>
+            store._swr({
+              key: dealsCacheKey.byId(id),
+              loadingId: id,
+              source: () => api.getById(id),
+              onData: (deal) => patchState(store, upsertEntity(deal)),
+            }),
+          ),
+        ),
+      ),
+
+      createDeal: rxMethod<CreateDealCommand>(
+        pipe(
+          debounceTime(SAVE_DEBOUNCE_MS),
+          // Clicks while a request is running are ignored
+          exhaustMap(({ draft, onCreated }) => {
+            patchState(store, loadingStart(NEW_DEAL_ID));
+
+            return api.create(draft).pipe(
+              tapResponse({
+                next: (deal) => {
+                  patchState(
+                    store,
+                    addEntity(deal),
+                    cacheInvalidate(dealsCacheKey.list),
+                    cacheInvalidate(dealsCacheKey.byContact(deal.contactId)),
+                  );
+                  onCreated?.(deal);
+                },
+                error: (error) => patchState(store, loadingError(error)),
+                finalize: () => patchState(store, loadingFinish(NEW_DEAL_ID)),
+              }),
+            );
+          }),
+        ),
+      ),
+
+      // Debounce and exhaust run per deal id, so saving two deals never drops one
+      updateDeal: rxMethod<UpdateDealCommand>(
+        pipe(
+          groupBy((command) => command.id),
+          mergeMap((commands$) =>
+            commands$.pipe(
+              debounceTime(SAVE_DEBOUNCE_MS),
+              exhaustMap(({ id, changes, onSaved }) => {
+                const original: Deal | undefined = store.entityMap()[id];
+                patchState(store, loadingStart(id), updateEntity<Deal>({ id, changes }));
+
+                return api.update(id, changes).pipe(
+                  tapResponse({
+                    next: (deal) => {
+                      patchState(
+                        store,
+                        upsertEntity(deal),
+                        cacheInvalidate(dealsCacheKey.byContact(deal.contactId)),
+                      );
+                      if (original && original.contactId !== deal.contactId) {
+                        patchState(store, cacheInvalidate(dealsCacheKey.byContact(original.contactId)));
+                      }
+                      onSaved?.(deal);
+                    },
+                    error: (error) => {
+                      if (original) patchState(store, setEntity(original));
+                      patchState(store, loadingError(error));
+                    },
+                    finalize: () => patchState(store, loadingFinish(id)),
+                  }),
+                );
+              }),
+            ),
+          ),
+        ),
+      ),
+    };
+  }),
+);
+
+```
+
+- filePath: `c:\Projects\sages-angular-adv-1126\src\app\features\deals\data\deals.store.ts`
+
+**Result:**
+
+```
+The following files were successfully edited:
+c:\Projects\sages-angular-adv-1126\src\app\features\deals\data\deals.store.ts
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="create_file"><details>
+<summary>Tool use: **create_file**</summary>
+
+Created `tasks.store.ts`
+
+**Input:**
+
+- content:
+
+```
+import { inject } from '@angular/core';
+import { tapResponse } from '@ngrx/operators';
+import { patchState, signalStore, withMethods } from '@ngrx/signals';
+import {
+  prependEntity,
+  removeEntities,
+  removeEntity,
+  setEntity,
+  updateEntity,
+  upsertEntities,
+  upsertEntity,
+  withEntities,
+} from '@ngrx/signals/entities';
+import { rxMethod } from '@ngrx/signals/rxjs-interop';
+import {
+  loadingError,
+  loadingFinish,
+  loadingStart,
+  withLoadingState,
+  withStaleWhileRevalidate,
+} from '@shared';
+import { concatMap, filter, map, pipe, switchMap } from 'rxjs';
+import { DealTask, TaskChanges, TaskDraft } from '../model/deal-task.model';
+import { TasksApi } from './tasks-api';
+import { withTaskSelectors } from './with-task-selectors';
+
+const TTL_MS = 60_000;
+
+export const tasksCacheKey = {
+  byDeal: (dealId: string) => `tasks:deal:${dealId}`,
+};
+
+export interface CreateTaskCommand {
+  dealId: string;
+  draft: TaskDraft;
+}
+
+export interface UpdateTaskCommand {
+  dealId: string;
+  taskId: string;
+  changes: TaskChanges;
+}
+
+export interface DeleteTaskCommand {
+  dealId: string;
+  taskId: string;
+}
+
+export const TasksStore = signalStore(
+  { providedIn: 'root' },
+  withEntities<DealTask>(),
+  withLoadingState(),
+  withStaleWhileRevalidate({ ttlMs: TTL_MS }),
+  withTaskSelectors(),
+
+  withMethods((store, api = inject(TasksApi)) => ({
+    loadTasksForDeal: rxMethod<string | undefined>(
+      pipe(
+        filter((dealId): dealId is string => dealId !== undefined),
+        switchMap((dealId) =>
+          store._swr({
+            key: tasksCacheKey.byDeal(dealId),
+            loadingId: dealId,
+            source: () => api.list(dealId),
+            // The response is the full task list of the deal, so missing tasks are dropped
+            onData: (tasks) =>
+              patchState(
+                store,
+                removeEntities<DealTask>((task) => task.dealId === dealId),
+                upsertEntities(tasks),
+              ),
+          }),
+        ),
+      ),
+    ),
+
+    createTask: rxMethod<CreateTaskCommand>(
+      pipe(
+        concatMap(({ dealId, draft }) => {
+          patchState(store, loadingStart(dealId));
+
+          return api.create(dealId, draft).pipe(
+            tapResponse({
+              next: (task) => patchState(store, prependEntity(task)),
+              error: (error) => patchState(store, loadingError(error)),
+              finalize: () => patchState(store, loadingFinish(dealId)),
+            }),
+          );
+        }),
+      ),
+    ),
+
+    // The optimistic patch is applied on call, before the request waits in the queue
+    updateTask: rxMethod<UpdateTaskCommand>(
+      pipe(
+        map((command) => {
+          const original: DealTask | undefined = store.entityMap()[command.taskId];
+          patchState(
+            store,
+            loadingStart(command.taskId),
+            updateEntity<DealTask>({ id: command.taskId, changes: command.changes }),
+          );
+          return { ...command, original };
+        }),
+        concatMap(({ dealId, taskId, changes, original }) =>
+          api.update(dealId, taskId, changes).pipe(
+            tapResponse({
+              next: (task) => patchState(store, upsertEntity(task)),
+              error: (error) => {
+                if (original) patchState(store, setEntity(original));
+                patchState(store, loadingError(error));
+              },
+              finalize: () => patchState(store, loadingFinish(taskId)),
+            }),
+          ),
+        ),
+      ),
+    ),
+
+    deleteTask: rxMethod<DeleteTaskCommand>(
+      pipe(
+        concatMap(({ dealId, taskId }) => {
+          patchState(store, loadingStart(taskId));
+
+          return api.delete(dealId, taskId).pipe(
+            tapResponse({
+              next: () => patchState(store, removeEntity(taskId)),
+              error: (error) => patchState(store, loadingError(error)),
+              finalize: () => patchState(store, loadingFinish(taskId)),
+            }),
+          );
+        }),
+      ),
+    ),
+  })),
+);
+
+```
+
+- filePath: `c:\Projects\sages-angular-adv-1126\src\app\features\deals\data\tasks.store.ts`
+
+**Result:**
+
+```
+The following files were successfully edited:
+c:\Projects\sages-angular-adv-1126\src\app\features\deals\data\tasks.store.ts
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **deals.store.ts**</summary>
+
+@@ lines 1-111 @@
+
+```
+import { inject } from '@angular/core';
+import { tapResponse } from '@ngrx/operators';
+import { patchState, signalStore, withMethods } from '@ngrx/signals';
+import {
+  addEntity,
+  setEntity,
+  updateEntity,
+  upsertEntities,
+  upsertEntity,
+  withEntities,
+} from '@ngrx/signals/entities';
+import { rxMethod } from '@ngrx/signals/rxjs-interop';
+import {
+  cacheInvalidate,
+  loadingError,
+  loadingFinish,
+  loadingStart,
+  withLoadingState,
+  withStaleWhileRevalidate,
+} from '@shared';
+import { debounceTime, exhaustMap, filter, groupBy, mergeMap, pipe, switchMap } from 'rxjs';
+import { Deal, DealChanges, DealDraft } from '../model/deal.model';
+import { DealsApi } from './deals-api';
+import { withDealSelectors } from './with-deal-selectors';
+
+const TTL_MS = 60_000;
+// Collapses repeated Save clicks into one request
+const SAVE_DEBOUNCE_MS = 300;
+
+// Loading id of the in-flight createDeal request
+export const NEW_DEAL_ID = 'new-deal';
+
+export const dealsCacheKey = {
+  list: 'deals:list',
+  byContact: (contactId: string) => `deals:byContact:${contactId}`,
+  byId: (id: string) => `deal:${id}`,
+};
+
+export interface CreateDealCommand {
+  draft: DealDraft;
+  onCreated?: (deal: Deal) => void;
+}
+
+export interface UpdateDealCommand {
+  id: string;
+  changes: DealChanges;
+  onSaved?: (deal: Deal) => void;
+}
+
+export const DealsStore = signalStore(
+  { providedIn: 'root' },
+  withEntities<Deal>(),
+  withLoadingState(),
+  withStaleWhileRevalidate({ ttlMs: TTL_MS }),
+  withDealSelectors(),
+
+  withMethods((store, api = inject(DealsApi)) => {
+    const upsertDeals = (deals: Deal[]) => patchState(store, upsertEntities(deals));
+
+    return {
+      loadDeals: rxMethod<void>(
+        pipe(
+          switchMap(() =>
+            store._swr({ key: dealsCacheKey.list, source: () => api.list(), onData: upsertDeals }),
+          ),
+        ),
+      ),
+
+      loadDealsByContact: rxMethod<string | undefined>(
+        pipe(
+          filter((contactId): contactId is string => contactId !== undefined),
+          switchMap((contactId) =>
+            store._swr({
+              key: dealsCacheKey.byContact(contactId),
+              source: () => api.list({ contactId }),
+              onData: upsertDeals,
+            }),
+          ),
+        ),
+      ),
+
+      loadDeal: rxMethod<string | undefined>(
+        pipe(
+          filter((id): id is string => id !== undefined),
+          switchMap((id) =>
+            store._swr({
+              key: dealsCacheKey.byId(id),
+              loadingId: id,
+              source: () => api.getById(id),
+              onData: (deal) => patchState(store, upsertEntity(deal)),
+            }),
+          ),
+        ),
+      ),
+
+      createDeal: rxMethod<CreateDealCommand>(
+        pipe(
+          debounceTime(SAVE_DEBOUNCE_MS),
+          // Clicks while a request is running are ignored
+          exhaustMap(({ draft, onCreated }) => {
+            patchState(store, loadingStart(NEW_DEAL_ID));
+
+            return api.create(draft).pipe(
+              tapResponse({
+                next: (deal) => {
+                  patchState(
+                    store,
+                    addEntity(deal),
+                    cacheInvalidate(dealsCacheKey.list),
+                    cacheInvalidate(dealsCacheKey.byContact(deal.contactId)),
+                  );
+                  onCreated?.(deal);
+                },
+                error: (error) => patchState(store, loadingError(error)),
+                finalize: () => patchState(store, loadingFinish(NEW_DEAL_ID)),
+              }),
+            );
+          }),
+        ),
+      ),
+
+      // Debounce and exhaust run per deal id, so saving two deals never drops one
+      updateDeal: rxMethod<UpdateDealCommand>(
+        pipe(
+          groupBy((command) => command.id),
+          mergeMap((commands$) =>
+            commands$.pipe(
+              debounceTime(SAVE_DEBOUNCE_MS),
+              exhaustMap(({ id, changes, onSaved }) => {
+                const original: Deal | undefined = store.entityMap()[id];
+                patchState(store, loadingStart(id), updateEntity<Deal>({ id, changes }));
+
+                return api.update(id, changes).pipe(
+                  tapResponse({
+                    next: (deal) => {
+                      patchState(
+                        store,
+                        upsertEntity(deal),
+                        cacheInvalidate(dealsCacheKey.byContact(deal.contactId)),
+                      );
+                      if (original && original.contactId !== deal.contactId) {
+                        patchState(store, cacheInvalidate(dealsCacheKey.byContact(original.contactId)));
+                      }
+                      onSaved?.(deal);
+                    },
+                    error: (error) => {
+                      if (original) patchState(store, setEntity(original));
+                      patchState(store, loadingError(error));
+                    },
+                    finalize: () => patchState(store, loadingFinish(id)),
+                  }),
+                );
+              }),
+            ),
+          ),
+        ),
+      ),
+    };
+  }),
+);
+
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **tasks.store.ts**</summary>
+
+@@ lines 1-1 @@
+
+```
+import { inject } from '@angular/core';
+import { tapResponse } from '@ngrx/operators';
+import { patchState, signalStore, withMethods } from '@ngrx/signals';
+import {
+  prependEntity,
+  removeEntities,
+  removeEntity,
+  setEntity,
+  updateEntity,
+  upsertEntities,
+  upsertEntity,
+  withEntities,
+} from '@ngrx/signals/entities';
+import { rxMethod } from '@ngrx/signals/rxjs-interop';
+import {
+  loadingError,
+  loadingFinish,
+  loadingStart,
+  withLoadingState,
+  withStaleWhileRevalidate,
+} from '@shared';
+import { concatMap, filter, map, pipe, switchMap } from 'rxjs';
+import { DealTask, TaskChanges, TaskDraft } from '../model/deal-task.model';
+import { TasksApi } from './tasks-api';
+import { withTaskSelectors } from './with-task-selectors';
+
+const TTL_MS = 60_000;
+
+export const tasksCacheKey = {
+  byDeal: (dealId: string) => `tasks:deal:${dealId}`,
+};
+
+export interface CreateTaskCommand {
+  dealId: string;
+  draft: TaskDraft;
+}
+
+export interface UpdateTaskCommand {
+  dealId: string;
+  taskId: string;
+  changes: TaskChanges;
+}
+
+export interface DeleteTaskCommand {
+  dealId: string;
+  taskId: string;
+}
+
+export const TasksStore = signalStore(
+  { providedIn: 'root' },
+  withEntities<DealTask>(),
+  withLoadingState(),
+  withStaleWhileRevalidate({ ttlMs: TTL_MS }),
+  withTaskSelectors(),
+
+  withMethods((store, api = inject(TasksApi)) => ({
+    loadTasksForDeal: rxMethod<string | undefined>(
+      pipe(
+        filter((dealId): dealId is string => dealId !== undefined),
+        switchMap((dealId) =>
+          store._swr({
+            key: tasksCacheKey.byDeal(dealId),
+            loadingId: dealId,
+            source: () => api.list(dealId),
+            // The response is the full task list of the deal, so missing tasks are dropped
+            onData: (tasks) =>
+              patchState(
+                store,
+                removeEntities<DealTask>((task) => task.dealId === dealId),
+                upsertEntities(tasks),
+              ),
+          }),
+        ),
+      ),
+    ),
+
+    createTask: rxMethod<CreateTaskCommand>(
+      pipe(
+        concatMap(({ dealId, draft }) => {
+          patchState(store, loadingStart(dealId));
+
+          return api.create(dealId, draft).pipe(
+            tapResponse({
+              next: (task) => patchState(store, prependEntity(task)),
+              error: (error) => patchState(store, loadingError(error)),
+              finalize: () => patchState(store, loadingFinish(dealId)),
+            }),
+          );
+        }),
+      ),
+    ),
+
+    // The optimistic patch is applied on call, before the request waits in the queue
+    updateTask: rxMethod<UpdateTaskCommand>(
+      pipe(
+        map((command) => {
+          const original: DealTask | undefined = store.entityMap()[command.taskId];
+          patchState(
+            store,
+            loadingStart(command.taskId),
+            updateEntity<DealTask>({ id: command.taskId, changes: command.changes }),
+          );
+          return { ...command, original };
+        }),
+        concatMap(({ dealId, taskId, changes, original }) =>
+          api.update(dealId, taskId, changes).pipe(
+            tapResponse({
+              next: (task) => patchState(store, upsertEntity(task)),
+              error: (error) => {
+                if (original) patchState(store, setEntity(original));
+                patchState(store, loadingError(error));
+              },
+              finalize: () => patchState(store, loadingFinish(taskId)),
+            }),
+          ),
+        ),
+      ),
+    ),
+
+    deleteTask: rxMethod<DeleteTaskCommand>(
+      pipe(
+        concatMap(({ dealId, taskId }) => {
+          patchState(store, loadingStart(taskId));
+
+          return api.delete(dealId, taskId).pipe(
+            tapResponse({
+              next: () => patchState(store, removeEntity(taskId)),
+              error: (error) => patchState(store, loadingError(error)),
+              finalize: () => patchState(store, loadingFinish(taskId)),
+            }),
+          );
+        }),
+      ),
+    ),
+  })),
+);
+
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="create_file"><details>
+<summary>Tool use: **create_file**</summary>
+
+Created `contact-directory.port.ts`
+
+**Input:**
+
+- content:
+
+```
+import { Signal } from '@angular/core';
+import { InjectionToken } from '@angular/core';
+
+export interface ContactOption {
+  id: string;
+  label: string;
+  description?: string;
+}
+
+/**
+ * Contact lookup the deals feature needs. Deals must not import the contacts feature,
+ * so the app provides the implementation (see app.config.ts).
+ * Commands take plain values and may be called before the implementation has loaded.
+ */
+export interface ContactDirectory {
+  // Every contact seen so far, by id
+  readonly optionsById: Signal<Readonly<Record<string, ContactOption>>>;
+  // Result lists of finished searches, by query
+  readonly searchResults: Signal<Readonly<Record<string, readonly ContactOption[]>>>;
+  readonly loading: Signal<boolean>;
+  search(query: string): void;
+  load(id: string): void;
+}
+
+export const CONTACT_DIRECTORY = new InjectionToken<ContactDirectory>('CONTACT_DIRECTORY');
+
+```
+
+- filePath: `c:\Projects\sages-angular-adv-1126\src\app\features\deals\data\contact-directory.port.ts`
+
+**Result:**
+
+```
+The following files were successfully edited:
+c:\Projects\sages-angular-adv-1126\src\app\features\deals\data\contact-directory.port.ts
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="create_file"><details>
+<summary>Tool use: **create_file**</summary>
+
+Created `deals.ports.ts`
+
+**Input:**
+
+- content:
+
+```
+import { inject, InjectionToken, Signal } from '@angular/core';
+import type { RxMethod } from '@ngrx/signals/rxjs-interop';
+import { Deal } from '../model/deal.model';
+import { DealTask } from '../model/deal-task.model';
+import { DealsStore, CreateDealCommand, UpdateDealCommand } from './deals.store';
+import {
+  CreateTaskCommand,
+  DeleteTaskCommand,
+  TasksStore,
+  UpdateTaskCommand,
+} from './tasks.store';
+
+// Each page injects only the slice of the store it needs.
+
+type Selector<T> = (id: () => string | undefined) => Signal<T>;
+
+export interface DealListSource {
+  readonly selectLoading: Signal<boolean>;
+  readonly selectError: Signal<string | null>;
+  selectFilteredDeals(query: () => string | undefined): Signal<Deal[]>;
+  readonly loadDeals: RxMethod<void>;
+}
+
+export interface DealDetailsSource {
+  readonly selectError: Signal<string | null>;
+  readonly selectDealById: Selector<Deal | undefined>;
+  readonly selectLoadingById: Selector<boolean>;
+  readonly selectRevalidating: Selector<boolean>;
+  readonly loadDeal: RxMethod<string | undefined>;
+}
+
+export interface DealEditSource {
+  readonly selectError: Signal<string | null>;
+  readonly selectDealById: Selector<Deal | undefined>;
+  readonly selectLoadingById: Selector<boolean>;
+  readonly loadDeal: RxMethod<string | undefined>;
+  readonly updateDeal: RxMethod<UpdateDealCommand>;
+}
+
+export interface DealCreateSource {
+  readonly selectError: Signal<string | null>;
+  readonly selectLoadingById: Selector<boolean>;
+  readonly createDeal: RxMethod<CreateDealCommand>;
+}
+
+// Public: other features read a contact's deals through this port
+export interface DealsByContactSource {
+  readonly selectDealsByContactId: Selector<Deal[]>;
+  readonly selectLoadingById: Selector<boolean>;
+  readonly selectRevalidating: Selector<boolean>;
+  readonly loadDealsByContact: RxMethod<string | undefined>;
+}
+
+export interface TasksReader {
+  readonly selectError: Signal<string | null>;
+  readonly selectTasksByDealId: Selector<DealTask[]>;
+  readonly selectLoadingById: Selector<boolean>;
+}
+
+export interface TasksCommands {
+  readonly loadTasksForDeal: RxMethod<string | undefined>;
+  readonly createTask: RxMethod<CreateTaskCommand>;
+  readonly updateTask: RxMethod<UpdateTaskCommand>;
+  readonly deleteTask: RxMethod<DeleteTaskCommand>;
+}
+
+export const DEAL_LIST_SOURCE = new InjectionToken<DealListSource>('DEAL_LIST_SOURCE', {
+  providedIn: 'root',
+  factory: () => inject(DealsStore),
+});
+
+export const DEAL_DETAILS_SOURCE = new InjectionToken<DealDetailsSource>('DEAL_DETAILS_SOURCE', {
+  providedIn: 'root',
+  factory: () => inject(DealsStore),
+});
+
+export const DEAL_EDIT_SOURCE = new InjectionToken<DealEditSource>('DEAL_EDIT_SOURCE', {
+  providedIn: 'root',
+  factory: () => inject(DealsStore),
+});
+
+export const DEAL_CREATE_SOURCE = new InjectionToken<DealCreateSource>('DEAL_CREATE_SOURCE', {
+  providedIn: 'root',
+  factory: () => inject(DealsStore),
+});
+
+export const DEALS_BY_CONTACT = new InjectionToken<DealsByContactSource>('DEALS_BY_CONTACT', {
+  providedIn: 'root',
+  factory: () => inject(DealsStore),
+});
+
+export const TASKS_READER = new InjectionToken<TasksReader>('TASKS_READER', {
+  providedIn: 'root',
+  factory: () => inject(TasksStore),
+});
+
+export const TASKS_COMMANDS = new InjectionToken<TasksCommands>('TASKS_COMMANDS', {
+  providedIn: 'root',
+  factory: () => inject(TasksStore),
+});
+
+```
+
+- filePath: `c:\Projects\sages-angular-adv-1126\src\app\features\deals\data\deals.ports.ts`
+
+**Result:**
+
+```
+The following files were successfully edited:
+c:\Projects\sages-angular-adv-1126\src\app\features\deals\data\deals.ports.ts
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **contact-directory.port.ts**</summary>
+
+@@ lines 1-1 @@
+
+```
+import { Signal } from '@angular/core';
+import { InjectionToken } from '@angular/core';
+
+export interface ContactOption {
+  id: string;
+  label: string;
+  description?: string;
+}
+
+/**
+ * Contact lookup the deals feature needs. Deals must not import the contacts feature,
+ * so the app provides the implementation (see app.config.ts).
+ * Commands take plain values and may be called before the implementation has loaded.
+ */
+export interface ContactDirectory {
+  // Every contact seen so far, by id
+  readonly optionsById: Signal<Readonly<Record<string, ContactOption>>>;
+  // Result lists of finished searches, by query
+  readonly searchResults: Signal<Readonly<Record<string, readonly ContactOption[]>>>;
+  readonly loading: Signal<boolean>;
+  search(query: string): void;
+  load(id: string): void;
+}
+
+export const CONTACT_DIRECTORY = new InjectionToken<ContactDirectory>('CONTACT_DIRECTORY');
+
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **deals.ports.ts**</summary>
+
+@@ lines 1-1 @@
+
+```
+import { inject, InjectionToken, Signal } from '@angular/core';
+import type { RxMethod } from '@ngrx/signals/rxjs-interop';
+import { Deal } from '../model/deal.model';
+import { DealTask } from '../model/deal-task.model';
+import { DealsStore, CreateDealCommand, UpdateDealCommand } from './deals.store';
+import {
+  CreateTaskCommand,
+  DeleteTaskCommand,
+  TasksStore,
+  UpdateTaskCommand,
+} from './tasks.store';
+
+// Each page injects only the slice of the store it needs.
+
+type Selector<T> = (id: () => string | undefined) => Signal<T>;
+
+export interface DealListSource {
+  readonly selectLoading: Signal<boolean>;
+  readonly selectError: Signal<string | null>;
+  selectFilteredDeals(query: () => string | undefined): Signal<Deal[]>;
+  readonly loadDeals: RxMethod<void>;
+}
+
+export interface DealDetailsSource {
+  readonly selectError: Signal<string | null>;
+  readonly selectDealById: Selector<Deal | undefined>;
+  readonly selectLoadingById: Selector<boolean>;
+  readonly selectRevalidating: Selector<boolean>;
+  readonly loadDeal: RxMethod<string | undefined>;
+}
+
+export interface DealEditSource {
+  readonly selectError: Signal<string | null>;
+  readonly selectDealById: Selector<Deal | undefined>;
+  readonly selectLoadingById: Selector<boolean>;
+  readonly loadDeal: RxMethod<string | undefined>;
+  readonly updateDeal: RxMethod<UpdateDealCommand>;
+}
+
+export interface DealCreateSource {
+  readonly selectError: Signal<string | null>;
+  readonly selectLoadingById: Selector<boolean>;
+  readonly createDeal: RxMethod<CreateDealCommand>;
+}
+
+// Public: other features read a contact's deals through this port
+export interface DealsByContactSource {
+  readonly selectDealsByContactId: Selector<Deal[]>;
+  readonly selectLoadingById: Selector<boolean>;
+  readonly selectRevalidating: Selector<boolean>;
+  readonly loadDealsByContact: RxMethod<string | undefined>;
+}
+
+export interface TasksReader {
+  readonly selectError: Signal<string | null>;
+  readonly selectTasksByDealId: Selector<DealTask[]>;
+  readonly selectLoadingById: Selector<boolean>;
+}
+
+export interface TasksCommands {
+  readonly loadTasksForDeal: RxMethod<string | undefined>;
+  readonly createTask: RxMethod<CreateTaskCommand>;
+  readonly updateTask: RxMethod<UpdateTaskCommand>;
+  readonly deleteTask: RxMethod<DeleteTaskCommand>;
+}
+
+export const DEAL_LIST_SOURCE = new InjectionToken<DealListSource>('DEAL_LIST_SOURCE', {
+  providedIn: 'root',
+  factory: () => inject(DealsStore),
+});
+
+export const DEAL_DETAILS_SOURCE = new InjectionToken<DealDetailsSource>('DEAL_DETAILS_SOURCE', {
+  providedIn: 'root',
+  factory: () => inject(DealsStore),
+});
+
+export const DEAL_EDIT_SOURCE = new InjectionToken<DealEditSource>('DEAL_EDIT_SOURCE', {
+  providedIn: 'root',
+  factory: () => inject(DealsStore),
+});
+
+export const DEAL_CREATE_SOURCE = new InjectionToken<DealCreateSource>('DEAL_CREATE_SOURCE', {
+  providedIn: 'root',
+  factory: () => inject(DealsStore),
+});
+
+export const DEALS_BY_CONTACT = new InjectionToken<DealsByContactSource>('DEALS_BY_CONTACT', {
+  providedIn: 'root',
+  factory: () => inject(DealsStore),
+});
+
+export const TASKS_READER = new InjectionToken<TasksReader>('TASKS_READER', {
+  providedIn: 'root',
+  factory: () => inject(TasksStore),
+});
+
+export const TASKS_COMMANDS = new InjectionToken<TasksCommands>('TASKS_COMMANDS', {
+  providedIn: 'root',
+  factory: () => inject(TasksStore),
+});
+
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="task" data-tool-name="manage_todo_list"><details>
+<summary>Tool use: **manage_todo_list**</summary>
+
+Starting: *Add specs for shared store features* (2/4)
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="create_file"><details>
+<summary>Tool use: **create_file**</summary>
+
+Created `index.ts`
+
+**Input:**
+
+- content:
+
+```
+export { default as dealsRoutes } from './deals.routes';
+
+export { CONTACT_DIRECTORY } from './data/contact-directory.port';
+export type { ContactDirectory, ContactOption } from './data/contact-directory.port';
+export { DEALS_BY_CONTACT } from './data/deals.ports';
+export type { DealsByContactSource } from './data/deals.ports';
+export { DEAL_STAGE_LABELS } from './model/deal.model';
+export type { Deal, DealStage } from './model/deal.model';
+
+```
+
+- filePath: `c:\Projects\sages-angular-adv-1126\src\app\features\deals\index.ts`
+
+**Result:**
+
+```
+ERROR while calling tool: File already exists. You must use an edit tool to modify it.
+Please check your input and try again.
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **contact-directory.port.ts**</summary>
+
+@@ lines 1-2 @@
+
+```
+InjectionToken, Signal
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="run_in_terminal"><details>
+<summary>Tool use: **run_in_terminal**</summary>
+
+Running ` cd /c/Projects/sages-angular-adv-1126 && F=$\(git status --short src | grep -...`
+
+Format and type-check Phase 4 files
+
+```bash
+cd /c/Projects/sages-angular-adv-1126 && F=$(git status --short src | grep -E "features/deals/(data|model|index)" | awk '{print $2}' | tr '\n' ' ') && echo $F && npx prettier --write $F >/dev/null && npx tsc --noEmit -p tsconfig.app.json 2>&1 | head -60
+```
+
+**Result:**
+
+```
+src/app/features/deals/data/deals.store.ts src/app/features/deals/index.ts src/app/features/deals/model/deal-task.model.ts src/app/features/deals/model/deal.model.ts src/app/features/deals/data/contact-directory.port.ts src/app/features/deals/data/deals-api.ts src/app/features/deals/data/deals.mappers.ts src/app/features/deals/data/deals.ports.ts src/app/features/deals/data/tasks-api.ts src/app/features/deals/data/tasks.store.ts src/app/features/deals/data/with-deal-selectors.ts src/app/features/deals/data/with-task-selectors.ts
+src/app/features/deals/data/deals-api.ts(20,42): error TS2769: No overload matches this call.
+  Overload 1 of 15, '(url: string, options: { observe: "events"; responseType?: "json" | undefined; } & HttpClientCommonOptions): Observable<HttpEvent<PagedDto<DealDto>>>', gave the following error.
+    Type '{ contactId: string; } | { contactId?: undefined; }' is not assignable to type 'HttpParams | { [param: string]: string | number | boolean | readonly (string | number | boolean)[]; } | undefined'.
+      Type '{ contactId?: undefined; }' is not assignable to type 'HttpParams | { [param: string]: string | number | boolean | readonly (string | number | boolean)[]; } | undefined'.
+        Type '{ contactId?: undefined; }' is not assignable to type '{ [param: string]: string | number | boolean | readonly (string | number | boolean)[]; }'.
+          Property 'contactId' is incompatible with index signature.
+            Type 'undefined' is not assignable to type 'string | number | boolean | readonly (string | number | boolean)[]'.
+  Overload 2 of 15, '(url: string, options: { observe: "response"; responseType?: "json" | undefined; } & HttpClientCommonOptions): Observable<HttpResponse<PagedDto<DealDto>>>', gave the following error.
+    Type '{ contactId: string; } | { contactId?: undefined; }' is not assignable to type 'HttpParams | { [param: string]: string | number | boolean | readonly (string | number | boolean)[]; } | undefined'.
+      Type '{ conta
+… (output truncated)
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **index.ts**</summary>
+
+@@ lines 1-1 @@
+
+```
+
+
+export { CONTACT_DIRECTORY } from './data/contact-directory.port';
+export type { ContactDirectory, ContactOption } from './data/contact-directory.port';
+export { DEALS_BY_CONTACT } from './data/deals.ports';
+export type { DealsByContactSource } from './data/deals.ports';
+export { DEAL_STAGE_LABELS } from './model/deal.model';
+export type { Deal, DealStage } from './model/deal.model';
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **contact-directory.port.ts**</summary>
+
+@@ lines 1-2 @@
+
+```
+InjectionToken, Signal
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **index.ts**</summary>
+
+@@ lines 1-1 @@
+
+```
+
+
+export { CONTACT_DIRECTORY } from './data/contact-directory.port';
+export type { ContactDirectory, ContactOption } from './data/contact-directory.port';
+export { DEALS_BY_CONTACT } from './data/deals.ports';
+export type { DealsByContactSource } from './data/deals.ports';
+export { DEAL_STAGE_LABELS } from './model/deal.model';
+export type { Deal, DealStage } from './model/deal.model';
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="run_in_terminal"><details>
+<summary>Tool use: **run_in_terminal**</summary>
+
+Running ` cd /c/Projects/sages-angular-adv-1126 && npx prettier --write src/app/featur...`
+
+Re-check types and lint Phase 4 files
+
+```bash
+cd /c/Projects/sages-angular-adv-1126 && npx prettier --write src/app/features/deals/data/deals-api.ts >/dev/null; npx tsc --noEmit -p tsconfig.app.json 2>&1 | grep -E "^src" | cut -c1-140; F=$(git status --short src | grep -E "features/deals/(data|model|index)" | grep -v seed | awk '{print $2}' | tr '\n' ' '); npx eslint $F; echo ESLINT=$?
+```
+
+**Result:**
+
+```
+src/app/features/deals/data/deals-seed.ts(26,5): error TS2353: Object literal may only specify known properties, and 'accountId' does not ex
+src/app/features/deals/data/deals-seed.ts(36,5): error TS2353: Object literal may only specify known properties, and 'accountId' does not ex
+src/app/features/deals/data/deals-seed.ts(46,5): error TS2353: Object literal may only specify known properties, and 'accountId' does not ex
+src/app/features/deals/data/deals-seed.ts(56,5): error TS2353: Object literal may only specify known properties, and 'accountId' does not ex
+src/app/features/deals/pages/deals-list/deals-list.page.ts(143,25): error TS2339: Property 'fetchDeals' does not exist on type '{ entityMap:
+src/app/features/deals/pages/deals-list/deals-list.page.ts(156,25): error TS2339: Property 'fetchDealById' does not exist on type '{ entityM
+src/app/features/deals/pages/deals-list/deals-list.page.ts(168,30): error TS2339: Property 'getTasksForDeal' does not exist on type '{ entit
+src/app/features/deals/pages/deals-list/deals-list.page.ts(201,16): error TS2339: Property 'addTask' does not exist on type '{ entityMap: Si
+src/app/features/deals/pages/deals-list/deals-list.page.ts(205,16): error TS2339: Property 'toggleTaskDone' does not exist on type '{ entity
+src/app/features/deals/ui/deal-editor/deal-editor.ts(211,50): error TS2344: Type '"id" | "contactId" | "accountId"' does not satisfy the con
+src/app/features/deals/ui/pipes/account-name-pipe.ts(11,23): error TS2339: Property 'accountName' does not exist on type '{ entityMap: Signa
+src/app/features/deals/ui/pipes/contact-name-pipe.ts(16,23): error TS2339: Property 'contactName' does not exist on type '{ entityMap: Signa
+ESLINT=0
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **deals-api.ts**</summary>
+
+@@ lines 18-18 @@
+
+```
+: Record<string, string>
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="run_in_terminal"><details>
+<summary>Tool use: **run_in_terminal**</summary>
+
+Running ` cd /c/Projects/sages-angular-adv-1126 && git add src/app/features/deals/data...`
+
+Commit Phase 4 files only
+
+```bash
+cd /c/Projects/sages-angular-adv-1126 && git add src/app/features/deals/data src/app/features/deals/model src/app/features/deals/index.ts && git commit -q -m "WIP phase 4: deals data layer (APIs, signal stores, SWR, ports)" 2>&1 | grep -v warning; git log --oneline | head -1; git status --short | grep -v ai-sessions
+```
+
+**Result:**
+
+```
+warning: in the working copy of 'src/app/features/deals/data/deals.store.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/app/features/deals/index.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/app/features/deals/model/deal-task.model.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/app/features/deals/model/deal.model.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/app/features/deals/data/contact-directory.port.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/app/features/deals/data/deals-api.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/app/features/deals/data/deals.mappers.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/app/features/deals/data/deals.ports.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/app/features/deals/data/tasks-api.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/app/features/deals/data/tasks.store.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/app/features/deals/data/with-deal-selectors.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/app/features/deals/data/with-task-selectors.ts', LF will be replaced by CRLF the next time Git touches it
+fd05a30 WIP phase 4: deals data layer (APIs, signal stores, SWR, ports)
+
+Command exited with code 1
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="run_in_terminal"><details>
+<summary>Tool use: **run_in_terminal**</summary>
+
+Running ` cd /c/Projects/sages-angular-adv-1126 && rm src/app/features/contacts/data/c...`
+
+Remove the HttpClient ContactsStore and generate ContactsApi and the directory adapter skeletons
+
+```bash
+cd /c/Projects/sages-angular-adv-1126 && rm src/app/features/contacts/data/contacts.store.ts && npx ng g s features/contacts/data/contacts-api && npx ng g s features/contacts/data/contact-directory-adapter && ls src/app/features/contacts/data
+```
+
+**Result:**
+
+```
+CREATE src/app/features/contacts/data/contacts-api.ts (87 bytes)
+CREATE src/app/features/contacts/data/contact-directory-adapter.ts (99 bytes)
+contact-directory-adapter.ts  contacts-api.ts
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="read" data-tool-name="read_file"><details>
+<summary>Tool use: **read_file**</summary>
+
+Read `contact-directory-adapter.ts`
+
+**Input:**
+
+- endLine: `10`
+- filePath: `c:\Projects\sages-angular-adv-1126\src\app\features\contacts\data\contact-directory-adapter.ts`
+- startLine: `1`
+
+**Result:**
+
+```
+import { Service } from '@angular/core';
+
+@Service()
+export class ContactDirectoryAdapter {}
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **contacts-api.ts**</summary>
+
+@@ lines 1-4 @@
+
+```
+HttpClient } from '@angular/common/http';
+import { inject, Service } from '@angular/core';
+import { map, Observable } from 'rxjs';
+import { Contact, ContactSearchResponse, PagedContacts } from '../model/contact.model';
+
+@Service()
+export class ContactsApi {
+  private readonly http = inject(HttpClient);
+
+  search(q: string): Observable<PagedContacts> {
+    return this.http
+      .get<ContactSearchResponse>('contacts', { params: { q } })
+      .pipe(map((response) => response.contacts));
+  }
+
+  getById(contactId: string): Observable<Contact> {
+    return this.http.get<Contact>(`contacts/${encodeURIComponent(contactId)}`);
+  }
+
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+
+```
+
+```
+
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **deals.store.ts**</summary>
+
+@@ lines 61-61 @@
+
+```
+selectLoadingByContactId: (contactId: () => string | undefined) =>
+        store.selectLoadingById(() => {
+          const id = contactId();
+          return id === undefined ? undefined : dealsCacheKey.byContact(id);
+        }),
+
+      selectRevalidatingByContactId: (contactId: () => string | undefined) =>
+        store.selectRevalidating(() => {
+          const id = contactId();
+          return id === undefined ? undefined : dealsCacheKey.byContact(id);
+        }),
+
+      
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+
+```
+
+```
+
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **deals.ports.ts**</summary>
+
+@@ lines 44-45 @@
+
+```
+ContactId: Selector<boolean>;
+  readonly selectRevalidatingByContactId
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="create_file"><details>
+<summary>Tool use: **create_file**</summary>
+
+Created `with-related-deals.ts`
+
+**Input:**
+
+- content:
+
+```
+import { computed, inject } from '@angular/core';
+import { signalStoreFeature, withMethods, withProps } from '@ngrx/signals';
+import { DEALS_BY_CONTACT } from '@feature/deals';
+
+// Reads and loads a contact's deals through the deals public port
+export function withRelatedDeals() {
+  return signalStoreFeature(
+    withProps(() => ({ _deals: inject(DEALS_BY_CONTACT) })),
+    withMethods((store) => ({
+      selectRelatedDeals: (contactId: () => string | undefined) =>
+        store._deals.selectDealsByContactId(contactId),
+
+      selectRelatedDealsLoading: (contactId: () => string | undefined) =>
+        store._deals.selectLoadingByContactId(contactId),
+
+      selectRelatedDealsRevalidating: (contactId: () => string | undefined) =>
+        computed(() => store._deals.selectRevalidatingByContactId(contactId)()),
+
+      loadRelatedDeals: store._deals.loadDealsByContact,
+    })),
+  );
+}
+
+```
+
+- filePath: `c:\Projects\sages-angular-adv-1126\src\app\features\contacts\data\with-related-deals.ts`
+
+**Result:**
+
+```
+The following files were successfully edited:
+c:\Projects\sages-angular-adv-1126\src\app\features\contacts\data\with-related-deals.ts
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **with-related-deals.ts**</summary>
+
+@@ lines 1-1 @@
+
+```
+import { computed, inject } from '@angular/core';
+import { signalStoreFeature, withMethods, withProps } from '@ngrx/signals';
+import { DEALS_BY_CONTACT } from '@feature/deals';
+
+// Reads and loads a contact's deals through the deals public port
+export function withRelatedDeals() {
+  return signalStoreFeature(
+    withProps(() => ({ _deals: inject(DEALS_BY_CONTACT) })),
+    withMethods((store) => ({
+      selectRelatedDeals: (contactId: () => string | undefined) =>
+        store._deals.selectDealsByContactId(contactId),
+
+      selectRelatedDealsLoading: (contactId: () => string | undefined) =>
+        store._deals.selectLoadingByContactId(contactId),
+
+      selectRelatedDealsRevalidating: (contactId: () => string | undefined) =>
+        computed(() => store._deals.selectRevalidatingByContactId(contactId)()),
+
+      loadRelatedDeals: store._deals.loadDealsByContact,
+    })),
+  );
+}
+
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="create_file"><details>
+<summary>Tool use: **create_file**</summary>
+
+Created `with-related-deals.ts`
+
+**Input:**
+
+- content:
+
+```
+import { inject } from '@angular/core';
+import { signalStoreFeature, withMethods, withProps } from '@ngrx/signals';
+import { DEALS_BY_CONTACT } from '@feature/deals';
+
+// Reads and loads a contact's deals through the deals public port
+export function withRelatedDeals() {
+  return signalStoreFeature(
+    withProps(() => ({ _deals: inject(DEALS_BY_CONTACT) })),
+    withMethods((store) => ({
+      selectRelatedDeals: (contactId: () => string | undefined) =>
+        store._deals.selectDealsByContactId(contactId),
+
+      selectRelatedDealsLoading: (contactId: () => string | undefined) =>
+        store._deals.selectLoadingByContactId(contactId),
+
+      loadRelatedDeals: store._deals.loadDealsByContact,
+    })),
+  );
+}
+
+```
+
+- filePath: `c:\Projects\sages-angular-adv-1126\src\app\features\contacts\data\with-related-deals.ts`
+
+**Result:**
+
+```
+ERROR while calling tool: File already exists. You must use an edit tool to modify it.
+Please check your input and try again.
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="create_file"><details>
+<summary>Tool use: **create_file**</summary>
+
+Created `with-related-deals-new.ts`
+
+**Input:**
+
+- content:
+
+```
+import { inject } from '@angular/core';
+import { signalStoreFeature, withMethods, withProps } from '@ngrx/signals';
+import { DEALS_BY_CONTACT } from '@feature/deals';
+
+// Reads and loads a contact's deals through the deals public port
+export function withRelatedDeals() {
+  return signalStoreFeature(
+    withProps(() => ({ _deals: inject(DEALS_BY_CONTACT) })),
+    withMethods((store) => ({
+      selectRelatedDeals: (contactId: () => string | undefined) =>
+        store._deals.selectDealsByContactId(contactId),
+
+      selectRelatedDealsLoading: (contactId: () => string | undefined) =>
+        store._deals.selectLoadingByContactId(contactId),
+
+      loadRelatedDeals: store._deals.loadDealsByContact,
+    })),
+  );
+}
+
+```
+
+- filePath: `c:\Projects\sages-angular-adv-1126\src\app\features\contacts\data\with-related-deals-new.ts`
+
+**Result:**
+
+```
+The following files were successfully edited:
+c:\Projects\sages-angular-adv-1126\src\app\features\contacts\data\with-related-deals-new.ts
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **with-related-deals-new.ts**</summary>
+
+@@ lines 1-1 @@
+
+```
+import { inject } from '@angular/core';
+import { signalStoreFeature, withMethods, withProps } from '@ngrx/signals';
+import { DEALS_BY_CONTACT } from '@feature/deals';
+
+// Reads and loads a contact's deals through the deals public port
+export function withRelatedDeals() {
+  return signalStoreFeature(
+    withProps(() => ({ _deals: inject(DEALS_BY_CONTACT) })),
+    withMethods((store) => ({
+      selectRelatedDeals: (contactId: () => string | undefined) =>
+        store._deals.selectDealsByContactId(contactId),
+
+      selectRelatedDealsLoading: (contactId: () => string | undefined) =>
+        store._deals.selectLoadingByContactId(contactId),
+
+      loadRelatedDeals: store._deals.loadDealsByContact,
+    })),
+  );
+}
+
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="run_in_terminal"><details>
+<summary>Tool use: **run_in_terminal**</summary>
+
+Running ` cd /c/Projects/sages-angular-adv-1126/src/app/features/contacts/data && mv -...`
+
+Replace the draft related-deals feature with the simplified version
+
+```bash
+cd /c/Projects/sages-angular-adv-1126/src/app/features/contacts/data && mv -f with-related-deals-new.ts with-related-deals.ts && ls
+```
+
+**Result:**
+
+```
+contact-directory-adapter.ts  contacts-api.ts  with-related-deals.ts
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="create_file"><details>
+<summary>Tool use: **create_file**</summary>
+
+Created `contacts.store.ts`
+
+**Input:**
+
+- content:
+
+```
+import { computed, inject } from '@angular/core';
+import { PartialStateUpdater, patchState, signalStore, withMethods, withState } from '@ngrx/signals';
+import { upsertEntities, upsertEntity, withEntities } from '@ngrx/signals/entities';
+import { rxMethod } from '@ngrx/signals/rxjs-interop';
+import { withLoadingState, withStaleWhileRevalidate } from '@shared';
+import { filter, mergeMap, pipe } from 'rxjs';
+import { Contact } from '../model/contact.model';
+import { ContactsApi } from './contacts-api';
+import { withRelatedDeals } from './with-related-deals';
+
+const TTL_MS = 60_000;
+
+export const contactsCacheKey = {
+  search: (query: string) => `contacts:search:${query}`,
+  byId: (id: string) => `contact:${id}`,
+};
+
+export interface SearchResult {
+  ids: string[];
+  total: number;
+}
+
+interface ContactsState {
+  // Server-side matching cannot be repeated on the client, so each query keeps its own id list
+  searchByQuery: Record<string, SearchResult>;
+}
+
+export const setSearchResult =
+  (query: string, result: SearchResult): PartialStateUpdater<ContactsState> =>
+  (state) => ({ searchByQuery: { ...state.searchByQuery, [query]: result } });
+
+export const ContactsStore = signalStore(
+  { providedIn: 'root' },
+  withEntities<Contact>(),
+  withState<ContactsState>({ searchByQuery: {} }),
+  withLoadingState(),
+  withStaleWhileRevalidate({ ttlMs: TTL_MS }),
+  withRelatedDeals(),
+
+  withMethods((store, api = inject(ContactsApi)) => ({
+    selectContactById: (id: () => string | undefined) =>
+      computed((): Contact | undefined => {
+        const key = id();
+        return key === undefined ? undefined : store.entityMap()[key];
+      }),
+
+    // `query` must be trimmed, as it is when passed to search()
+    selectSearchResults: (query: () => string) =>
+      computed(() => {
+        const result: SearchResult | undefined = store.searchByQuery()[query()];
+        const contacts = store.entityMap();
+        return (result?.ids ?? []).map((id) => contacts[id]);
+      }),
+
+    // Results are stored per query, so overlapping searches cannot overwrite each other
+    search: rxMethod<string>(
+      pipe(
+        mergeMap((query) =>
+          store._swr({
+            key: contactsCacheKey.search(query),
+            source: () => api.search(query),
+            onData: (page) =>
+              patchState(
+                store,
+                upsertEntities(page.items),
+                setSearchResult(query, { ids: page.items.map((c) => c.id), total: page.total }),
+              ),
+          }),
+        ),
+      ),
+    ),
+
+    loadContact: rxMethod<string | undefined>(
+      pipe(
+        filter((id): id is string => id !== undefined),
+        mergeMap((id) =>
+          store._swr({
+            key: contactsCacheKey.byId(id),
+            loadingId: id,
+            source: () => api.getById(id),
+            onData: (contact) => patchState(store, upsertEntity(contact)),
+          }),
+        ),
+      ),
+    ),
+  })),
+);
+
+```
+
+- filePath: `c:\Projects\sages-angular-adv-1126\src\app\features\contacts\data\contacts.store.ts`
+
+**Result:**
+
+```
+The following files were successfully edited:
+c:\Projects\sages-angular-adv-1126\src\app\features\contacts\data\contacts.store.ts
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **contacts.store.ts**</summary>
+
+@@ lines 1-20 @@
+
+```
+import { computed, inject } from '@angular/core';
+import { PartialStateUpdater, patchState, signalStore, withMethods, withState } from '@ngrx/signals';
+import { upsertEntities, upsertEntity, withEntities } from '@ngrx/signals/entities';
+import { rxMethod } from '@ngrx/signals/rxjs-interop';
+import { withLoadingState, withStaleWhileRevalidate } from '@shared';
+import { filter, mergeMap, pipe } from 'rxjs';
+import { Contact } from '../model/contact.model';
+import { ContactsApi } from './contacts-api';
+import { withRelatedDeals } from './with-related-deals';
+
+const TTL_MS = 60_000;
+
+export const contactsCacheKey = {
+  search: (query: string) => `contacts:search:${query}`,
+  byId: (id: string) => `contact:${id}`,
+};
+
+export interface SearchResult {
+  ids: string[];
+  total: number;
+}
+
+interface ContactsState {
+  // Server-side matching cannot be repeated on the client, so each query keeps its own id list
+  searchByQuery: Record<string, SearchResult>;
+}
+
+export const setSearchResult =
+  (query: string, result: SearchResult): PartialStateUpdater<ContactsState> =>
+  (state) => ({ searchByQuery: { ...state.searchByQuery, [query]: result } });
+
+export const ContactsStore = signalStore(
+  { providedIn: 'root' },
+  withEntities<Contact>(),
+  withState<ContactsState>({ searchByQuery: {} }),
+  withLoadingState(),
+  withStaleWhileRevalidate({ ttlMs: TTL_MS }),
+  withRelatedDeals(),
+
+  withMethods((store, api = inject(ContactsApi)) => ({
+    selectContactById: (id: () => string | undefined) =>
+      computed((): Contact | undefined => {
+        const key = id();
+        return key === undefined ? undefined : store.entityMap()[key];
+      }),
+
+    // `query` must be trimmed, as it is when passed to search()
+    selectSearchResults: (query: () => string) =>
+      computed(() => {
+        const result: SearchResult | undefined = store.searchByQuery()[query()];
+        const contacts = store.entityMap();
+        return (result?.ids ?? []).map((id) => contacts[id]);
+      }),
+
+    // Results are stored per query, so overlapping searches cannot overwrite each other
+    search: rxMethod<string>(
+      pipe(
+        mergeMap((query) =>
+          store._swr({
+            key: contactsCacheKey.search(query),
+            source: () => api.search(query),
+            onData: (page) =>
+              patchState(
+                store,
+                upsertEntities(page.items),
+                setSearchResult(query, { ids: page.items.map((c) => c.id), total: page.total }),
+              ),
+          }),
+        ),
+      ),
+    ),
+
+    loadContact: rxMethod<string | undefined>(
+      pipe(
+        filter((id): id is string => id !== undefined),
+        mergeMap((id) =>
+          store._swr({
+            key: contactsCacheKey.byId(id),
+            loadingId: id,
+            source: () => api.getById(id),
+            onData: (contact) => patchState(store, upsertEntity(contact)),
+          }),
+        ),
+      ),
+    ),
+  })),
+);
+
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **contact-directory-adapter.ts**</summary>
+
+@@ lines 1-4 @@
+
+```
+computed, inject, Service } from '@angular/core';
+import { ContactDirectory, ContactOption } from '@feature/deals';
+import { Contact, contactFullName } from '../model/contact.model';
+import { ContactsStore } from './contacts.store';
+
+function toOption(contact: Contact): ContactOption {
+  return {
+    id: contact.id,
+    label: contactFullName(contact),
+    description: contact.company || contact.email,
+  };
+}
+
+// Adapts the contacts store to the lookup port that the deals feature defines
+@Service()
+export class ContactDirectoryAdapter implements ContactDirectory {
+  private readonly store = inject(ContactsStore);
+
+  readonly optionsById = computed(() =>
+    Object.fromEntries(this.store.entities().map((contact) => [contact.id, toOption(contact)])),
+  );
+
+  readonly searchResults = computed(() => {
+    const contacts = this.store.entityMap();
+    return Object.fromEntries(
+      Object.entries(this.store.searchByQuery()).map(([query, result]) => [
+        query,
+        result.ids.map((id) => toOption(contacts[id])),
+      ]),
+    );
+  });
+
+  readonly loading = this.store.selectLoading;
+
+  search(query: string): void {
+    this.store.search(query);
+  }
+
+  load(id: string): void {
+    this.store.loadContact(id);
+  }
+
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="create_file"><details>
+<summary>Tool use: **create_file**</summary>
+
+Created `contact-directory.provider.ts`
+
+**Input:**
+
+- content:
+
+```
+import { computed, inject, Injector, Provider, signal } from '@angular/core';
+import { CONTACT_DIRECTORY, ContactDirectory } from '@feature/deals';
+
+const NO_OPTIONS = Object.freeze({});
+
+// Deals must not import contacts, so the app wires them. The contacts chunk loads on first use.
+function lazyContactDirectory(): ContactDirectory {
+  const injector = inject(Injector);
+  const loaded = signal<ContactDirectory | undefined>(undefined);
+
+  const ready = import('@feature/contacts').then(({ ContactDirectoryAdapter }) => {
+    const directory = injector.get(ContactDirectoryAdapter);
+    loaded.set(directory);
+    return directory;
+  });
+
+  return {
+    optionsById: computed(() => loaded()?.optionsById() ?? NO_OPTIONS),
+    searchResults: computed(() => loaded()?.searchResults() ?? NO_OPTIONS),
+    // Counts as loading until the chunk is there
+    loading: computed(() => loaded()?.loading() ?? true),
+    // Chained on one promise, so calls made before the chunk loads keep their order
+    search: (query) => void ready.then((directory) => directory.search(query)),
+    load: (id) => void ready.then((directory) => directory.load(id)),
+  };
+}
+
+export function provideContactDirectory(): Provider {
+  return { provide: CONTACT_DIRECTORY, useFactory: lazyContactDirectory };
+}
+
+```
+
+- filePath: `c:\Projects\sages-angular-adv-1126\src\app\contact-directory.provider.ts`
+
+**Result:**
+
+```
+The following files were successfully edited:
+c:\Projects\sages-angular-adv-1126\src\app\contact-directory.provider.ts
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="read" data-tool-name="read_file"><details>
+<summary>Tool use: **read_file**</summary>
+
+Read `index.ts`
+
+**Input:**
+
+- endLine: `12`
+- filePath: `c:\Projects\sages-angular-adv-1126\src\app\features\contacts\index.ts`
+- startLine: `1`
+
+**Result:**
+
+```
+export { default as contactsRoutes } from './contacts.routes';
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **contact-directory.provider.ts**</summary>
+
+@@ lines 1-1 @@
+
+```
+import { computed, inject, Injector, Provider, signal } from '@angular/core';
+import { CONTACT_DIRECTORY, ContactDirectory } from '@feature/deals';
+
+const NO_OPTIONS = Object.freeze({});
+
+// Deals must not import contacts, so the app wires them. The contacts chunk loads on first use.
+function lazyContactDirectory(): ContactDirectory {
+  const injector = inject(Injector);
+  const loaded = signal<ContactDirectory | undefined>(undefined);
+
+  const ready = import('@feature/contacts').then(({ ContactDirectoryAdapter }) => {
+    const directory = injector.get(ContactDirectoryAdapter);
+    loaded.set(directory);
+    return directory;
+  });
+
+  return {
+    optionsById: computed(() => loaded()?.optionsById() ?? NO_OPTIONS),
+    searchResults: computed(() => loaded()?.searchResults() ?? NO_OPTIONS),
+    // Counts as loading until the chunk is there
+    loading: computed(() => loaded()?.loading() ?? true),
+    // Chained on one promise, so calls made before the chunk loads keep their order
+    search: (query) => void ready.then((directory) => directory.search(query)),
+    load: (id) => void ready.then((directory) => directory.load(id)),
+  };
+}
+
+export function provideContactDirectory(): Provider {
+  return { provide: CONTACT_DIRECTORY, useFactory: lazyContactDirectory };
+}
+
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="task" data-tool-name="manage_todo_list"><details>
+<summary>Tool use: **manage_todo_list**</summary>
+
+Starting: *Update routing configuration for params inheritance* (3/5)
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="read" data-tool-name="read_file"><details>
+<summary>Tool use: **read_file**</summary>
+
+Read `contacts.routes.ts`
+
+**Input:**
+
+- endLine: `40`
+- filePath: `c:\Projects\sages-angular-adv-1126\src\app\features\contacts\contacts.routes.ts`
+- startLine: `1`
+
+**Result:**
+
+```
+import { ActivatedRouteSnapshot, Routes } from '@angular/router';
+import { ContactsStore } from './data/contacts.store';
+
+// One ContactsStore for the whole feature, shared by the search and details pages.
+const routes: Routes = [
+  {
+    path: '',
+    providers: [ContactsStore],
+    children: [
+      {
+        path: '',
+        pathMatch: 'full',
+        redirectTo: 'search?q=',
+      },
+      {
+        path: 'search',
+        loadComponent: () =>
+          import('./pages/contact-search/contact-search.page').then((m) => m.ContactSearchPage),
+      },
+      {
+        path: ':contactId',
+        resolve:{
+            contact:(route: ActivatedRouteSnapshot) => {
+                
+            }
+        },
+        loadComponent: () =>
+          import('./pages/contact-details/contact-details.page').then((m) => m.ContactDetailsPage),
+      },
+    ],
+  },
+];
+
+export default routes;
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **index.ts**</summary>
+
+@@ lines 1-1 @@
+
+```
+
+
+// Consumed only by the app, which wires it into the deals feature
+export { ContactDirectoryAdapter } from './data/contact-directory-adapter';
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **contacts.routes.ts**</summary>
+
+@@ lines 1-30 @@
+
+```
+Routes } from '@angular/router';
+
+// ContactsStore is root-scoped, so the pages share its cached entities.
+const routes: Routes = [
+  {
+    path: '',
+    pathMatch: 'full',
+    redirectTo: 'search?q=',
+  },
+  {
+    path: 'search',
+    loadComponent: () =>
+      import('./pages/contact-search/contact-search.page').then((m) => m.ContactSearchPage),
+  },
+  {
+    path: ':contactId',
+    loadComponent: () =>
+      import('./pages/contact-details/contact-details.page').then((m) => m.ContactDetailsPage)
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+
+```
+
+```
+
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **app.config.ts**</summary>
+
+@@ lines 27-27 @@
+
+```
+
+
+    provideContactDirectory(),
+```
+
+@@ lines 10-10 @@
+
+```
+
+import { provideContactDirectory } from './contact-directory.provider';
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+
+```
+
+```
+
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **contact-directory.port.ts**</summary>
+
+@@ lines 17-17 @@
+
+```
+trimmed 
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="run_in_terminal"><details>
+<summary>Tool use: **run_in_terminal**</summary>
+
+Running ` cd /c/Projects/sages-angular-adv-1126 && F="src/app/contact-directory.provid...`
+
+Format, type-check and lint Phase 5 files
+
+```bash
+cd /c/Projects/sages-angular-adv-1126 && F="src/app/contact-directory.provider.ts src/app/app.config.ts src/app/features/contacts/index.ts src/app/features/contacts/contacts.routes.ts src/app/features/contacts/data/*.ts src/app/features/deals/data/deals.store.ts src/app/features/deals/data/deals.ports.ts src/app/features/deals/data/contact-directory.port.ts" && npx prettier --write $F >/dev/null; npx tsc --noEmit -p tsconfig.app.json 2>&1 | grep -E "^src" | cut -c1-220 | grep -v -E "deals-seed|deals-list.page|deal-editor|pipes/"; npx eslint $F; echo ESLINT=$?
+```
+
+**Result:**
+
+```
+src/app/features/contacts/pages/contact-details/contact-details.page.ts(39,44): error TS2339: Property 'getById' does not exist on type '{ entityMap: Signal<EntityMap<Contact>>; ids: Signal<EntityId[]>; searchByQuery: Si
+src/app/features/contacts/pages/contact-search/contact-search.page.ts(50,32): error TS2769: No overload matches this call.
+
+C:\Projects\sages-angular-adv-1126\src\app\app.config.ts
+  10:1  error  './core/http/index-interceptor' is a deep import from a barrel module. Use the module's barrel file (index.ts) instead  @softarc/sheriff/encapsulation
+
+✖ 1 problem (1 error, 0 warnings)
+
+ESLINT=1
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="run_in_terminal"><details>
+<summary>Tool use: **run_in_terminal**</summary>
+
+Running ` cd /c/Projects/sages-angular-adv-1126 && git add src/app/contact-directory.p...`
+
+Commit Phase 5 files only
+
+```bash
+cd /c/Projects/sages-angular-adv-1126 && git add src/app/contact-directory.provider.ts src/app/app.config.ts src/app/features/contacts/index.ts src/app/features/contacts/contacts.routes.ts src/app/features/contacts/data src/app/features/deals/data && git commit -q -m "WIP phase 5: contacts store, related deals, lazy contact directory" 2>&1 | grep -v warning; git log --oneline | head -1; git status --short | grep -v ai-sessions
+```
+
+**Result:**
+
+```
+warning: in the working copy of 'src/app/app.config.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/app/features/contacts/contacts.routes.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/app/features/contacts/data/contacts.store.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/app/features/contacts/index.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/app/features/deals/data/contact-directory.port.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/app/features/deals/data/deals.ports.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/app/features/deals/data/deals.store.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/app/contact-directory.provider.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/app/features/contacts/data/contact-directory-adapter.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/app/features/contacts/data/contacts-api.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/app/features/contacts/data/with-related-deals.ts', LF will be replaced by CRLF the next time Git touches it
+dfb2cf8 WIP phase 5: contacts store, related deals, lazy contact directory
+
+Command exited with code 1
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="read" data-tool-name="read_file"><details>
+<summary>Tool use: **read_file**</summary>
+
+Read `deal-editor.ts`, lines 196 to 222
+
+**Input:**
+
+- endLine: `240`
+- filePath: `c:\Projects\sages-angular-adv-1126\src\app\features\deals\ui\deal-editor\deal-editor.ts`
+- startLine: `196`
+
+**Result:**
+
+```
+  protected removeTask(index: number): void {
+    this.model.update((value) => ({
+      ...value,
+      tasks: value.tasks.filter((_, i) => i !== index),
+    }));
+    this.dealForm().markAsDirty();
+  }
+
+  hasUnsavedChanges(): boolean {
+    return this.dealForm().dirty();
+  }
+}
+
+export type PartialPartial<T, F extends keyof T> = Omit<T, F> & Partial<Pick<T, F>>;
+
+export type DealFormDraft = PartialPartial<Deal, 'id' | 'accountId' | 'contactId'>;
+
+export function emptyDeal(): DealFormDraft {
+  return {
+    title: '',
+    summary: '',
+    stage: 'new',
+    value: { amount: 0, currency: 'USD' },
+    isPublic: false,
+  };
+}
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="read" data-tool-name="read_file"><details>
+<summary>Tool use: **read_file**</summary>
+
+Read `deal-list-item.ts`
+
+**Input:**
+
+- endLine: `80`
+- filePath: `c:\Projects\sages-angular-adv-1126\src\app\features\deals\ui\deal-list-item\deal-list-item.ts`
+- startLine: `1`
+
+**Result:**
+
+```
+import { CurrencyPipe } from '@angular/common';
+import { Component, input } from '@angular/core';
+import { Deal } from '../../model/deal.model';
+import { AccountNamePipe } from '../pipes/account-name-pipe';
+import { DealStageBadge } from '../deal-stage-badge/deal-stage-badge';
+
+@Component({
+  selector: 'app-deal-list-item',
+  imports: [AccountNamePipe, CurrencyPipe, DealStageBadge],
+  host: {
+    class: 'block group',
+    '[attr.data-selected]': 'selected()',
+  },
+  template: `
+   <div>
+     <p class="truncate text-title-sm">{{ deal().title }} — {{ deal().accountId | accountName }}</p>
+    <div class=" flex justify-between">
+      <p class="text-body-sm text-on-surface-variant flex-1 group-data-[selected=true]:text-on-secondary-container">
+        {{ deal().value.amount | currency: deal().value.currency : 'symbol' : '1.0-0' }}
+      </p>
+      <app-deal-stage-badge [stage]="deal().stage" />
+    </div>
+   </div>
+  `,
+})
+export class DealListItem {
+  readonly deal = input.required<Deal>();
+  readonly selected = input(false);
+}
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="read" data-tool-name="read_file"><details>
+<summary>Tool use: **read_file**</summary>
+
+Read `deal-item-tpl.ts`
+
+**Input:**
+
+- endLine: `60`
+- filePath: `c:\Projects\sages-angular-adv-1126\src\app\features\deals\ui\deal-item-tpl\deal-item-tpl.ts`
+- startLine: `1`
+
+**Result:**
+
+```
+import { Directive, inject, TemplateRef } from '@angular/core';
+import { Deal } from '../../model/deal.model';
+
+export interface DealItemContext {
+  $implicit: Deal;
+  selected: boolean;
+}
+
+@Directive({
+  selector: '[appDealItemTpl]',
+})
+export class DealItemTpl {
+  readonly templateRef = inject<TemplateRef<DealItemContext>>(TemplateRef);
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- predicate is read by Angular's template type-checker
+  static ngTemplateContextGuard(_dir: DealItemTpl, _ctx: unknown): _ctx is DealItemContext {
+    return true;
+  }
+}
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="read" data-tool-name="read_file"><details>
+<summary>Tool use: **read_file**</summary>
+
+Read `deal-master-list.ts`, lines 78 to 86
+
+**Input:**
+
+- endLine: `120`
+- filePath: `c:\Projects\sages-angular-adv-1126\src\app\features\deals\ui\deal-master-list\deal-master-list.ts`
+- startLine: `78`
+
+**Result:**
+
+```
+  protected readonly selectedValue = computed(() => {
+    return this.selectedId() ? [this.selectedId()] : null;
+  });
+
+  protected onValueChange([id]: (string | null)[]): void {
+    this.dealSelected.emit(id);
+  }
+}
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="run_in_terminal"><details>
+<summary>Tool use: **run_in_terminal**</summary>
+
+Running ` cd /c/Projects/sages-angular-adv-1126 && npx ng g c features/deals/pages/dea...`
+
+Generate the routed deal pages, ContactPicker and ContactRelatedDeals, then rename pages to *.page.ts
+
+```bash
+cd /c/Projects/sages-angular-adv-1126 && npx ng g c features/deals/pages/deals-layout && npx ng g c features/deals/pages/deal-placeholder && npx ng g c features/deals/pages/deal-details && npx ng g c features/deals/pages/deal-tasks && npx ng g c features/deals/pages/deal-edit && npx ng g c features/deals/pages/deal-create && npx ng g c features/deals/ui/contact-picker && npx ng g c features/contacts/ui/contact-related-deals && for p in deals-layout deal-placeholder deal-details deal-tasks deal-edit deal-create; do mv src/app/features/deals/pages/$p/$p.ts src/app/features/deals/pages/$p/$p.page.ts; done && cat src/app/features/deals/pages/deal-edit/deal-edit.page.ts
+```
+
+**Result:**
+
+```
+CREATE src/app/features/deals/pages/deals-layout/deals-layout.ts (273 bytes)
+CREATE src/app/features/deals/pages/deal-placeholder/deal-placeholder.ts (285 bytes)
+CREATE src/app/features/deals/pages/deal-details/deal-details.ts (273 bytes)
+CREATE src/app/features/deals/pages/deal-tasks/deal-tasks.ts (267 bytes)
+CREATE src/app/features/deals/pages/deal-edit/deal-edit.ts (264 bytes)
+CREATE src/app/features/deals/pages/deal-create/deal-create.ts (270 bytes)
+CREATE src/app/features/deals/ui/contact-picker/contact-picker.ts (279 bytes)
+CREATE src/app/features/contacts/ui/contact-related-deals/contact-related-deals.ts (299 bytes)
+import { Component } from '@angular/core';
+
+@Component({
+  imports: [],
+  selector: 'app-deal-edit',
+  styles: `
+    :host {
+      display: block;
+    }
+  `,
+  template: ` <p>deal-edit works!</p> `,
+})
+export class DealEdit {}
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="read" data-tool-name="read_file"><details>
+<summary>Tool use: **read_file**</summary>
+
+Read `signals.d.ts`, lines 500 to 700
+
+**Input:**
+
+- endLine: `700`
+- filePath: `c:\Projects\sages-angular-adv-1126\node_modules\@angular\forms\types\signals.d.ts`
+- startLine: `500`
+
+**Result:**
+
+```
+ *
+ * @param path The target path to add the validation logic to.
+ * @param logic A `TreeValidator` that returns the current validation errors.
+ *   Errors returned by the validator may specify a target field to indicate an error on a child field.
+ * @template TValue The type of value stored in the field the logic is bound to.
+ * @template TPathKind The kind of path the logic is bound to (a root path, child path, or item of an array)
+ *
+ * @see [Cross-field validation](guide/forms/signals/cross-field-logic#using-validatetree)
+ * @see [Custom validation rules](guide/forms/signals/validation#using-validatetree)
+ *
+ * @category logic
+ * @publicApi 22.0
+ */
+declare function validateTree<TValue, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, logic: NoInfer<TreeValidator<TValue, TPathKind>>): void;
+
+/**
+ * Asserts whether a value is a `FieldTree`.
+ * @param value Value to be checked.
+ *
+ * @publicApi 22.1
+ */
+declare function isFieldTree(value: unknown): value is FieldTree<unknown>;
+
+/**
+ * The base set of properties shared by all form control contracts.
+ *
+ * @see [Custom form controls](guide/forms/signals/custom-controls)
+ *
+ * @category control
+ * @publicApi 22.0
+ */
+interface FormUiControl<TValue> {
+    /**
+     * An input to receive the errors for the field. If implemented, the `Field` directive will
+     * automatically bind errors from the bound field to this input.
+     */
+    readonly errors?: InputSignal<readonly ValidationError.WithOptionalFieldTree[]> | InputSignalWithTransform<readonly ValidationError.WithOptionalFieldTree[], unknown>;
+    /**
+     * An input to receive the disabled status for the field. If implemented, the `Field` directive
+     * will automatically bind the disabled status from the bound field to this input.
+     */
+    readonly disabled?: InputSignal<boolean> | InputSignalWithTransform<boolean, unknown>;
+    /**
+     * An input to receive the reasons for the disablement of the fi
+… (output truncated)
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="search" data-tool-name="grep_search"><details>
+<summary>Tool use: **grep_search**</summary>
+
+Searched for regex `emptyDeal|DealFormDraft|PartialPartial|IHaveUnsavedChanges|SharedModule|SharedImports` (`**/src/**`), 27 results
+
+**Input:**
+
+- includePattern: `src/**`
+- isRegexp: `true`
+- query: `emptyDeal|DealFormDraft|PartialPartial|IHaveUnsavedChanges|SharedModule|SharedImports`
+
+**Result:**
+
+```
+Found 27 matches in 7 files for "emptyDeal|DealFormDraft|PartialPartial|IHaveUnsavedChanges|SharedModule|SharedImports"
+
+src/app/features/deals/pages/deals-list/deals-list.page.ts
+12:import { MasterDetailLayout, NeverPipe, SharedModule } from '@shared';
+17:import { DealEditor, IHaveUnsavedChanges } from '../../ui/deal-editor/deal-editor';
+40:    SharedModule,
+171:  editorRef = viewChild(IHaveUnsavedChanges);
+
+src/app/features/deals/ui/deal-details-card/deal-details-card.ts
+3:import { SharedImports } from '@shared';
+11:  imports: [SharedImports, AccountNamePipe, ContactNamePipe, CurrencyPipe, DealStageBadge],
+
+src/app/features/deals/ui/deal-editor/deal-editor.ts
+17:import { SharedImports } from '@shared';
+22:export interface IHaveUnsavedChanges {
+25:export const IHaveUnsavedChanges = new InjectionToken<IHaveUnsavedChanges>('IHaveUnsavedChanges');
+81:  imports: [SharedImports, FormField],
+159:  providers: [{ provide: IHaveUnsavedChanges, useExisting: DealEditor }],
+161:export class DealEditor implements IHaveUnsavedChanges {
+209:export type PartialPartial<T, F extends keyof T> = Omit<T, F> & Partial<Pick<T, F>>;
+211:export type DealFormDraft = PartialPartial<Deal, 'id' | 'accountId' | 'contactId'>;
+213:export function emptyDeal(): DealFormDraft {
+
+src/app/features/deals/ui/deal-task-composer/deal-task-composer.ts
+3:import { SharedImports } from '@shared';
+15:  imports: [SharedImports, FormField],
+
+src/app/features/deals/ui/deal-tasks-card/deal-tasks-card.ts
+2:import { SharedImports } from '@shared';
+9:  imports: [SharedImports, DealTaskComposer, TaskPriorityBadge],
+
+src/app/features/deals/ui/deals-filter/deals-filter.ts
+2:import { SharedModule } from '@shared';
+8:  imports: [SharedModule],
+
+src/app/shared/shared-module.ts
+33:// const SharedImports = [
+79:export const SharedImports = [
+88:  imports: [SharedImports],
+90:    // ...SharedImports
+91:    SharedImports,
+94:export class SharedModule {}
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="read" data-tool-name="read_file"><details>
+<summary>Tool use: **read_file**</summary>
+
+Read `shared-module.ts`, lines 76 to 95
+
+**Input:**
+
+- endLine: `125`
+- filePath: `c:\Projects\sages-angular-adv-1126\src\app\shared\shared-module.ts`
+- startLine: `76`
+
+**Result:**
+
+```
+  RouterLinkActive,
+];
+
+export const SharedImports = [
+  CommonModule,
+  SharedForms,
+  //
+  SharedUI,
+];
+
+@NgModule({
+  declarations: [],
+  imports: [SharedImports],
+  exports: [
+    // ...SharedImports
+    SharedImports,
+  ],
+})
+export class SharedModule {}
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **deal-editor.ts**</summary>
+
+@@ lines 151-154 @@
+
+```
+  }
+        </mat-card-content>
+        <mat-card-actions align="end">
+          <button matButton="text" type="button" (click)="cancelled.emit()">Cancel</button>
+          <button matButton="filled" type="submit" [disabled]="saving()
+```
+
+@@ lines 122-122 @@
+
+```
+@if (showTasks()) {
+            
+```
+
+@@ lines 110-113 @@
+
+```
+app-contact-picker
+              [formField]="dealForm.contactId"
+              [options]="contactOptions()"
+              [selectedLabel]="contactLabel()"
+              [loading]="contactLoading()"
+              (searched)="contactSearch.emit($event)"
+            /
+```
+
+@@ lines 86-86 @@
+
+```
+{{ heading() }}
+```
+
+@@ lines 81-81 @@
+
+```
+, ContactPicker
+```
+
+@@ lines 69-69 @@
+
+```
+
+    contactId: deal?.contactId ?? '',
+```
+
+@@ lines 48-48 @@
+
+```
+
+  contactId: z.string().min(1, 'Contact is required'),
+```
+
+@@ lines 1-31 @@
+
+```
+ Component, effect, input, linkedSignal, output, untracked } from '@angular/core';
+import {
+  form,
+  FormField,
+  SchemaPathTree,
+  submit,
+  validateStandardSchema,
+} from '@angular/forms/signals';
+import { HasUnsavedChanges, SharedImports } from '@shared';
+import { z } from 'zod';
+import { ContactOption } from '../../data/contact-directory.port';
+import { Deal, DEAL_STAGE_LABELS, DealDraft, DealStage } from '../../model/deal.model';
+import { DealTask, TASK_PRIORITY_LABELS, TaskPriority } from '../../model/deal-task.model';
+import { ContactPicker } from '../contact-picker/contact-picker';
+
+export interface DealEditorValue {
+  title: string;
+  summary: string;
+  stage: DealStage;
+  amount: number;
+  contactId: string
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="read" data-tool-name="read_file"><details>
+<summary>Tool use: **read_file**</summary>
+
+Read `deal-editor.ts`, lines 96 to 219
+
+**Input:**
+
+- endLine: `225`
+- filePath: `c:\Projects\sages-angular-adv-1126\src\app\features\deals\ui\deal-editor\deal-editor.ts`
+- startLine: `96`
+
+**Result:**
+
+```
+              <mat-select [formField]="dealForm.stage">
+                @for (stage of stages; track stage) {
+                  <mat-option [value]="stage">{{ stageLabels[stage] }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+            <app-contact-picker
+              [formField]="dealForm.contactId"
+              [options]="contactOptions()"
+              [selectedLabel]="contactLabel()"
+              [loading]="contactLoading()"
+              (searched)="contactSearch.emit($event)"
+            />
+            <mat-form-field class="md:col-span-2">
+              <mat-label>Description</mat-label>
+              <textarea matInput rows="4" [formField]="dealForm.summary"></textarea>
+            </mat-form-field>
+          </div>
+
+          <mat-checkbox class="mt-4" [formField]="dealForm.isPublic">Public deal</mat-checkbox>
+
+          @if (showTasks()) {
+            <div class="mt-6 flex items-center justify-between">
+            <h3 class="font-medium">Tasks</h3>
+            <button matButton="text" type="button" (click)="addTask()">Add task</button>
+          </div>
+
+          <div class="mt-2 flex flex-col gap-3">
+            @for (task of dealForm.tasks; track $index; let i = $index) {
+              <div class="grid grid-cols-1 items-start gap-3 md:grid-cols-[1fr_10rem_auto]">
+                <mat-form-field>
+                  <mat-label>Task title</mat-label>
+                  <input matInput type="text" [formField]="task.title" />
+                  <mat-error>{{ task.title().errors()[0]?.message }}</mat-error>
+                </mat-form-field>
+                <mat-form-field>
+                  <mat-label>Priority</mat-label>
+                  <mat-select [formField]="task.priority">
+                    @for (priority of priorities; track priority) {
+                      <mat-option [value]="priority">{{ priorityLabels[priority] }}</mat-option>
+                    }
+                  </mat-select>
+                </m
+… (output truncated)
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **deal-editor.ts**</summary>
+
+@@ lines 206-216 @@
+
+```
+function toDealDraft(value: DealEditorValue): DealDraft {
+  return {
+    title: value.title,
+    summary: value.summary,
+    stage: value.stage,
+    value: { amount: value.amount, currency: 'USD' },
+    contactId: value.contactId,
+    isPublic: value.isPublic
+```
+
+@@ lines 156-163 @@
+
+```
+})
+export class DealEditor implements HasUnsavedChanges {
+  readonly deal = input<Deal>();
+  readonly tasks = input<readonly DealTask[]>([]);
+  readonly heading = input('Edit Deal');
+  // Tasks need a saved deal, so the create page turns them off
+  readonly showTasks = input(true);
+  readonly saving = input(false);
+  readonly contactOptions = input<readonly ContactOption[]>([]);
+  readonly contactLabel = input('');
+  readonly contactLoading = input(false);
+
+  readonly saved = output<DealEditorValue>();
+  readonly cancelled = output<void>();
+  readonly contactSearch = output<string
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="multi_replace_string_in_file"><details>
+<summary>Tool use: **multi_replace_string_in_file**</summary>
+
+Multi-Replace String in Files
+
+**Input:**
+
+- explanation: `Register Material autocomplete in the shared form imports`
+- replacements: `[{"filePath": "c:\\Projects\\sages-angular-adv-1126\\src\\app\\shared\\shared-module.ts", "newString">: "import { MatButton } from '@angular/material/button';", "oldString": "import { MatButton } from '@angular/material/button';"}]`
+
+**Result:**
+
+```
+ERROR: Your input to the tool was invalid (must be array)
+Please check your input and try again.
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **shared-module.ts**</summary>
+
+@@ lines 37-37 @@
+
+```
+Autocomplete,
+  MatAutocompleteTrigger,
+  Mat
+```
+
+@@ lines 4-4 @@
+
+```
+Autocomplete, MatAutocompleteTrigger } from '@angular/material/autocomplete';
+import { Mat
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="read" data-tool-name="read_file"><details>
+<summary>Tool use: **read_file**</summary>
+
+Read `contact-picker.ts`
+
+**Input:**
+
+- endLine: `20`
+- filePath: `c:\Projects\sages-angular-adv-1126\src\app\features\deals\ui\contact-picker\contact-picker.ts`
+- startLine: `1`
+
+**Result:**
+
+```
+import { Component } from '@angular/core';
+
+@Component({
+  imports: [],
+  selector: 'app-contact-picker',
+  styles: `
+    :host {
+      display: block;
+    }
+  `,
+  template: ` <p>contact-picker works!</p> `,
+})
+export class ContactPicker {}
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **contact-picker.ts**</summary>
+
+@@ lines 1-13 @@
+
+```
+, effect, input, linkedSignal, model, output, signal } from '@angular/core';
+import { FormValueControl, ValidationError } from '@angular/forms/signals';
+import { SharedForms } from '@shared';
+import { ContactOption } from '../../data/contact-directory.port';
+
+const SEARCH_DEBOUNCE_MS = 300;
+
+// Autocomplete over options the parent supplies; `value` is the picked contact id
+@Component({
+  imports: [...SharedForms],
+  selector: 'app-contact-picker',
+  styles: `
+    :host {
+      display: block;
+    }
+  `,
+  template: `
+    <mat-form-field class="w-full">
+      <mat-label>Contact</mat-label>
+      <input
+        matInput
+        type="text"
+        autocomplete="off"
+        [matAutocomplete]="auto"
+        [value]="text()"
+        [disabled]="disabled()"
+        [attr.aria-invalid]="invalid()"
+        (input)="onInput($event)"
+        (focus)="searched.emit(text().trim())"
+        (blur)="touch.emit()"
+      />
+      <mat-autocomplete
+        #auto="matAutocomplete"
+        [displayWith]="displayLabel"
+        (optionSelected)="value.set($event.option.value)"
+      >
+        @for (option of options(); track option.id) {
+          <mat-option [value]="option.id">
+            {{ option.label }}
+            @if (option.description) {
+              <span class="ml-2 text-body-sm text-on-surface-variant">{{ option.description }}</span>
+            }
+          </mat-option>
+        }
+      </mat-autocomplete>
+      @if (loading()) {
+        <mat-hint>Searching ...</mat-hint>
+      }
+    </mat-form-field>
+    @if (touched() && errors()[0]; as error) {
+      <p role="alert" class="px-4 text-body-sm text-error">{{ error.message }}</p>
+    }
+  `,
+})
+export class ContactPicker implements FormValueControl<string> {
+  readonly value = model('');
+  readonly errors = input<readonly ValidationError.WithOptionalFieldTree[]>([]);
+  readonly disabled = input(false);
+  readonly invalid = input(false);
+  readonly touched = input(false);
+  readonly touch = output<void>();
+
+  readonly options = input<readonly ContactOption[]>([]);
+  // Text for the current `value`; the parent knows it, the picker only holds an id
+  readonly selectedLabel = input('');
+  readonly loading = input(false);
+  readonly searched = output<string>();
+
+  protected readonly text = linkedSignal(() => this.selectedLabel());
+
+  // null skips the initial run, so opening the form does not trigger a search
+  private readonly pendingQuery = signal<string | null>(null);
+
+  protected readonly displayLabel = (id: string): string =>
+    this.options().find((option) => option.id === id)?.label ?? this.selectedLabel();
+
+  constructor() {
+    effect((onCleanup) => {
+      const query = this.pendingQuery();
+      if (query === null) return;
+
+      const timerId = setTimeout(() => this.searched.emit(query), SEARCH_DEBOUNCE_MS);
+      onCleanup(() => clearTimeout(timerId));
+    });
+  }
+
+  protected onInput(event: Event): void {
+    const text = (event.target as HTMLInputElement).value;
+    this.text.set(text);
+    // Typing drops the picked contact until the user picks another
+    this.value.set('');
+    this.pendingQuery.set(text.trim());
+  }
+
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="run_in_terminal"><details>
+<summary>Tool use: **run_in_terminal**</summary>
+
+Running ` cd /c/Projects/sages-angular-adv-1126/src/app/features/deals && git rm -q -r...`
+
+Remove the seed data, account/contact models, name pipes and the old list page that the new routed pages replace
+
+```bash
+cd /c/Projects/sages-angular-adv-1126/src/app/features/deals && git rm -q -r ui/pipes data/deals-seed.ts model/account.model.ts model/contact.model.ts pages/deals-list && git status --short . | head -20
+```
+
+**Result:**
+
+```
+D  data/deals-seed.ts
+D  model/account.model.ts
+D  model/contact.model.ts
+D  pages/deals-list/deals-list.page.ts
+ M ui/deal-details-card/deal-details-card.ts
+ M ui/deal-editor/deal-editor.ts
+ M ui/deal-list-item/deal-list-item.ts
+D  ui/pipes/account-name-pipe.ts
+D  ui/pipes/contact-name-pipe.ts
+?? pages/
+?? ui/contact-picker/
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **deal-details-card.ts**</summary>
+
+@@ lines 58-58 @@
+
+```
+// Shown instead of the raw contact id once known
+  readonly contactName = input<string>();
+  
+```
+
+@@ lines 35-35 @@
+
+```
+contactName() ?? deal.contactId
+```
+
+@@ lines 21-21 @@ (deleted)
+
+@@ lines 5-11 @@
+
+```
+DealStageBadge } from '../deal-stage-badge/deal-stage-badge';
+
+@Component({
+  selector: 'app-deal-details-card',
+  imports: [SharedImports
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+
+```
+
+```
+
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **deal-list-item.ts**</summary>
+
+@@ lines 16-16 @@ (deleted)
+
+@@ lines 4-9 @@
+
+```
+DealStageBadge } from '../deal-stage-badge/deal-stage-badge';
+
+@Component({
+  selector: 'app-deal-list-item',
+  imports: [
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **deals.store.ts**</summary>
+
+@@ lines 55-55 @@
+
+```
+
+  withComputed(({ inFlightIds }) => ({
+    listLoading: computed(() => inFlightIds().includes(dealsCacheKey.list)),
+  })),
+```
+
+@@ lines 1-3 @@
+
+```
+computed, inject } from '@angular/core';
+import { tapResponse } from '@ngrx/operators';
+import { patchState, signalStore, withComputed
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+
+```
+
+```
+
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **deals.ports.ts**</summary>
+
+@@ lines 13-13 @@
+
+```
+lis
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="create_file"><details>
+<summary>Tool use: **create_file**</summary>
+
+Created `inject-contact-lookup.ts`
+
+**Input:**
+
+- content:
+
+```
+import { computed, effect, inject, signal, untracked } from '@angular/core';
+import { CONTACT_DIRECTORY } from './contact-directory.port';
+
+// State for a contact picker: options for the typed query, plus the label of the selected contact
+export function injectContactLookup(selectedId: () => string | undefined) {
+  const directory = inject(CONTACT_DIRECTORY);
+  const query = signal('');
+
+  const selected = computed(() => {
+    const id = selectedId();
+    return id ? directory.optionsById()[id] : undefined;
+  });
+
+  effect(() => {
+    const id = selectedId();
+    if (id) untracked(() => directory.load(id));
+  });
+
+  return {
+    label: computed(() => selected()?.label),
+    loading: directory.loading,
+    // Before the search answers, the selected contact keeps its label visible
+    options: computed(() => directory.searchResults()[query()] ?? (selected() ? [selected()!] : [])),
+    search(text: string): void {
+      query.set(text);
+      directory.search(text);
+    },
+  };
+}
+
+```
+
+- filePath: `c:\Projects\sages-angular-adv-1126\src\app\features\deals\data\inject-contact-lookup.ts`
+
+**Result:**
+
+```
+The following files were successfully edited:
+c:\Projects\sages-angular-adv-1126\src\app\features\deals\data\inject-contact-lookup.ts
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **deals.store.ts**</summary>
+
+@@ lines 57-57 @@
+
+```
+
+    creating: computed(() => inFlightIds().includes(NEW_DEAL_ID)),
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+
+```
+
+```
+
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **deals.ports.ts**</summary>
+
+@@ lines 37-37 @@
+
+```
+creating: Signal
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+
+```
+
+```
+
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **deal-editor.ts**</summary>
+
+@@ lines 210-210 @@
+
+```
+
+
+  // Lets the parent leave the page right after saving without tripping the unsaved-changes guard
+  markPristine(): void {
+    this.dealForm().reset();
+  }
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **inject-contact-lookup.ts**</summary>
+
+@@ lines 1-1 @@
+
+```
+import { computed, effect, inject, signal, untracked } from '@angular/core';
+import { CONTACT_DIRECTORY } from './contact-directory.port';
+
+// State for a contact picker: options for the typed query, plus the label of the selected contact
+export function injectContactLookup(selectedId: () => string | undefined) {
+  const directory = inject(CONTACT_DIRECTORY);
+  const query = signal('');
+
+  const selected = computed(() => {
+    const id = selectedId();
+    return id ? directory.optionsById()[id] : undefined;
+  });
+
+  effect(() => {
+    const id = selectedId();
+    if (id) untracked(() => directory.load(id));
+  });
+
+  return {
+    label: computed(() => selected()?.label),
+    loading: directory.loading,
+    // Before the search answers, the selected contact keeps its label visible
+    options: computed(() => directory.searchResults()[query()] ?? (selected() ? [selected()!] : [])),
+    search(text: string): void {
+      query.set(text);
+      directory.search(text);
+    },
+  };
+}
+
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **inject-contact-lookup.ts**</summary>
+
+@@ lines 23-23 @@
+
+```
+{
+      const found = directory.searchResults()[query()];
+      if (found) return found;
+      const current = selected();
+      return current ? [current] : [];
+    }
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+
+```
+
+```
+
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **deals-layout.page.ts**</summary>
+
+@@ lines 1-13 @@
+
+```
+, inject, input } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
+import { MasterDetailLayout, SharedUI } from '@shared';
+import { filter, map, startWith } from 'rxjs';
+import { DEAL_LIST_SOURCE } from '../../data/deals.ports';
+import { DealItemTpl } from '../../ui/deal-item-tpl/deal-item-tpl';
+import { DealListItem } from '../../ui/deal-list-item/deal-list-item';
+import { DealMasterList } from '../../ui/deal-master-list/deal-master-list';
+import { DealsFilter } from '../../ui/deals-filter/deals-filter';
+
+@Component({
+  imports: [
+    ...SharedUI,
+    RouterOutlet,
+    MasterDetailLayout,
+    DealMasterList,
+    DealListItem,
+    DealItemTpl,
+    DealsFilter,
+  ],
+  selector: 'app-deals-layout-page',
+  template: `
+    <main class="bg-surface text-on-surface">
+      <app-master-detail-layout>
+        <app-deal-master-list
+          appMasterDetailList
+          [deals]="deals()"
+          [selectedId]="selectedDealId() ?? null"
+          (dealSelected)="onSelectDeal($event)"
+        >
+          <ng-container *appDealItemTpl="let deal; selected as isSelected">
+            <app-deal-list-item [deal]="deal" />
+          </ng-container>
+
+          <app-deals-filter
+            app-master-list-header
+            [value]="dealFilter() ?? ''"
+            (debouncedChange)="onFilterChange($event)"
+          />
+
+          <a
+            app-master-list-footer
+            matButton="outlined"
+            routerLink="new"
+            queryParamsHandling="preserve"
+          >
+            Create new
+          </a>
+        </app-deal-master-list>
+
+        <div>
+          @if (error(); as message) {
+            <p role="alert" class="mb-2 text-body-md text-error">{{ message }}</p>
+          }
+          @if (listLoading()) {
+            <p class="mb-2 text-body-md">Loading ...</p>
+          }
+          <router-outlet />
+        </div>
+      </app-master-detail-layout>
+    </main>
+  `,
+})
+export class DealsLayoutPage {
+  private readonly source = inject(DEAL_LIST_SOURCE);
+  private readonly router = inject(Router);
+
+  // Bound from the ?dealFilter= query param (withComponentInputBinding)
+  readonly dealFilter = input<string>();
+
+  protected readonly deals = this.source.selectFilteredDeals(this.dealFilter);
+  protected readonly listLoading = this.source.listLoading;
+  protected readonly error = this.source.selectError;
+
+  // A parent route does not receive child params, so read them from the router state
+  protected readonly selectedDealId = toSignal(
+    this.router.events.pipe(
+      filter((event) => event instanceof NavigationEnd),
+      startWith(null),
+      map(() => this.deepestRoute().paramMap.get('dealId') ?? undefined),
+    ),
+  );
+
+  constructor() {
+    this.source.loadDeals();
+  }
+
+  protected onSelectDeal(dealId: string | null): void {
+    if (!dealId) return;
+    void this.router.navigate(['/deals', dealId], { queryParamsHandling: 'preserve' });
+  }
+
+  protected onFilterChange(text: string): void {
+    void this.router.navigate([], {
+      queryParams: { dealFilter: text || null },
+      queryParamsHandling: 'merge',
+      replaceUrl: true,
+    });
+  }
+
+  private deepestRoute() {
+    let route = this.router.routerState.snapshot.root;
+    while (route.firstChild) route = route.firstChild;
+    return route;
+  }
+
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+
+```
+
+```
+
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **deal-placeholder.page.ts**</summary>
+
+@@ lines 4-13 @@
+
+```
+selector: 'app-deal-placeholder-page',
+  template: `
+    <p class="my-10 text-center text-body-md text-on-surface-variant">Select a deal</p>
+  `,
+})
+export class DealPlaceholderPage
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="task" data-tool-name="manage_todo_list"><details>
+<summary>Tool use: **manage_todo_list**</summary>
+
+Starting: *Implement UI changes for deals and contacts* (4/4)
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **deal-details.page.ts**</summary>
+
+@@ lines 1-13 @@
+
+```
+, inject, input } from '@angular/core';
+import { Router, RouterOutlet } from '@angular/router';
+import { DEAL_DETAILS_SOURCE } from '../../data/deals.ports';
+import { injectContactLookup } from '../../data/inject-contact-lookup';
+import { DealDetailsCard } from '../../ui/deal-details-card/deal-details-card';
+
+@Component({
+  imports: [DealDetailsCard, RouterOutlet],
+  selector: 'app-deal-details-page',
+  template: `
+    @if (error(); as message) {
+      <p role="alert" class="mb-2 text-body-md text-error">{{ message }}</p>
+    }
+    @if (loading()) {
+      <p class="mb-2 text-body-md">Loading ...</p>
+    }
+
+    @if (deal(); as value) {
+      <app-deal-details-card
+        [deal]="value"
+        [contactName]="contact.label()"
+        (editRequested)="onEdit()"
+      />
+      <div class="mt-4">
+        <router-outlet />
+      </div>
+    }
+  `,
+})
+export class DealDetailsPage {
+  private readonly source = inject(DEAL_DETAILS_SOURCE);
+  private readonly router = inject(Router);
+
+  // Bound from the :dealId route param (withComponentInputBinding)
+  readonly dealId = input.required<string>();
+
+  protected readonly deal = this.source.selectDealById(this.dealId);
+  protected readonly loading = this.source.selectLoadingById(this.dealId);
+  protected readonly error = this.source.selectError;
+  protected readonly contact = injectContactLookup(() => this.deal()?.contactId);
+
+  constructor() {
+    this.source.loadDeal(this.dealId);
+  }
+
+  protected onEdit(): void {
+    void this.router.navigate(['/deals', this.dealId(), 'edit'], { queryParamsHandling: 'preserve' });
+  }
+
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+
+```
+
+```
+
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **deal-tasks.page.ts**</summary>
+
+@@ lines 1-13 @@
+
+```
+, inject, input } from '@angular/core';
+import { TASKS_COMMANDS, TASKS_READER } from '../../data/deals.ports';
+import { TaskPriority } from '../../model/deal-task.model';
+import { DealTasksCard } from '../../ui/deal-tasks-card/deal-tasks-card';
+
+@Component({
+  imports: [DealTasksCard],
+  selector: 'app-deal-tasks-page',
+  template: `
+    @if (error(); as message) {
+      <p role="alert" class="mb-2 text-body-md text-error">{{ message }}</p>
+    }
+    <app-deal-tasks-card
+      [tasks]="tasks()"
+      (taskAdded)="onTaskAdded($event)"
+      (taskToggled)="onTaskToggled($event)"
+    />
+  `,
+})
+export class DealTasksPage {
+  private readonly reader = inject(TASKS_READER);
+  private readonly commands = inject(TASKS_COMMANDS);
+
+  // Inherited from the :dealId parent route (paramsInheritanceStrategy: 'always')
+  readonly dealId = input.required<string>();
+
+  protected readonly tasks = this.reader.selectTasksByDealId(this.dealId);
+  protected readonly error = this.reader.selectError;
+
+  constructor() {
+    this.commands.loadTasksForDeal(this.dealId);
+  }
+
+  protected onTaskAdded(task: { title: string; priority: TaskPriority }): void {
+    this.commands.createTask({ dealId: this.dealId(), draft: task });
+  }
+
+  protected onTaskToggled(taskId: string): void {
+    const task = this.tasks().find((candidate) => candidate.id === taskId);
+    if (!task) return;
+    this.commands.updateTask({ dealId: this.dealId(), taskId, changes: { done: !task.done } });
+  }
+
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **deal-edit.page.ts**</summary>
+
+@@ lines 1-13 @@
+
+```
+, inject, input, viewChild } from '@angular/core';
+import { Router } from '@angular/router';
+import { HasUnsavedChanges } from '@shared';
+import { DEAL_EDIT_SOURCE, TASKS_COMMANDS, TASKS_READER } from '../../data/deals.ports';
+import { injectContactLookup } from '../../data/inject-contact-lookup';
+import { DealEditor, DealEditorValue, toDealDraft } from '../../ui/deal-editor/deal-editor';
+
+@Component({
+  imports: [DealEditor],
+  selector: 'app-deal-edit-page',
+  template: `
+    @if (error(); as message) {
+      <p role="alert" class="mb-2 text-body-md text-error">{{ message }}</p>
+    }
+    @if (deal(); as value) {
+      <app-deal-editor
+        [deal]="value"
+        [tasks]="tasks()"
+        [saving]="saving()"
+        [contactOptions]="contact.options()"
+        [contactLabel]="contact.label() ?? ''"
+        [contactLoading]="contact.loading()"
+        (contactSearch)="contact.search($event)"
+        (saved)="onSaved($event)"
+        (cancelled)="goToDetails()"
+      />
+    }
+  `,
+})
+export class DealEditPage implements HasUnsavedChanges {
+  private readonly source = inject(DEAL_EDIT_SOURCE);
+  private readonly tasksReader = inject(TASKS_READER);
+  private readonly tasksCommands = inject(TASKS_COMMANDS);
+  private readonly router = inject(Router);
+
+  // Bound from the :dealId route param (withComponentInputBinding)
+  readonly dealId = input.required<string>();
+
+  private readonly editor = viewChild(DealEditor);
+
+  protected readonly deal = this.source.selectDealById(this.dealId);
+  protected readonly saving = this.source.selectLoadingById(this.dealId);
+  protected readonly error = this.source.selectError;
+  protected readonly tasks = this.tasksReader.selectTasksByDealId(this.dealId);
+  protected readonly contact = injectContactLookup(() => this.deal()?.contactId);
+
+  constructor() {
+    this.source.loadDeal(this.dealId);
+    this.tasksCommands.loadTasksForDeal(this.dealId);
+  }
+
+  hasUnsavedChanges(): boolean {
+    return this.editor()?.hasUnsavedChanges() ?? false;
+  }
+
+  protected onSaved(value: DealEditorValue): void {
+    this.source.updateDeal({
+      id: this.dealId(),
+      changes: toDealDraft(value),
+      onSaved: () => {
+        this.editor()?.markPristine();
+        this.goToDetails();
+      },
+    });
+  }
+
+  protected goToDetails(): void {
+    void this.router.navigate(['/deals', this.dealId()], { queryParamsHandling: 'preserve' });
+  }
+
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+
+```
+
+```
+
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **deal-create.page.ts**</summary>
+
+@@ lines 1-13 @@
+
+```
+, inject, viewChild } from '@angular/core';
+import { Router } from '@angular/router';
+import { HasUnsavedChanges } from '@shared';
+import { DEAL_CREATE_SOURCE } from '../../data/deals.ports';
+import { injectContactLookup } from '../../data/inject-contact-lookup';
+import { DealEditor, DealEditorValue, toDealDraft } from '../../ui/deal-editor/deal-editor';
+
+@Component({
+  imports: [DealEditor],
+  selector: 'app-deal-create-page',
+  template: `
+    @if (error(); as message) {
+      <p role="alert" class="mb-2 text-body-md text-error">{{ message }}</p>
+    }
+    <app-deal-editor
+      heading="New Deal"
+      [showTasks]="false"
+      [saving]="creating()"
+      [contactOptions]="contact.options()"
+      [contactLoading]="contact.loading()"
+      (contactSearch)="contact.search($event)"
+      (saved)="onSaved($event)"
+      (cancelled)="onCancel()"
+    />
+  `,
+})
+export class DealCreatePage implements HasUnsavedChanges {
+  private readonly source = inject(DEAL_CREATE_SOURCE);
+  private readonly router = inject(Router);
+
+  private readonly editor = viewChild(DealEditor);
+
+  protected readonly creating = this.source.creating;
+  protected readonly error = this.source.selectError;
+  protected readonly contact = injectContactLookup(() => undefined);
+
+  hasUnsavedChanges(): boolean {
+    return this.editor()?.hasUnsavedChanges() ?? false;
+  }
+
+  protected onSaved(value: DealEditorValue): void {
+    this.source.createDeal({
+      draft: toDealDraft(value),
+      onCreated: (deal) => {
+        this.editor()?.markPristine();
+        void this.router.navigate(['/deals', deal.id], { queryParamsHandling: 'preserve' });
+      },
+    });
+  }
+
+  protected onCancel(): void {
+    void this.router.navigate(['/deals'], { queryParamsHandling: 'preserve' });
+  }
+
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="run_in_terminal"><details>
+<summary>Tool use: **run_in_terminal**</summary>
+
+Running ` cd /c/Projects/sages-angular-adv-1126 && F=$\(git status --short src/app/feat...`
+
+Format and type-check the deals UI changes
+
+```bash
+cd /c/Projects/sages-angular-adv-1126 && F=$(git status --short src/app/features/deals src/app/shared | grep -v '^D' | awk '{print $2}' | grep -E "\.ts$" | tr '\n' ' ') && P=$(find src/app/features/deals/pages src/app/features/deals/ui/contact-picker -name "*.ts" | tr '\n' ' ') && npx prettier --write $F $P >/dev/null; npx tsc --noEmit -p tsconfig.app.json 2>&1 | grep -E "^src" | cut -c1-250
+```
+
+**Result:**
+
+```
+src/app/features/contacts/pages/contact-details/contact-details.page.ts(39,44): error TS2339: Property 'getById' does not exist on type '{ entityMap: Signal<EntityMap<Contact>>; ids: Signal<EntityId[]>; searchByQuery: Signal<Record<string, SearchResu
+src/app/features/contacts/pages/contact-search/contact-search.page.ts(50,32): error TS2769: No overload matches this call.
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **deals.routes.ts**</summary>
+
+@@ lines 2-8 @@
+
+```
+unsavedChangesGuard } from '@shared';
+
+// DealsStore and TasksStore are root-scoped, so their cached entities outlive these routes.
+const routes: Routes = [
+  {
+    path: '',
+    loadComponent: () =>
+      import('./pages/deals-layout/deals-layout.page').then((m) => m.DealsLayoutPage),
+    children: [
+      {
+        path: '',
+        pathMatch: 'full',
+        loadComponent: () =>
+          import('./pages/deal-placeholder/deal-placeholder.page').then((m) => m.DealPlaceholderPage),
+      },
+      {
+        path: 'new',
+        canDeactivate: [unsavedChangesGuard],
+        loadComponent: () =>
+          import('./pages/deal-create/deal-create.page').then((m) => m.DealCreatePage),
+      },
+      {
+        path: ':dealId',
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import('./pages/deal-details/deal-details.page').then((m) => m.DealDetailsPage),
+            children: [
+              {
+                path: '',
+                loadComponent: () =>
+                  import('./pages/deal-tasks/deal-tasks.page').then((m) => m.DealTasksPage),
+              },
+            ],
+          },
+          {
+            path: 'edit',
+            canDeactivate: [unsavedChangesGuard],
+            loadComponent: () =>
+              import('./pages/deal-edit/deal-edit.page').then((m) => m.DealEditPage),
+          },
+        ],
+      },
+    ]
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="run_in_terminal"><details>
+<summary>Tool use: **run_in_terminal**</summary>
+
+Running ` cd /c/Projects/sages-angular-adv-1126 && F=$\(git status --short src/app/feat...`
+
+Lint the deals UI files
+
+```bash
+cd /c/Projects/sages-angular-adv-1126 && F=$(git status --short src/app/features/deals src/app/shared | grep -v '^D' | awk '{print $2}' | grep -E "\.ts$" | tr '\n' ' ') && P=$(find src/app/features/deals/pages src/app/features/deals/ui/contact-picker -name "*.ts" | tr '\n' ' ') && npx eslint $F $P; echo ESLINT=$?
+```
+
+**Result:**
+
+```
+
+C:\Projects\sages-angular-adv-1126\src\app\shared\shared-module.ts
+  29:10  error  'MatLineModule' is defined but never used  @typescript-eslint/no-unused-vars
+
+✖ 1 problem (1 error, 0 warnings)
+
+ESLINT=1
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **shared-module.ts**</summary>
+
+@@ lines 29-30 @@ (deleted)
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **contacts.store.ts**</summary>
+
+@@ lines 61-61 @@
+
+```
+True once the query has an answer, so "no results" is not shown before it arrives
+    selectSearched: (query: () => string) =>
+      computed(() => query() in store.searchByQuery()),
+
+    selectSearchLoading: (query: () => string) =>
+      store.selectLoadingById(() => contactsCacheKey.search(query())),
+
+    // 
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="read" data-tool-name="read_file"><details>
+<summary>Tool use: **read_file**</summary>
+
+Read `contact-related-deals.ts`
+
+**Input:**
+
+- endLine: `22`
+- filePath: `c:\Projects\sages-angular-adv-1126\src\app\features\contacts\ui\contact-related-deals\contact-related-deals.ts`
+- startLine: `1`
+
+**Result:**
+
+```
+import { Component } from '@angular/core';
+
+@Component({
+  imports: [],
+  selector: 'app-contact-related-deals',
+  styles: `
+    :host {
+      display: block;
+    }
+  `,
+  template: ` <p>contact-related-deals works!</p> `,
+})
+export class ContactRelatedDeals {}
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **contact-related-deals.ts**</summary>
+
+@@ lines 1-13 @@
+
+```
+urrencyPipe } from '@angular/common';
+import { Component, input } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { Deal, DEAL_STAGE_LABELS } from '@feature/deals';
+
+@Component({
+  imports: [CurrencyPipe, RouterLink],
+  selector: 'app-contact-related-deals',
+  host: {
+    class: 'block',
+  },
+  template: `
+    <section aria-labelledby="related-deals-title" class="flex flex-col gap-2">
+      <h2 id="related-deals-title" class="text-title-md">Related deals</h2>
+
+      @if (loading()) {
+        <p class="text-body-md">Loading ...</p>
+      }
+
+      <ul class="flex flex-col gap-2">
+        @for (deal of deals(); track deal.id) {
+          <li>
+            <a
+              class="flex items-center justify-between gap-4 rounded-xl bg-surface-container-low p-4 text-on-surface no-underline hover:bg-surface-container focus-visible:outline-2 focus-visible:outline-offset-2"
+              [routerLink]="['/deals', deal.id]"
+            >
+              <span class="min-w-0 truncate text-title-sm">{{ deal.title }}</span>
+              <span class="shrink-0 text-body-sm text-on-surface-variant">
+                {{ stageLabels[deal.stage] }} ·
+                {{ deal.value.amount | currency: deal.value.currency : 'symbol' : '1.0-0' }}
+              </span>
+            </a>
+          </li>
+        } @empty {
+          @if (!loading()) {
+            <li class="text-body-md text-on-surface-variant">No deals for this contact.</li>
+          }
+        }
+      </ul>
+    </section>
+  `,
+})
+export class ContactRelatedDeals {
+  readonly deals = input.required<readonly Deal[]>();
+  readonly loading = input(false);
+
+  protected readonly stageLabels = DEAL_STAGE_LABELS;
+
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+
+```
+
+```
+
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **contact-search.page.ts**</summary>
+
+@@ lines 2-59 @@
+
+```
+ActivatedRoute, Router } from '@angular/router';
+import { ContactsStore } from '../../data/contacts.store';
+import { ContactCard } from '../../ui/contact-card/contact-card';
+import { ContactSearchForm } from '../../ui/contact-search-form/contact-search-form';
+
+@Component({
+  selector: 'app-contact-search-page',
+  imports: [ContactCard, ContactSearchForm],
+  template: `
+    <main class="flex flex-col gap-4 bg-surface p-4 text-on-surface">
+      <h1 class="text-title-lg">Contacts</h1>
+
+      <app-contact-search-form [initialQuery]="query()" (queryChange)="onQueryChange($event)" />
+
+      @if (loading()) {
+        <p class="text-body-md">Loading ...</p>
+      }
+
+      @if (error(); as message) {
+        <p role="alert" class="text-body-md text-error">{{ message }}</p>
+      }
+
+      @if (searched() && contacts().length === 0) {
+        <p class="text-body-md text-on-surface-variant">No contacts found.</p>
+      }
+
+      <ul class="grid grid-cols-1 gap-4 md:grid-cols-2">
+        @for (contact of contacts(); track contact.id) {
+          <li>
+            <app-contact-card [contact]="contact" />
+          </li>
+        }
+      </ul>
+    </main>
+  `,
+})
+export class ContactSearchPage {
+  private readonly store = inject(ContactsStore);
+  private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
+
+  // Bound from the ?q= query param (withComponentInputBinding)
+  readonly q = input<string>();
+
+  protected readonly query = computed(() => (this.q() ?? '').trim());
+  protected readonly contacts = this.store.selectSearchResults(this.query);
+  protected readonly searched = this.store.selectSearched(this.query);
+  protected readonly loading = this.store.selectSearchLoading(this.query);
+  protected readonly error = this.store.selectError;
+
+  constructor() {
+    this.store.search(this.query);
+  }
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="run_in_terminal"><details>
+<summary>Tool use: **run_in_terminal**</summary>
+
+Running ` cd /c/Projects/sages-angular-adv-1126 && F=$\(git status --short src | grep -...`
+
+Format, type-check and run the Angular compiler to validate templates
+
+```bash
+cd /c/Projects/sages-angular-adv-1126 && F=$(git status --short src | grep -v '^D' | awk '{print $2}' | grep -E "\.ts$" | tr '\n' ' ') && P=$(find src/app/features/deals/pages src/app/features/deals/ui/contact-picker src/app/features/contacts/ui/contact-related-deals -name "*.ts" | tr '\n' ' ') && npx prettier --write $F $P >/dev/null; npx tsc --noEmit -p tsconfig.app.json 2>&1 | grep -E "^src" | cut -c1-250; echo ---NGC; npx ngc -p tsconfig.app.json --noEmit 2>&1 | head -40
+```
+
+**Result:**
+
+```
+---NGC
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **contact-details.page.ts**</summary>
+
+@@ lines 1-46 @@
+
+```
+inject, input } from '@angular/core';
+import { SharedForms } from '@shared';
+import { ContactsStore } from '../../data/contacts.store';
+import { ContactFullDetailsCard } from '../../ui/contact-full-details-card/contact-full-details-card';
+import { ContactRelatedDeals } from '../../ui/contact-related-deals/contact-related-deals';
+
+@Component({
+  selector: 'app-contact-details-page',
+  imports: [...SharedForms, ContactFullDetailsCard, ContactRelatedDeals],
+  template: `
+    <main class="flex flex-col gap-4 bg-surface p-4 text-on-surface">
+      <div>
+        <button matButton="text" type="button" (click)="back()">Back to search</button>
+      </div>
+
+      @if (loading()) {
+        <p class="text-body-md">Loading ...</p>
+      }
+
+      @if (error(); as message) {
+        <p role="alert" class="text-body-md text-error">{{ message }}</p>
+      }
+
+      @if (contact(); as value) {
+        <app-contact-full-details-card [contact]="value" />
+        <app-contact-related-deals [deals]="relatedDeals()" [loading]="relatedDealsLoading()" />
+      }
+    </main>
+  `,
+})
+export class ContactDetailsPage {
+  private readonly store = inject(ContactsStore);
+
+  // Bound from the :contactId route param (withComponentInputBinding)
+  readonly contactId = input.required<string>();
+
+  protected readonly contact = this.store.selectContactById(this.contactId);
+  protected readonly loading = this.store.selectLoadingById(this.contactId);
+  protected readonly error = this.store.selectError;
+  protected readonly relatedDeals = this.store.selectRelatedDeals(this.contactId);
+  protected readonly relatedDealsLoading = this.store.selectRelatedDealsLoading(this.contactId);
+
+  constructor() {
+    this.store.loadContact(this.contactId);
+    this.store.loadRelatedDeals(this.contactId);
+  }
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="run_in_terminal"><details>
+<summary>Tool use: **run_in_terminal**</summary>
+
+Running ` cd /c/Projects/sages-angular-adv-1126 && F=$\(git status --short src | grep -...`
+
+Lint the Phase 6 files and list pending changes
+
+```bash
+cd /c/Projects/sages-angular-adv-1126 && F=$(git status --short src | grep -v '^D' | awk '{print $2}' | grep -E "\.ts$" | tr '\n' ' ') && P=$(find src/app/features/deals/pages src/app/features/deals/ui/contact-picker src/app/features/contacts/ui/contact-related-deals -name "*.ts" | tr '\n' ' ') && npx eslint $F $P; echo ESLINT=$?; git status --short | grep -v ai-sessions
+```
+
+**Result:**
+
+```
+ESLINT=0
+ M src/app/features/contacts/data/contacts.store.ts
+ M src/app/features/contacts/pages/contact-details/contact-details.page.ts
+ M src/app/features/contacts/pages/contact-search/contact-search.page.ts
+D  src/app/features/deals/data/deals-seed.ts
+ M src/app/features/deals/data/deals.ports.ts
+ M src/app/features/deals/data/deals.store.ts
+ M src/app/features/deals/deals.routes.ts
+D  src/app/features/deals/model/account.model.ts
+D  src/app/features/deals/model/contact.model.ts
+D  src/app/features/deals/pages/deals-list/deals-list.page.ts
+ M src/app/features/deals/ui/deal-details-card/deal-details-card.ts
+ M src/app/features/deals/ui/deal-editor/deal-editor.ts
+ M src/app/features/deals/ui/deal-list-item/deal-list-item.ts
+D  src/app/features/deals/ui/pipes/account-name-pipe.ts
+D  src/app/features/deals/ui/pipes/contact-name-pipe.ts
+ M src/app/shared/shared-module.ts
+?? src/app/features/contacts/ui/contact-related-deals/
+?? src/app/features/deals/data/inject-contact-lookup.ts
+?? src/app/features/deals/pages/
+?? src/app/features/deals/ui/contact-picker/
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="run_in_terminal"><details>
+<summary>Tool use: **run_in_terminal**</summary>
+
+Running ` cd /c/Projects/sages-angular-adv-1126 && git add src/app/shared/shared-modul...`
+
+Commit Phase 6 deals and contacts changes separately
+
+```bash
+cd /c/Projects/sages-angular-adv-1126 && git add src/app/shared/shared-module.ts src/app/features/deals && git commit -q -m "WIP phase 6a: routed deals pages, contact picker, editor and card updates" 2>&1 | grep -v warning; git add src/app/features/contacts && git commit -q -m "WIP phase 6b: contacts pages on store, related deals list" 2>&1 | grep -v warning; git log --oneline | head -3; git status --short | grep -v ai-sessions
+```
+
+**Result:**
+
+```
+warning: in the working copy of 'src/app/features/deals/data/deals.ports.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/app/features/deals/data/deals.store.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/app/features/deals/deals.routes.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/app/features/deals/ui/deal-details-card/deal-details-card.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/app/features/deals/ui/deal-editor/deal-editor.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/app/features/deals/ui/deal-list-item/deal-list-item.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/app/shared/shared-module.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/app/features/deals/data/inject-contact-lookup.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/app/features/deals/pages/deal-create/deal-create.page.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/app/features/deals/pages/deal-details/deal-details.page.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/app/features/deals/pages/deal-edit/deal-edit.page.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/app/features/deals/pages/deal-placeholder/deal-placeholder.page.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/app/features/deals/pages/deal-tasks/deal-tasks.page.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/app/features/deals/pages/deals-layout/deals-layout.page.ts', LF will 
+… (output truncated)
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="run_in_terminal"><details>
+<summary>Tool use: **run_in_terminal**</summary>
+
+Running ` cd /c/Projects/sages-angular-adv-1126 && npm i -D vitest jsdom 2>&1 | tail -...`
+
+Install vitest and jsdom, which the Angular unit-test builder needs
+
+```bash
+cd /c/Projects/sages-angular-adv-1126 && npm i -D vitest jsdom 2>&1 | tail -3; grep -n "vitest\|jsdom" package.json
+```
+
+**Result:**
+
+```
+  npm audit fix --force
+
+Run `npm audit` for details.
+48:    "jsdom": "^31.0.0",
+55:    "vitest": "^5.1.0"
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="memory"><details>
+<summary>Tool use: **memory**</summary>
+
+Updated memory file `plan.md`
+
+**Input:**
+
+- command: `str_replace`
+- new_str:
+
+```
+### PROGRESS (implementing; user approved, asked WIP commit per phase, only that phase's files)
+Done+committed: phases 0-6 (6a deals UI, 6b contacts UI). Left: phase 7 specs (no test target/vitest in repo: add @angular/build:unit-test + vitest + jsdom), then verification (ng serve build, ng build chunk check, manual w/ ask before browser). Server running in async terminal 5fcf783c (tsx watch). Pre-existing eslint error: app.config deep import './core/http/index-interceptor' (left). docs/ai-sessions file auto-modified - never stage.
+
+### Phases
+```
+
+- old_str: `### Phases`
+- path: `/memories/session/plan.md`
+
+**Result:**
+
+```
+The memory file has been edited. Here's the result of running `cat -n` on a snippet of /memories/session/plan.md:
+    12	- Contact picker: presentational deals/ui ContactPicker (mat-autocomplete) implementing FormValueControl<string> (verified in @angular/forms/signals), inputs options/loading/selectedLabel, debounced `searched` output; pages inject CONTACT_DIRECTORY and feed the editor; editor gets contactId field (zod required), `showTasks`/title inputs (create hides tasks).
+    13	- Editor persists deal fields only (no task diff); accounts + seed + pipes removed; Deal.accountId removed; contact name from directory.optionsById.
+    14	- Reference bugs not to copy from sages-opi-angular-gr2 withLoadingState: loadingFinish resets error; updater types mismatch; mixed styles; withFeature wrapper; keyed by dealId.
+    15	
+    16	### PROGRESS (implementing; user approved, asked WIP commit per phase, only that phase's files)
+    17	Done+committed: phases 0-6 (6a deals UI, 6b contacts UI). Left: phase 7 specs (no test target/vitest in repo: add @angular/build:unit-test + vitest + jsdom), then verification (ng serve build, ng build chunk check, manual w/ ask before browser). Server running in async terminal 5fcf783c (tsx watch). Pre-existing eslint error: app.config deep import './core/http/index-interceptor' (left). docs/ai-sessions file auto-modified - never stage.
+    18	
+    19	### Phases
+    20	0 deps (@ngrx/signals, @ngrx/operators 22.0.1)
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="read" data-tool-name="read_file"><details>
+<summary>Tool use: **read_file**</summary>
+
+Read `angular.json`, lines 86 to 114
+
+**Input:**
+
+- endLine: `125`
+- filePath: `c:\Projects\sages-angular-adv-1126\angular.json`
+- startLine: `86`
+
+**Result:**
+
+```
+              "extractLicenses": false,
+              "sourceMap": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular/build:dev-server",
+          "configurations": {
+            "production": {
+              "buildTarget": "sages:build:production"
+            },
+            "development": {
+              "buildTarget": "sages:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": ["src/**/*.ts", "src/**/*.html"]
+          }
+        }
+      }
+    }
+  }
+}
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **angular.json**</summary>
+
+@@ lines 109-109 @@
+
+```
+,
+        "test": {
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "tsConfig": "tsconfig.spec.json"
+          }
+        }
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="create_file"><details>
+<summary>Tool use: **create_file**</summary>
+
+Created `with-loading-state.spec.ts`
+
+**Input:**
+
+- content:
+
+```
+import { TestBed } from '@angular/core/testing';
+import { patchState, signalStore } from '@ngrx/signals';
+import { unprotected } from '@ngrx/signals/testing';
+import {
+  loadingError,
+  loadingFinish,
+  loadingStart,
+  withLoadingState,
+} from './with-loading-state';
+
+const TestStore = signalStore({ providedIn: 'root' }, withLoadingState());
+
+describe('withLoadingState', () => {
+  function setup() {
+    const store = TestBed.inject(TestStore);
+    return { store, state: unprotected(store) };
+  }
+
+  it('is loading while any request is in flight', () => {
+    const { store, state } = setup();
+
+    patchState(state, loadingStart('a'));
+    expect(store.selectLoading()).toBe(true);
+    expect(store.selectLoadingById(() => 'a')()).toBe(true);
+    expect(store.selectLoadingById(() => 'b')()).toBe(false);
+
+    patchState(state, loadingFinish('a'));
+    expect(store.selectLoading()).toBe(false);
+  });
+
+  it('counts overlapping requests with the same id', () => {
+    const { store, state } = setup();
+
+    patchState(state, loadingStart('a'), loadingStart('a'), loadingFinish('a'));
+    expect(store.selectLoadingById(() => 'a')()).toBe(true);
+
+    patchState(state, loadingFinish('a'));
+    expect(store.selectLoadingById(() => 'a')()).toBe(false);
+  });
+
+  it('keeps the error when the request finishes', () => {
+    const { store, state } = setup();
+
+    patchState(state, loadingStart('a'), loadingError(new Error('boom')), loadingFinish('a'));
+
+    expect(store.selectError()).toBe('boom');
+  });
+
+  it('clears the error when a new request starts', () => {
+    const { store, state } = setup();
+
+    patchState(state, loadingError(new Error('boom')), loadingStart('a'));
+
+    expect(store.selectError()).toBeNull();
+  });
+});
+
+```
+
+- filePath: `c:\Projects\sages-angular-adv-1126\src\app\shared\store\with-loading-state.spec.ts`
+
+**Result:**
+
+```
+The following files were successfully edited:
+c:\Projects\sages-angular-adv-1126\src\app\shared\store\with-loading-state.spec.ts
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="create_file"><details>
+<summary>Tool use: **create_file**</summary>
+
+Created `with-stale-while-revalidate.spec.ts`
+
+**Input:**
+
+- content:
+
+```
+import { TestBed } from '@angular/core/testing';
+import { patchState, signalStore, withMethods, withState } from '@ngrx/signals';
+import { rxMethod } from '@ngrx/signals/rxjs-interop';
+import { unprotected } from '@ngrx/signals/testing';
+import { Observable, pipe, Subject, switchMap } from 'rxjs';
+import { withLoadingState } from './with-loading-state';
+import { CLOCK, cacheInvalidate, withStaleWhileRevalidate } from './with-stale-while-revalidate';
+
+const TTL_MS = 1000;
+const KEY = 'items:list';
+
+describe('withStaleWhileRevalidate', () => {
+  let now: number;
+  let request: Subject<string[]>;
+  let calls: number;
+
+  const TestStore = signalStore(
+    { providedIn: 'root' },
+    withState({ items: [] as string[] }),
+    withLoadingState(),
+    withStaleWhileRevalidate({ ttlMs: TTL_MS }),
+    withMethods((store) => ({
+      load: rxMethod<void>(
+        pipe(
+          switchMap(() =>
+            store._swr({
+              key: KEY,
+              source: (): Observable<string[]> => {
+                calls++;
+                request = new Subject<string[]>();
+                return request;
+              },
+              onData: (items) => patchState(store, { items }),
+            }),
+          ),
+        ),
+      ),
+    })),
+  );
+
+  beforeEach(() => {
+    now = 10_000;
+    calls = 0;
+    TestBed.configureTestingModule({ providers: [{ provide: CLOCK, useValue: () => now }] });
+  });
+
+  function loadOnce(store: InstanceType<typeof TestStore>, items: string[]) {
+    store.load();
+    request.next(items);
+    request.complete();
+  }
+
+  it('blocks on a cold load and stores the response', () => {
+    const store = TestBed.inject(TestStore);
+
+    store.load();
+    expect(store.selectLoadingById(() => KEY)()).toBe(true);
+    expect(store.selectRevalidating(() => KEY)()).toBe(false);
+
+    request.next(['a']);
+    request.complete();
+
+    expect(store.items()).toEqual(['a']);
+    expect(store.selectLoadingById(() => KEY)()).toBe(false);
+  });
+
+  it('does not fetch while the data is fresh', () => {
+    const store = TestBed.inject(TestStore);
+    loadOnce(store, ['a']);
+
+    now += TTL_MS - 1;
+    store.load();
+
+    expect(calls).toBe(1);
+  });
+
+  it('serves cached data and revalidates quietly once stale', () => {
+    const store = TestBed.inject(TestStore);
+    loadOnce(store, ['a']);
+
+    now += TTL_MS;
+    store.load();
+
+    expect(calls).toBe(2);
+    expect(store.items()).toEqual(['a']);
+    expect(store.selectLoadingById(() => KEY)()).toBe(false);
+    expect(store.selectRevalidating(() => KEY)()).toBe(true);
+
+    request.next(['a', 'b']);
+    request.complete();
+
+    expect(store.items()).toEqual(['a', 'b']);
+    expect(store.selectRevalidating(() => KEY)()).toBe(false);
+  });
+
+  it('keeps cached data when revalidation fails and retries on the next call', () => {
+    const store = TestBed.inject(TestStore);
+    loadOnce(store, ['a']);
+
+    now += TTL_MS;
+    store.load();
+    request.error(new Error('offline'));
+
+    expect(store.items()).toEqual(['a']);
+    expect(store.selectError()).toBe('offline');
+    expect(store.selectRevalidating(() => KEY)()).toBe(false);
+
+    store.load();
+    expect(calls).toBe(3);
+  });
+
+  it('treats invalidated keys as stale but keeps their data', () => {
+    const store = TestBed.inject(TestStore);
+    loadOnce(store, ['a']);
+
+    patchState(unprotected(store), cacheInvalidate('items:'));
+    store.load();
+
+    expect(calls).toBe(2);
+    expect(store.items()).toEqual(['a']);
+    expect(store.selectLoadingById(() => KEY)()).toBe(false);
+  });
+});
+
+```
+
+- filePath: `c:\Projects\sages-angular-adv-1126\src\app\shared\store\with-stale-while-revalidate.spec.ts`
+
+**Result:**
+
+```
+The following files were successfully edited:
+c:\Projects\sages-angular-adv-1126\src\app\shared\store\with-stale-while-revalidate.spec.ts
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **with-loading-state.spec.ts**</summary>
+
+@@ lines 1-1 @@
+
+```
+import { TestBed } from '@angular/core/testing';
+import { patchState, signalStore } from '@ngrx/signals';
+import { unprotected } from '@ngrx/signals/testing';
+import {
+  loadingError,
+  loadingFinish,
+  loadingStart,
+  withLoadingState,
+} from './with-loading-state';
+
+const TestStore = signalStore({ providedIn: 'root' }, withLoadingState());
+
+describe('withLoadingState', () => {
+  function setup() {
+    const store = TestBed.inject(TestStore);
+    return { store, state: unprotected(store) };
+  }
+
+  it('is loading while any request is in flight', () => {
+    const { store, state } = setup();
+
+    patchState(state, loadingStart('a'));
+    expect(store.selectLoading()).toBe(true);
+    expect(store.selectLoadingById(() => 'a')()).toBe(true);
+    expect(store.selectLoadingById(() => 'b')()).toBe(false);
+
+    patchState(state, loadingFinish('a'));
+    expect(store.selectLoading()).toBe(false);
+  });
+
+  it('counts overlapping requests with the same id', () => {
+    const { store, state } = setup();
+
+    patchState(state, loadingStart('a'), loadingStart('a'), loadingFinish('a'));
+    expect(store.selectLoadingById(() => 'a')()).toBe(true);
+
+    patchState(state, loadingFinish('a'));
+    expect(store.selectLoadingById(() => 'a')()).toBe(false);
+  });
+
+  it('keeps the error when the request finishes', () => {
+    const { store, state } = setup();
+
+    patchState(state, loadingStart('a'), loadingError(new Error('boom')), loadingFinish('a'));
+
+    expect(store.selectError()).toBe('boom');
+  });
+
+  it('clears the error when a new request starts', () => {
+    const { store, state } = setup();
+
+    patchState(state, loadingError(new Error('boom')), loadingStart('a'));
+
+    expect(store.selectError()).toBeNull();
+  });
+});
+
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **with-stale-while-revalidate.spec.ts**</summary>
+
+@@ lines 1-1 @@
+
+```
+import { TestBed } from '@angular/core/testing';
+import { patchState, signalStore, withMethods, withState } from '@ngrx/signals';
+import { rxMethod } from '@ngrx/signals/rxjs-interop';
+import { unprotected } from '@ngrx/signals/testing';
+import { Observable, pipe, Subject, switchMap } from 'rxjs';
+import { withLoadingState } from './with-loading-state';
+import { CLOCK, cacheInvalidate, withStaleWhileRevalidate } from './with-stale-while-revalidate';
+
+const TTL_MS = 1000;
+const KEY = 'items:list';
+
+describe('withStaleWhileRevalidate', () => {
+  let now: number;
+  let request: Subject<string[]>;
+  let calls: number;
+
+  const TestStore = signalStore(
+    { providedIn: 'root' },
+    withState({ items: [] as string[] }),
+    withLoadingState(),
+    withStaleWhileRevalidate({ ttlMs: TTL_MS }),
+    withMethods((store) => ({
+      load: rxMethod<void>(
+        pipe(
+          switchMap(() =>
+            store._swr({
+              key: KEY,
+              source: (): Observable<string[]> => {
+                calls++;
+                request = new Subject<string[]>();
+                return request;
+              },
+              onData: (items) => patchState(store, { items }),
+            }),
+          ),
+        ),
+      ),
+    })),
+  );
+
+  beforeEach(() => {
+    now = 10_000;
+    calls = 0;
+    TestBed.configureTestingModule({ providers: [{ provide: CLOCK, useValue: () => now }] });
+  });
+
+  function loadOnce(store: InstanceType<typeof TestStore>, items: string[]) {
+    store.load();
+    request.next(items);
+    request.complete();
+  }
+
+  it('blocks on a cold load and stores the response', () => {
+    const store = TestBed.inject(TestStore);
+
+    store.load();
+    expect(store.selectLoadingById(() => KEY)()).toBe(true);
+    expect(store.selectRevalidating(() => KEY)()).toBe(false);
+
+    request.next(['a']);
+    request.complete();
+
+    expect(store.items()).toEqual(['a']);
+    expect(store.selectLoadingById(() => KEY)()).toBe(false);
+  });
+
+  it('does not fetch while the data is fresh', () => {
+    const store = TestBed.inject(TestStore);
+    loadOnce(store, ['a']);
+
+    now += TTL_MS - 1;
+    store.load();
+
+    expect(calls).toBe(1);
+  });
+
+  it('serves cached data and revalidates quietly once stale', () => {
+    const store = TestBed.inject(TestStore);
+    loadOnce(store, ['a']);
+
+    now += TTL_MS;
+    store.load();
+
+    expect(calls).toBe(2);
+    expect(store.items()).toEqual(['a']);
+    expect(store.selectLoadingById(() => KEY)()).toBe(false);
+    expect(store.selectRevalidating(() => KEY)()).toBe(true);
+
+    request.next(['a', 'b']);
+    request.complete();
+
+    expect(store.items()).toEqual(['a', 'b']);
+    expect(store.selectRevalidating(() => KEY)()).toBe(false);
+  });
+
+  it('keeps cached data when revalidation fails and retries on the next call', () => {
+    const store = TestBed.inject(TestStore);
+    loadOnce(store, ['a']);
+
+    now += TTL_MS;
+    store.load();
+    request.error(new Error('offline'));
+
+    expect(store.items()).toEqual(['a']);
+    expect(store.selectError()).toBe('offline');
+    expect(store.selectRevalidating(() => KEY)()).toBe(false);
+
+    store.load();
+    expect(calls).toBe(3);
+  });
+
+  it('treats invalidated keys as stale but keeps their data', () => {
+    const store = TestBed.inject(TestStore);
+    loadOnce(store, ['a']);
+
+    patchState(unprotected(store), cacheInvalidate('items:'));
+    store.load();
+
+    expect(calls).toBe(2);
+    expect(store.items()).toEqual(['a']);
+    expect(store.selectLoadingById(() => KEY)()).toBe(false);
+  });
+});
+
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="run_in_terminal"><details>
+<summary>Tool use: **run_in_terminal**</summary>
+
+Running ` cd /c/Projects/sages-angular-adv-1126 && timeout 300 npx ng test --watch=fal...`
+
+Run the unit tests once to validate the test setup and the shared store specs
+
+```bash
+cd /c/Projects/sages-angular-adv-1126 && timeout 300 npx ng test --watch=false 2>&1 | tail -40
+```
+
+**Result:**
+
+```
+❯ Building...
+✔ Building...
+Application bundle generation complete. [2.599 seconds] - 2026-11-06T16:14:12.801Z
+
+
+ RUN  v5.1.0 C:/Projects/sages-angular-adv-1126
+
+
+ Test Files  2 passed (2)
+      Tests  9 passed (9)
+   Start at  17:14:13
+   Duration  5.10s (environment 83%, setup 12%, transform 3%, tests 1%)
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="create_file"><details>
+<summary>Tool use: **create_file**</summary>
+
+Created `deals.store.spec.ts`
+
+**Input:**
+
+- content:
+
+```
+import { TestBed } from '@angular/core/testing';
+import { of, Subject } from 'rxjs';
+import { Deal } from '../model/deal.model';
+import { DealsApi } from './deals-api';
+import { DealsStore } from './deals.store';
+
+const SAVE_DEBOUNCE_MS = 300;
+
+function makeDeal(overrides: Partial<Deal> = {}): Deal {
+  return {
+    id: 'd1',
+    title: 'Enterprise License',
+    summary: '',
+    stage: 'new',
+    value: { amount: 1000, currency: 'USD' },
+    contactId: 'c1',
+    isPublic: false,
+    ...overrides,
+  };
+}
+
+describe('DealsStore', () => {
+  const api = { list: vi.fn(), getById: vi.fn(), create: vi.fn(), update: vi.fn() };
+
+  beforeEach(() => {
+    vi.useFakeTimers();
+    api.list.mockReset().mockReturnValue(
+      of([makeDeal(), makeDeal({ id: 'd2', title: 'Pilot Program', contactId: 'c2' })]),
+    );
+    TestBed.configureTestingModule({ providers: [{ provide: DealsApi, useValue: api }] });
+  });
+
+  afterEach(() => vi.useRealTimers());
+
+  it('selects deals by title and by contact from the entity map', () => {
+    const store = TestBed.inject(DealsStore);
+    store.loadDeals();
+
+    expect(store.selectFilteredDeals(() => 'pilot')().map((deal) => deal.id)).toEqual(['d2']);
+    expect(store.selectDealsByContactId(() => 'c1')().map((deal) => deal.id)).toEqual(['d1']);
+  });
+
+  it('shows a saved change in every selector, optimistically', () => {
+    const response = new Subject<Deal>();
+    api.update.mockReturnValue(response);
+    const store = TestBed.inject(DealsStore);
+    store.loadDeals();
+
+    const byId = store.selectDealById(() => 'd1');
+    const byContact = store.selectDealsByContactId(() => 'c1');
+    const byTitle = store.selectFilteredDeals(() => 'enterprise');
+
+    store.updateDeal({ id: 'd1', changes: { stage: 'proposal' } });
+    vi.advanceTimersByTime(SAVE_DEBOUNCE_MS);
+
+    expect(byId()?.stage).toBe('proposal');
+    expect(byContact()[0].stage).toBe('proposal');
+    expect(byTitle()[0].stage).toBe('proposal');
+    expect(store.selectLoadingById(() => 'd1')()).toBe(true);
+
+    response.next(makeDeal({ stage: 'proposal', title: 'Enterprise (renewed)' }));
+    response.complete();
+
+    expect(byId()?.title).toBe('Enterprise (renewed)');
+    expect(store.selectLoadingById(() => 'd1')()).toBe(false);
+  });
+
+  it('collapses repeated saves of one deal into a single request', () => {
+    api.update.mockReturnValue(of(makeDeal({ title: 'Third' })));
+    const store = TestBed.inject(DealsStore);
+    store.loadDeals();
+
+    store.updateDeal({ id: 'd1', changes: { title: 'First' } });
+    store.updateDeal({ id: 'd1', changes: { title: 'Second' } });
+    store.updateDeal({ id: 'd1', changes: { title: 'Third' } });
+    vi.advanceTimersByTime(SAVE_DEBOUNCE_MS);
+
+    expect(api.update).toHaveBeenCalledTimes(1);
+    expect(api.update).toHaveBeenCalledWith('d1', { title: 'Third' });
+  });
+
+  it('saves two different deals independently', () => {
+    api.update.mockReturnValue(of(makeDeal()));
+    const store = TestBed.inject(DealsStore);
+    store.loadDeals();
+
+    store.updateDeal({ id: 'd1', changes: { title: 'A' } });
+    store.updateDeal({ id: 'd2', changes: { title: 'B' } });
+    vi.advanceTimersByTime(SAVE_DEBOUNCE_MS);
+
+    expect(api.update).toHaveBeenCalledTimes(2);
+  });
+
+  it('reverts the optimistic change and exposes the error when saving fails', () => {
+    const response = new Subject<Deal>();
+    api.update.mockReturnValue(response);
+    const store = TestBed.inject(DealsStore);
+    store.loadDeals();
+
+    store.updateDeal({ id: 'd1', changes: { stage: 'closed-won' } });
+    vi.advanceTimersByTime(SAVE_DEBOUNCE_MS);
+    expect(store.selectDealById(() => 'd1')()?.stage).toBe('closed-won');
+
+    response.error(new Error('Server down'));
+
+    expect(store.selectDealById(() => 'd1')()?.stage).toBe('new');
+    expect(store.selectError()).toBe('Server down');
+    expect(store.selectLoadingById(() => 'd1')()).toBe(false);
+  });
+
+  it('creates one deal for repeated clicks and reports the created deal', () => {
+    const response = new Subject<Deal>();
+    api.create.mockReturnValue(response);
+    const onCreated = vi.fn();
+    const store = TestBed.inject(DealsStore);
+    const { id: _id, ...draft } = makeDeal({ title: 'Brand new' });
+
+    store.createDeal({ draft, onCreated });
+    store.createDeal({ draft, onCreated });
+    vi.advanceTimersByTime(SAVE_DEBOUNCE_MS);
+
+    expect(store.creating()).toBe(true);
+    expect(api.create).toHaveBeenCalledTimes(1);
+
+    response.next(makeDeal({ id: 'd9', title: 'Brand new' }));
+    response.complete();
+
+    expect(store.creating()).toBe(false);
+    expect(onCreated).toHaveBeenCalledWith(expect.objectContaining({ id: 'd9' }));
+    expect(store.selectDealById(() => 'd9')()?.title).toBe('Brand new');
+  });
+
+  it('refetches the list after a deal was created', () => {
+    api.create.mockReturnValue(of(makeDeal({ id: 'd9' })));
+    const store = TestBed.inject(DealsStore);
+    const { id: _id, ...draft } = makeDeal();
+
+    store.loadDeals();
+    store.loadDeals();
+    expect(api.list).toHaveBeenCalledTimes(1);
+
+    store.createDeal({ draft });
+    vi.advanceTimersByTime(SAVE_DEBOUNCE_MS);
+    store.loadDeals();
+
+    expect(api.list).toHaveBeenCalledTimes(2);
+    expect(store.selectLoadingById(() => 'deals:list')()).toBe(false);
+  });
+});
+
+```
+
+- filePath: `c:\Projects\sages-angular-adv-1126\src\app\features\deals\data\deals.store.spec.ts`
+
+**Result:**
+
+```
+The following files were successfully edited:
+c:\Projects\sages-angular-adv-1126\src\app\features\deals\data\deals.store.spec.ts
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="create_file"><details>
+<summary>Tool use: **create_file**</summary>
+
+Created `tasks.store.spec.ts`
+
+**Input:**
+
+- content:
+
+```
+import { TestBed } from '@angular/core/testing';
+import { CLOCK } from '@shared';
+import { of, Subject } from 'rxjs';
+import { DealTask } from '../model/deal-task.model';
+import { TasksApi } from './tasks-api';
+import { TasksStore } from './tasks.store';
+
+const TTL_MS = 60_000;
+
+function makeTask(overrides: Partial<DealTask> = {}): DealTask {
+  return { id: 't1', dealId: 'd1', title: 'Send proposal', priority: 'high', done: false, ...overrides };
+}
+
+describe('TasksStore', () => {
+  const api = { list: vi.fn(), create: vi.fn(), update: vi.fn(), delete: vi.fn() };
+  let now: number;
+
+  beforeEach(() => {
+    now = 1_000_000;
+    api.list.mockReset().mockReturnValue(of([makeTask(), makeTask({ id: 't2', title: 'Call' })]));
+    TestBed.configureTestingModule({
+      providers: [
+        { provide: TasksApi, useValue: api },
+        { provide: CLOCK, useValue: () => now },
+      ],
+    });
+  });
+
+  it('lists the open tasks of a deal first', () => {
+    const store = TestBed.inject(TasksStore);
+    api.list.mockReturnValue(of([makeTask({ done: true }), makeTask({ id: 't2', title: 'Call' })]));
+
+    store.loadTasksForDeal('d1');
+
+    expect(store.selectTasksByDealId(() => 'd1')().map((task) => task.id)).toEqual(['t2', 't1']);
+    expect(store.selectTasksByDealId(() => 'other')()).toEqual([]);
+  });
+
+  it('applies a change at once and keeps it when the server confirms', () => {
+    const response = new Subject<DealTask>();
+    api.update.mockReturnValue(response);
+    const store = TestBed.inject(TasksStore);
+    store.loadTasksForDeal('d1');
+    const tasks = store.selectTasksByDealId(() => 'd1');
+
+    store.updateTask({ dealId: 'd1', taskId: 't1', changes: { done: true } });
+
+    expect(tasks().map((task) => [task.id, task.done])).toEqual([
+      ['t2', false],
+      ['t1', true],
+    ]);
+    expect(store.selectLoadingById(() => 't1')()).toBe(true);
+
+    response.next(makeTask({ done: true }));
+    response.complete();
+
+    expect(store.selectLoadingById(() => 't1')()).toBe(false);
+    expect(tasks().find((task) => task.id === 't1')?.done).toBe(true);
+  });
+
+  it('reverts the change when the server rejects it', () => {
+    const response = new Subject<DealTask>();
+    api.update.mockReturnValue(response);
+    const store = TestBed.inject(TasksStore);
+    store.loadTasksForDeal('d1');
+
+    store.updateTask({ dealId: 'd1', taskId: 't1', changes: { done: true } });
+    response.error(new Error('Rejected'));
+
+    expect(store.selectTasksByDealId(() => 'd1')().find((task) => task.id === 't1')?.done).toBe(false);
+    expect(store.selectError()).toBe('Rejected');
+  });
+
+  it('drops tasks that disappeared on the server when the list is refetched', () => {
+    const store = TestBed.inject(TasksStore);
+    store.loadTasksForDeal('d1');
+
+    now += TTL_MS;
+    api.list.mockReturnValue(of([makeTask()]));
+    store.loadTasksForDeal('d1');
+
+    expect(store.selectTasksByDealId(() => 'd1')().map((task) => task.id)).toEqual(['t1']);
+  });
+
+  it('removes a task after the server deleted it', () => {
+    api.delete.mockReturnValue(of(undefined));
+    const store = TestBed.inject(TasksStore);
+    store.loadTasksForDeal('d1');
+
+    store.deleteTask({ dealId: 'd1', taskId: 't2' });
+
+    expect(store.selectTasksByDealId(() => 'd1')().map((task) => task.id)).toEqual(['t1']);
+  });
+});
+
+```
+
+- filePath: `c:\Projects\sages-angular-adv-1126\src\app\features\deals\data\tasks.store.spec.ts`
+
+**Result:**
+
+```
+The following files were successfully edited:
+c:\Projects\sages-angular-adv-1126\src\app\features\deals\data\tasks.store.spec.ts
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **deals.store.spec.ts**</summary>
+
+@@ lines 1-1 @@
+
+```
+import { TestBed } from '@angular/core/testing';
+import { of, Subject } from 'rxjs';
+import { Deal } from '../model/deal.model';
+import { DealsApi } from './deals-api';
+import { DealsStore } from './deals.store';
+
+const SAVE_DEBOUNCE_MS = 300;
+
+function makeDeal(overrides: Partial<Deal> = {}): Deal {
+  return {
+    id: 'd1',
+    title: 'Enterprise License',
+    summary: '',
+    stage: 'new',
+    value: { amount: 1000, currency: 'USD' },
+    contactId: 'c1',
+    isPublic: false,
+    ...overrides,
+  };
+}
+
+describe('DealsStore', () => {
+  const api = { list: vi.fn(), getById: vi.fn(), create: vi.fn(), update: vi.fn() };
+
+  beforeEach(() => {
+    vi.useFakeTimers();
+    api.list.mockReset().mockReturnValue(
+      of([makeDeal(), makeDeal({ id: 'd2', title: 'Pilot Program', contactId: 'c2' })]),
+    );
+    TestBed.configureTestingModule({ providers: [{ provide: DealsApi, useValue: api }] });
+  });
+
+  afterEach(() => vi.useRealTimers());
+
+  it('selects deals by title and by contact from the entity map', () => {
+    const store = TestBed.inject(DealsStore);
+    store.loadDeals();
+
+    expect(store.selectFilteredDeals(() => 'pilot')().map((deal) => deal.id)).toEqual(['d2']);
+    expect(store.selectDealsByContactId(() => 'c1')().map((deal) => deal.id)).toEqual(['d1']);
+  });
+
+  it('shows a saved change in every selector, optimistically', () => {
+    const response = new Subject<Deal>();
+    api.update.mockReturnValue(response);
+    const store = TestBed.inject(DealsStore);
+    store.loadDeals();
+
+    const byId = store.selectDealById(() => 'd1');
+    const byContact = store.selectDealsByContactId(() => 'c1');
+    const byTitle = store.selectFilteredDeals(() => 'enterprise');
+
+    store.updateDeal({ id: 'd1', changes: { stage: 'proposal' } });
+    vi.advanceTimersByTime(SAVE_DEBOUNCE_MS);
+
+    expect(byId()?.stage).toBe('proposal');
+    expect(byContact()[0].stage).toBe('proposal');
+    expect(byTitle()[0].stage).toBe('proposal');
+    expect(store.selectLoadingById(() => 'd1')()).toBe(true);
+
+    response.next(makeDeal({ stage: 'proposal', title: 'Enterprise (renewed)' }));
+    response.complete();
+
+    expect(byId()?.title).toBe('Enterprise (renewed)');
+    expect(store.selectLoadingById(() => 'd1')()).toBe(false);
+  });
+
+  it('collapses repeated saves of one deal into a single request', () => {
+    api.update.mockReturnValue(of(makeDeal({ title: 'Third' })));
+    const store = TestBed.inject(DealsStore);
+    store.loadDeals();
+
+    store.updateDeal({ id: 'd1', changes: { title: 'First' } });
+    store.updateDeal({ id: 'd1', changes: { title: 'Second' } });
+    store.updateDeal({ id: 'd1', changes: { title: 'Third' } });
+    vi.advanceTimersByTime(SAVE_DEBOUNCE_MS);
+
+    expect(api.update).toHaveBeenCalledTimes(1);
+    expect(api.update).toHaveBeenCalledWith('d1', { title: 'Third' });
+  });
+
+  it('saves two different deals independently', () => {
+    api.update.mockReturnValue(of(makeDeal()));
+    const store = TestBed.inject(DealsStore);
+    store.loadDeals();
+
+    store.updateDeal({ id: 'd1', changes: { title: 'A' } });
+    store.updateDeal({ id: 'd2', changes: { title: 'B' } });
+    vi.advanceTimersByTime(SAVE_DEBOUNCE_MS);
+
+    expect(api.update).toHaveBeenCalledTimes(2);
+  });
+
+  it('reverts the optimistic change and exposes the error when saving fails', () => {
+    const response = new Subject<Deal>();
+    api.update.mockReturnValue(response);
+    const store = TestBed.inject(DealsStore);
+    store.loadDeals();
+
+    store.updateDeal({ id: 'd1', changes: { stage: 'closed-won' } });
+    vi.advanceTimersByTime(SAVE_DEBOUNCE_MS);
+    expect(store.selectDealById(() => 'd1')()?.stage).toBe('closed-won');
+
+    response.error(new Error('Server down'));
+
+    expect(store.selectDealById(() => 'd1')()?.stage).toBe('new');
+    expect(store.selectError()).toBe('Server down');
+    expect(store.selectLoadingById(() => 'd1')()).toBe(false);
+  });
+
+  it('creates one deal for repeated clicks and reports the created deal', () => {
+    const response = new Subject<Deal>();
+    api.create.mockReturnValue(response);
+    const onCreated = vi.fn();
+    const store = TestBed.inject(DealsStore);
+    const { id: _id, ...draft } = makeDeal({ title: 'Brand new' });
+
+    store.createDeal({ draft, onCreated });
+    store.createDeal({ draft, onCreated });
+    vi.advanceTimersByTime(SAVE_DEBOUNCE_MS);
+
+    expect(store.creating()).toBe(true);
+    expect(api.create).toHaveBeenCalledTimes(1);
+
+    response.next(makeDeal({ id: 'd9', title: 'Brand new' }));
+    response.complete();
+
+    expect(store.creating()).toBe(false);
+    expect(onCreated).toHaveBeenCalledWith(expect.objectContaining({ id: 'd9' }));
+    expect(store.selectDealById(() => 'd9')()?.title).toBe('Brand new');
+  });
+
+  it('refetches the list after a deal was created', () => {
+    api.create.mockReturnValue(of(makeDeal({ id: 'd9' })));
+    const store = TestBed.inject(DealsStore);
+    const { id: _id, ...draft } = makeDeal();
+
+    store.loadDeals();
+    store.loadDeals();
+    expect(api.list).toHaveBeenCalledTimes(1);
+
+    store.createDeal({ draft });
+    vi.advanceTimersByTime(SAVE_DEBOUNCE_MS);
+    store.loadDeals();
+
+    expect(api.list).toHaveBeenCalledTimes(2);
+    expect(store.selectLoadingById(() => 'deals:list')()).toBe(false);
+  });
+});
+
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **tasks.store.spec.ts**</summary>
+
+@@ lines 1-1 @@
+
+```
+import { TestBed } from '@angular/core/testing';
+import { CLOCK } from '@shared';
+import { of, Subject } from 'rxjs';
+import { DealTask } from '../model/deal-task.model';
+import { TasksApi } from './tasks-api';
+import { TasksStore } from './tasks.store';
+
+const TTL_MS = 60_000;
+
+function makeTask(overrides: Partial<DealTask> = {}): DealTask {
+  return { id: 't1', dealId: 'd1', title: 'Send proposal', priority: 'high', done: false, ...overrides };
+}
+
+describe('TasksStore', () => {
+  const api = { list: vi.fn(), create: vi.fn(), update: vi.fn(), delete: vi.fn() };
+  let now: number;
+
+  beforeEach(() => {
+    now = 1_000_000;
+    api.list.mockReset().mockReturnValue(of([makeTask(), makeTask({ id: 't2', title: 'Call' })]));
+    TestBed.configureTestingModule({
+      providers: [
+        { provide: TasksApi, useValue: api },
+        { provide: CLOCK, useValue: () => now },
+      ],
+    });
+  });
+
+  it('lists the open tasks of a deal first', () => {
+    const store = TestBed.inject(TasksStore);
+    api.list.mockReturnValue(of([makeTask({ done: true }), makeTask({ id: 't2', title: 'Call' })]));
+
+    store.loadTasksForDeal('d1');
+
+    expect(store.selectTasksByDealId(() => 'd1')().map((task) => task.id)).toEqual(['t2', 't1']);
+    expect(store.selectTasksByDealId(() => 'other')()).toEqual([]);
+  });
+
+  it('applies a change at once and keeps it when the server confirms', () => {
+    const response = new Subject<DealTask>();
+    api.update.mockReturnValue(response);
+    const store = TestBed.inject(TasksStore);
+    store.loadTasksForDeal('d1');
+    const tasks = store.selectTasksByDealId(() => 'd1');
+
+    store.updateTask({ dealId: 'd1', taskId: 't1', changes: { done: true } });
+
+    expect(tasks().map((task) => [task.id, task.done])).toEqual([
+      ['t2', false],
+      ['t1', true],
+    ]);
+    expect(store.selectLoadingById(() => 't1')()).toBe(true);
+
+    response.next(makeTask({ done: true }));
+    response.complete();
+
+    expect(store.selectLoadingById(() => 't1')()).toBe(false);
+    expect(tasks().find((task) => task.id === 't1')?.done).toBe(true);
+  });
+
+  it('reverts the change when the server rejects it', () => {
+    const response = new Subject<DealTask>();
+    api.update.mockReturnValue(response);
+    const store = TestBed.inject(TasksStore);
+    store.loadTasksForDeal('d1');
+
+    store.updateTask({ dealId: 'd1', taskId: 't1', changes: { done: true } });
+    response.error(new Error('Rejected'));
+
+    expect(store.selectTasksByDealId(() => 'd1')().find((task) => task.id === 't1')?.done).toBe(false);
+    expect(store.selectError()).toBe('Rejected');
+  });
+
+  it('drops tasks that disappeared on the server when the list is refetched', () => {
+    const store = TestBed.inject(TasksStore);
+    store.loadTasksForDeal('d1');
+
+    now += TTL_MS;
+    api.list.mockReturnValue(of([makeTask()]));
+    store.loadTasksForDeal('d1');
+
+    expect(store.selectTasksByDealId(() => 'd1')().map((task) => task.id)).toEqual(['t1']);
+  });
+
+  it('removes a task after the server deleted it', () => {
+    api.delete.mockReturnValue(of(undefined));
+    const store = TestBed.inject(TasksStore);
+    store.loadTasksForDeal('d1');
+
+    store.deleteTask({ dealId: 'd1', taskId: 't2' });
+
+    expect(store.selectTasksByDealId(() => 'd1')().map((task) => task.id)).toEqual(['t1']);
+  });
+});
+
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="create_file"><details>
+<summary>Tool use: **create_file**</summary>
+
+Created `contacts.store.spec.ts`
+
+**Input:**
+
+- content:
+
+```
+import { computed, signal } from '@angular/core';
+import { TestBed } from '@angular/core/testing';
+import { Deal, DEALS_BY_CONTACT, DealsByContactSource } from '@feature/deals';
+import { of } from 'rxjs';
+import { Contact } from '../model/contact.model';
+import { ContactsApi } from './contacts-api';
+import { ContactsStore } from './contacts.store';
+
+function makeContact(overrides: Partial<Contact> = {}): Contact {
+  return {
+    id: 'c1',
+    firstName: 'Anna',
+    lastName: 'Kowalska',
+    email: 'anna@example.com',
+    status: 'customer',
+    createdAt: '2025-06-15T10:30:00Z',
+    company: 'Tech Solutions',
+    ...overrides,
+  };
+}
+
+function makeDeal(overrides: Partial<Deal> = {}): Deal {
+  return {
+    id: 'd1',
+    title: 'Enterprise License',
+    summary: '',
+    stage: 'new',
+    value: { amount: 1000, currency: 'USD' },
+    contactId: 'c1',
+    isPublic: false,
+    ...overrides,
+  };
+}
+
+describe('ContactsStore', () => {
+  const api = { search: vi.fn(), getById: vi.fn() };
+  const deals = signal<Deal[]>([]);
+  const loadDealsByContact = vi.fn();
+
+  const dealsPort = {
+    selectDealsByContactId: (contactId: () => string | undefined) =>
+      computed(() => deals().filter((deal) => deal.contactId === contactId())),
+    selectLoadingByContactId: () => computed(() => false),
+    selectRevalidatingByContactId: () => computed(() => false),
+    loadDealsByContact,
+  } as unknown as DealsByContactSource;
+
+  beforeEach(() => {
+    deals.set([]);
+    api.search.mockReset().mockImplementation((q: string) =>
+      of({
+        items: q === 'ann' ? [makeContact()] : [makeContact({ id: 'c2', firstName: 'Marek' })],
+        total: 1,
+        offset: 0,
+        limit: 20,
+      }),
+    );
+    api.getById.mockReset().mockReturnValue(of(makeContact({ company: 'New Company' })));
+    TestBed.configureTestingModule({
+      providers: [
+        { provide: ContactsApi, useValue: api },
+        { provide: DEALS_BY_CONTACT, useValue: dealsPort },
+      ],
+    });
+  });
+
+  it('keeps the result list of every query, so overlapping searches do not overwrite each other', () => {
+    const store = TestBed.inject(ContactsStore);
+
+    store.search('ann');
+    store.search('mar');
+
+    expect(store.selectSearchResults(() => 'ann')().map((c) => c.id)).toEqual(['c1']);
+    expect(store.selectSearchResults(() => 'mar')().map((c) => c.id)).toEqual(['c2']);
+  });
+
+  it('reports a query as searched only after its response arrived', () => {
+    const store = TestBed.inject(ContactsStore);
+    const searched = store.selectSearched(() => 'ann');
+
+    expect(searched()).toBe(false);
+    store.search('ann');
+    expect(searched()).toBe(true);
+  });
+
+  it('reflects a reloaded contact in earlier search results', () => {
+    const store = TestBed.inject(ContactsStore);
+    store.search('ann');
+    const results = store.selectSearchResults(() => 'ann');
+    expect(results()[0].company).toBe('Tech Solutions');
+
+    store.loadContact('c1');
+
+    expect(results()[0].company).toBe('New Company');
+    expect(store.selectContactById(() => 'c1')()?.company).toBe('New Company');
+  });
+
+  it('does not fetch a query again while it is fresh', () => {
+    const store = TestBed.inject(ContactsStore);
+
+    store.search('ann');
+    store.search('ann');
+
+    expect(api.search).toHaveBeenCalledTimes(1);
+  });
+
+  it('follows deal changes of the related deals port', () => {
+    const store = TestBed.inject(ContactsStore);
+    const related = store.selectRelatedDeals(() => 'c1');
+    expect(related()).toEqual([]);
+
+    deals.set([makeDeal(), makeDeal({ id: 'd2', contactId: 'c2' })]);
+    expect(related().map((deal) => deal.id)).toEqual(['d1']);
+
+    deals.update((list) => list.map((deal) => ({ ...deal, stage: 'closed-won' as const })));
+    expect(related()[0].stage).toBe('closed-won');
+
+    store.loadRelatedDeals('c1');
+    expect(loadDealsByContact).toHaveBeenCalledWith('c1');
+  });
+});
+
+```
+
+- filePath: `c:\Projects\sages-angular-adv-1126\src\app\features\contacts\data\contacts.store.spec.ts`
+
+**Result:**
+
+```
+The following files were successfully edited:
+c:\Projects\sages-angular-adv-1126\src\app\features\contacts\data\contacts.store.spec.ts
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="create_file"><details>
+<summary>Tool use: **create_file**</summary>
+
+Created `contact-directory.provider.spec.ts`
+
+**Input:**
+
+- content:
+
+```
+import { provideHttpClient } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
+import { CONTACT_DIRECTORY } from '@feature/deals';
+import { provideContactDirectory } from './contact-directory.provider';
+
+describe('lazy contact directory', () => {
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [provideHttpClient(), provideHttpClientTesting(), provideContactDirectory()],
+    });
+  });
+
+  it('is empty and loading until the contacts chunk has loaded', () => {
+    const directory = TestBed.inject(CONTACT_DIRECTORY);
+
+    expect(directory.loading()).toBe(true);
+    expect(directory.optionsById()).toEqual({});
+    expect(directory.searchResults()).toEqual({});
+  });
+
+  it('runs commands issued before the chunk loaded, in order, and exposes the results', async () => {
+    const http = TestBed.inject(HttpTestingController);
+    const directory = TestBed.inject(CONTACT_DIRECTORY);
+
+    directory.search('ann');
+    directory.search('mar');
+
+    const first = await vi.waitFor(() => http.expectOne((r) => r.url === 'contacts' && r.params.get('q') === 'ann'));
+    const second = http.expectOne((r) => r.url === 'contacts' && r.params.get('q') === 'mar');
+
+    first.flush({
+      contacts: {
+        items: [
+          {
+            id: 'c1',
+            firstName: 'Anna',
+            lastName: 'Kowalska',
+            email: 'anna@example.com',
+            status: 'customer',
+            createdAt: '2025-06-15T10:30:00Z',
+            company: 'Tech Solutions',
+          },
+        ],
+        total: 1,
+        offset: 0,
+        limit: 20,
+      },
+    });
+    second.flush({ contacts: { items: [], total: 0, offset: 0, limit: 20 } });
+
+    expect(directory.loading()).toBe(false);
+    expect(directory.searchResults()['ann']).toEqual([
+      { id: 'c1', label: 'Anna Kowalska', description: 'Tech Solutions' },
+    ]);
+    expect(directory.searchResults()['mar']).toEqual([]);
+    expect(directory.optionsById()['c1']?.label).toBe('Anna Kowalska');
+  });
+});
+
+```
+
+- filePath: `c:\Projects\sages-angular-adv-1126\src\app\contact-directory.provider.spec.ts`
+
+**Result:**
+
+```
+The following files were successfully edited:
+c:\Projects\sages-angular-adv-1126\src\app\contact-directory.provider.spec.ts
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="run_in_terminal"><details>
+<summary>Tool use: **run_in_terminal**</summary>
+
+Running ` cd /c/Projects/sages-angular-adv-1126 && npx prettier --write "src/\*\*/\*.spec...`
+
+Format specs and run all unit tests
+
+```bash
+cd /c/Projects/sages-angular-adv-1126 && npx prettier --write "src/**/*.spec.ts" >/dev/null && timeout 300 npx ng test --watch=false 2>&1 | tail -70
+```
+
+**Result:**
+
+```
+❯ Building...
+✔ Building...
+Application bundle generation complete. [6.190 seconds] - 2026-11-06T16:15:20.298Z
+
+
+ RUN  v5.1.0 C:/Projects/sages-angular-adv-1126
+
+
+ Test Files  6 passed (6)
+      Tests  28 passed (28)
+   Start at  17:15:20
+   Duration  4.90s (environment 46%, import 23%, setup 22%, transform 6%, tests 2%, worker 1%)
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **contacts.store.spec.ts**</summary>
+
+@@ lines 1-1 @@
+
+```
+import { computed, signal } from '@angular/core';
+import { TestBed } from '@angular/core/testing';
+import { Deal, DEALS_BY_CONTACT, DealsByContactSource } from '@feature/deals';
+import { of } from 'rxjs';
+import { Contact } from '../model/contact.model';
+import { ContactsApi } from './contacts-api';
+import { ContactsStore } from './contacts.store';
+
+function makeContact(overrides: Partial<Contact> = {}): Contact {
+  return {
+    id: 'c1',
+    firstName: 'Anna',
+    lastName: 'Kowalska',
+    email: 'anna@example.com',
+    status: 'customer',
+    createdAt: '2025-06-15T10:30:00Z',
+    company: 'Tech Solutions',
+    ...overrides,
+  };
+}
+
+function makeDeal(overrides: Partial<Deal> = {}): Deal {
+  return {
+    id: 'd1',
+    title: 'Enterprise License',
+    summary: '',
+    stage: 'new',
+    value: { amount: 1000, currency: 'USD' },
+    contactId: 'c1',
+    isPublic: false,
+    ...overrides,
+  };
+}
+
+describe('ContactsStore', () => {
+  const api = { search: vi.fn(), getById: vi.fn() };
+  const deals = signal<Deal[]>([]);
+  const loadDealsByContact = vi.fn();
+
+  const dealsPort = {
+    selectDealsByContactId: (contactId: () => string | undefined) =>
+      computed(() => deals().filter((deal) => deal.contactId === contactId())),
+    selectLoadingByContactId: () => computed(() => false),
+    selectRevalidatingByContactId: () => computed(() => false),
+    loadDealsByContact,
+  } as unknown as DealsByContactSource;
+
+  beforeEach(() => {
+    deals.set([]);
+    api.search.mockReset().mockImplementation((q: string) =>
+      of({
+        items: q === 'ann' ? [makeContact()] : [makeContact({ id: 'c2', firstName: 'Marek' })],
+        total: 1,
+        offset: 0,
+        limit: 20,
+      }),
+    );
+    api.getById.mockReset().mockReturnValue(of(makeContact({ company: 'New Company' })));
+    TestBed.configureTestingModule({
+      providers: [
+        { provide: ContactsApi, useValue: api },
+        { provide: DEALS_BY_CONTACT, useValue: dealsPort },
+      ],
+    });
+  });
+
+  it('keeps the result list of every query, so overlapping searches do not overwrite each other', () => {
+    const store = TestBed.inject(ContactsStore);
+
+    store.search('ann');
+    store.search('mar');
+
+    expect(store.selectSearchResults(() => 'ann')().map((c) => c.id)).toEqual(['c1']);
+    expect(store.selectSearchResults(() => 'mar')().map((c) => c.id)).toEqual(['c2']);
+  });
+
+  it('reports a query as searched only after its response arrived', () => {
+    const store = TestBed.inject(ContactsStore);
+    const searched = store.selectSearched(() => 'ann');
+
+    expect(searched()).toBe(false);
+    store.search('ann');
+    expect(searched()).toBe(true);
+  });
+
+  it('reflects a reloaded contact in earlier search results', () => {
+    const store = TestBed.inject(ContactsStore);
+    store.search('ann');
+    const results = store.selectSearchResults(() => 'ann');
+    expect(results()[0].company).toBe('Tech Solutions');
+
+    store.loadContact('c1');
+
+    expect(results()[0].company).toBe('New Company');
+    expect(store.selectContactById(() => 'c1')()?.company).toBe('New Company');
+  });
+
+  it('does not fetch a query again while it is fresh', () => {
+    const store = TestBed.inject(ContactsStore);
+
+    store.search('ann');
+    store.search('ann');
+
+    expect(api.search).toHaveBeenCalledTimes(1);
+  });
+
+  it('follows deal changes of the related deals port', () => {
+    const store = TestBed.inject(ContactsStore);
+    const related = store.selectRelatedDeals(() => 'c1');
+    expect(related()).toEqual([]);
+
+    deals.set([makeDeal(), makeDeal({ id: 'd2', contactId: 'c2' })]);
+    expect(related().map((deal) => deal.id)).toEqual(['d1']);
+
+    deals.update((list) => list.map((deal) => ({ ...deal, stage: 'closed-won' as const })));
+    expect(related()[0].stage).toBe('closed-won');
+
+    store.loadRelatedDeals('c1');
+    expect(loadDealsByContact).toHaveBeenCalledWith('c1');
+  });
+});
+
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **contact-directory.provider.spec.ts**</summary>
+
+@@ lines 1-1 @@
+
+```
+import { provideHttpClient } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
+import { CONTACT_DIRECTORY } from '@feature/deals';
+import { provideContactDirectory } from './contact-directory.provider';
+
+describe('lazy contact directory', () => {
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [provideHttpClient(), provideHttpClientTesting(), provideContactDirectory()],
+    });
+  });
+
+  it('is empty and loading until the contacts chunk has loaded', () => {
+    const directory = TestBed.inject(CONTACT_DIRECTORY);
+
+    expect(directory.loading()).toBe(true);
+    expect(directory.optionsById()).toEqual({});
+    expect(directory.searchResults()).toEqual({});
+  });
+
+  it('runs commands issued before the chunk loaded, in order, and exposes the results', async () => {
+    const http = TestBed.inject(HttpTestingController);
+    const directory = TestBed.inject(CONTACT_DIRECTORY);
+
+    directory.search('ann');
+    directory.search('mar');
+
+    const first = await vi.waitFor(() => http.expectOne((r) => r.url === 'contacts' && r.params.get('q') === 'ann'));
+    const second = http.expectOne((r) => r.url === 'contacts' && r.params.get('q') === 'mar');
+
+    first.flush({
+      contacts: {
+        items: [
+          {
+            id: 'c1',
+            firstName: 'Anna',
+            lastName: 'Kowalska',
+            email: 'anna@example.com',
+            status: 'customer',
+            createdAt: '2025-06-15T10:30:00Z',
+            company: 'Tech Solutions',
+          },
+        ],
+        total: 1,
+        offset: 0,
+        limit: 20,
+      },
+    });
+    second.flush({ contacts: { items: [], total: 0, offset: 0, limit: 20 } });
+
+    expect(directory.loading()).toBe(false);
+    expect(directory.searchResults()['ann']).toEqual([
+      { id: 'c1', label: 'Anna Kowalska', description: 'Tech Solutions' },
+    ]);
+    expect(directory.searchResults()['mar']).toEqual([]);
+    expect(directory.optionsById()['c1']?.label).toBe('Anna Kowalska');
+  });
+});
+
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="run_in_terminal"><details>
+<summary>Tool use: **run_in_terminal**</summary>
+
+Running ` cd /c/Projects/sages-angular-adv-1126 && S=$\(git status --short | grep -E "s...`
+
+Lint and type-check the new spec files
+
+```bash
+cd /c/Projects/sages-angular-adv-1126 && S=$(git status --short | grep -E "spec\.ts" | awk '{print $2}' | tr '\n' ' ') && echo $S && npx eslint $S; echo ESLINT=$?; npx tsc --noEmit -p tsconfig.spec.json 2>&1 | head -20; echo TSC_SPEC=$?
+```
+
+**Result:**
+
+```
+src/app/contact-directory.provider.spec.ts src/app/features/contacts/data/contacts.store.spec.ts src/app/features/deals/data/deals.store.spec.ts src/app/features/deals/data/tasks.store.spec.ts src/app/shared/store/with-loading-state.spec.ts src/app/shared/store/with-stale-while-revalidate.spec.ts
+
+C:\Projects\sages-angular-adv-1126\src\app\features\deals\data\deals.store.spec.ts
+  126:17  error  '_id' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  146:17  error  '_id' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+✖ 2 problems (2 errors, 0 warnings)
+
+ESLINT=1
+TSC_SPEC=0
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **deals.store.spec.ts**</summary>
+
+@@ lines 146-146 @@
+
+```
+draft = makeDraft
+```
+
+@@ lines 126-126 @@
+
+```
+draft = makeDraft
+```
+
+@@ lines 3-19 @@
+
+```
+, DealDraft } from '../model/deal.model';
+import { DealsApi } from './deals-api';
+import { DealsStore } from './deals.store';
+
+const SAVE_DEBOUNCE_MS = 300;
+
+function makeDraft(overrides: Partial<DealDraft> = {}): DealDraft {
+  return {
+    title: 'Enterprise License',
+    summary: '',
+    stage: 'new',
+    value: { amount: 1000, currency: 'USD' },
+    contactId: 'c1',
+    isPublic: false,
+    ...overrides,
+  };
+}
+
+function makeDeal(overrides: Partial<Deal> = {}): Deal {
+  return { id: 'd1', ...makeDraft(), ...overrides
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="run_in_terminal"><details>
+<summary>Tool use: **run_in_terminal**</summary>
+
+Running ` cd /c/Projects/sages-angular-adv-1126 && npx prettier --write "src/\*\*/\*.spec...`
+
+Re-lint and re-run the tests
+
+```bash
+cd /c/Projects/sages-angular-adv-1126 && npx prettier --write "src/**/*.spec.ts" >/dev/null && S=$(git status --short | grep -E "spec\.ts" | awk '{print $2}' | tr '\n' ' ') && npx eslint $S; echo ESLINT=$?; timeout 300 npx ng test --watch=false 2>&1 | tail -8
+```
+
+**Result:**
+
+```
+ESLINT=0
+ RUN  v5.1.0 C:/Projects/sages-angular-adv-1126
+
+
+ Test Files  6 passed (6)
+      Tests  28 passed (28)
+   Start at  17:16:08
+   Duration  4.54s (environment 51%, setup 21%, import 20%, transform 5%, tests 2%, worker 1%)
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="run_in_terminal"><details>
+<summary>Tool use: **run_in_terminal**</summary>
+
+Running ` cd /c/Projects/sages-angular-adv-1126 && git add angular.json package.json p...`
+
+Commit Phase 7 files only
+
+```bash
+cd /c/Projects/sages-angular-adv-1126 && git add angular.json package.json package-lock.json src/app/contact-directory.provider.spec.ts src/app/features/contacts/data/contacts.store.spec.ts src/app/features/deals/data/deals.store.spec.ts src/app/features/deals/data/tasks.store.spec.ts src/app/shared/store/with-loading-state.spec.ts src/app/shared/store/with-stale-while-revalidate.spec.ts && git commit -q -m "WIP phase 7: unit-test target (vitest) and store specs" 2>&1 | grep -v warning; git log --oneline | head -1; git status --short | grep -v ai-sessions
+```
+
+**Result:**
+
+```
+warning: in the working copy of 'angular.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'package-lock.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'package.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/app/contact-directory.provider.spec.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/app/features/contacts/data/contacts.store.spec.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/app/features/deals/data/deals.store.spec.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/app/features/deals/data/tasks.store.spec.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/app/shared/store/with-loading-state.spec.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/app/shared/store/with-stale-while-revalidate.spec.ts', LF will be replaced by CRLF the next time Git touches it
+bd5e658 WIP phase 7: unit-test target (vitest) and store specs
+
+Command exited with code 1
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="run_in_terminal"><details>
+<summary>Tool use: **run_in_terminal**</summary>
+
+Running ` cd /c/Projects/sages-angular-adv-1126 && timeout 600 npx ng build --output-p...`
+
+One-off production build (as planned) to check that deals and contacts store code stays in lazy chunks
+
+```bash
+cd /c/Projects/sages-angular-adv-1126 && timeout 600 npx ng build --output-path /tmp/sages-dist 2>&1 | tail -50; git status --short | grep -v ai-sessions
+```
+
+**Result:**
+
+```
+❯ Building...
+✔ Building...
+Initial chunk files   | Names                 |  Raw size | Estimated transfer size
+main-KS5EUWX6.js      | main                  | 412.16 kB |                75.21 kB
+chunk-D-uVuQg7.js     | -                     | 213.61 kB |                50.92 kB
+chunk-CdmSsjkd.js     | -                     | 209.21 kB |                61.68 kB
+styles-XYOIDTDP.css   | styles                |  37.82 kB |                 6.56 kB
+polyfills-LVNOU2XZ.js | polyfills             |  35.88 kB |                11.64 kB
+
+                      | Initial total         | 908.67 kB |               206.01 kB
+
+Lazy chunk files      | Names                 |  Raw size | Estimated transfer size
+chunk-ROqYHiiL.js     | -                     | 437.45 kB |                80.63 kB
+chunk-BhLg4q_2.js     | deals-layout-page     |  27.02 kB |                 7.33 kB
+chunk-HYGelmFu.js     | deal-tasks-page       |   5.79 kB |                 2.13 kB
+chunk-Ctc7OfpW.js     | contact-details-page  |   5.43 kB |                 1.87 kB
+chunk-72NYkrvb.js     | contact-search-page   |   4.58 kB |                 1.72 kB
+chunk-DFhb9wpR.js     | deal-details-page     |   3.54 kB |                 1.48 kB
+chunk-C6pRZNyr.js     | index                 |   2.59 kB |                 1.10 kB
+chunk-DVoI4vO6.js     | deal-edit-page        |   2.32 kB |                 1.00 kB
+chunk-DRXLy-AU.js     | deal-create-page      |   1.65 kB |               791 bytes
+chunk-C88DPo6X.js     | -                     |   1.17 kB |               522 bytes
+chunk-CKwsr5YD.js     | -                     |   1.13 kB |               561 bytes
+chunk-KxuzOGsS.js     | -                     |   1.10 kB |               505 bytes
+chunk-DpaNysIl.js     | index                 | 830 bytes |               830 bytes
+chunk-ov8gceF0.js     | -                     | 438 bytes |               438 bytes
+chunk-NPRFANOH.js     | deal-placeholder-page | 405 bytes |               405 bytes
+...and 3 more lazy chunks files. Use "
+… (output truncated)
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="run_in_terminal"><details>
+<summary>Tool use: **run_in_terminal**</summary>
+
+Running ` cd /tmp/sages-dist/browser 2>/dev/null || cd "C:/Users/ev45i/AppData/Local/T...`
+
+Check which built chunks contain the deals/contacts store code
+
+```bash
+cd /tmp/sages-dist/browser 2>/dev/null || cd "C:/Users/ev45i/AppData/Local/Temp/sages-dist/browser"; for k in "deals:byContact" "contacts:search" "tasks:deal" "inFlightIds" "CONTACT_DIRECTORY" "deals:list"; do echo "== $k"; grep -l "$k" *.js; done; echo; for f in main-*.js chunk-D-uVuQg7.js chunk-CdmSsjkd.js; do echo "$f: $(grep -c 'deals:byContact' $f)"; done; cd /c/Projects/sages-angular-adv-1126; git stash list | head -2
+```
+
+**Result:**
+
+```
+== deals:byContact
+main-KS5EUWX6.js
+== contacts:search
+chunk-C6pRZNyr.js
+== tasks:deal
+main-KS5EUWX6.js
+== inFlightIds
+main-KS5EUWX6.js
+== CONTACT_DIRECTORY
+main-KS5EUWX6.js
+== deals:list
+main-KS5EUWX6.js
+
+main-KS5EUWX6.js: 1
+chunk-D-uVuQg7.js: 0
+chunk-CdmSsjkd.js: 0
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="create_file"><details>
+<summary>Tool use: **create_file**</summary>
+
+Created `contact-directory.provider-new.ts`
+
+**Input:**
+
+- content:
+
+```
+import { computed, inject, InjectionToken, Injector, Provider, signal } from '@angular/core';
+import type { ContactDirectory } from '@feature/deals';
+
+const NO_OPTIONS = Object.freeze({});
+
+// Deals must not import contacts, so the app wires them. The contacts chunk loads on first use.
+function lazyContactDirectory(): ContactDirectory {
+  const injector = inject(Injector);
+  const loaded = signal<ContactDirectory | undefined>(undefined);
+
+  const ready = import('@feature/contacts').then(({ ContactDirectoryAdapter }) => {
+    const directory = injector.get(ContactDirectoryAdapter);
+    loaded.set(directory);
+    return directory;
+  });
+
+  return {
+    optionsById: computed(() => loaded()?.optionsById() ?? NO_OPTIONS),
+    searchResults: computed(() => loaded()?.searchResults() ?? NO_OPTIONS),
+    // Counts as loading until the chunk is there
+    loading: computed(() => loaded()?.loading() ?? true),
+    // Chained on one promise, so calls made before the chunk loads keep their order
+    search: (query) => void ready.then((directory) => directory.search(query)),
+    load: (id) => void ready.then((directory) => directory.load(id)),
+  };
+}
+
+// The token arrives as an argument: importing it statically would pull the deals feature into the main bundle
+export function provideContactDirectory(token: InjectionToken<ContactDirectory>): Provider {
+  return { provide: token, useFactory: lazyContactDirectory };
+}
+
+```
+
+- filePath: `c:\Projects\sages-angular-adv-1126\src\app\contact-directory.provider-new.ts`
+
+**Result:**
+
+```
+The following files were successfully edited:
+c:\Projects\sages-angular-adv-1126\src\app\contact-directory.provider-new.ts
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **contact-directory.provider-new.ts**</summary>
+
+@@ lines 1-1 @@
+
+```
+import { computed, inject, InjectionToken, Injector, Provider, signal } from '@angular/core';
+import type { ContactDirectory } from '@feature/deals';
+
+const NO_OPTIONS = Object.freeze({});
+
+// Deals must not import contacts, so the app wires them. The contacts chunk loads on first use.
+function lazyContactDirectory(): ContactDirectory {
+  const injector = inject(Injector);
+  const loaded = signal<ContactDirectory | undefined>(undefined);
+
+  const ready = import('@feature/contacts').then(({ ContactDirectoryAdapter }) => {
+    const directory = injector.get(ContactDirectoryAdapter);
+    loaded.set(directory);
+    return directory;
+  });
+
+  return {
+    optionsById: computed(() => loaded()?.optionsById() ?? NO_OPTIONS),
+    searchResults: computed(() => loaded()?.searchResults() ?? NO_OPTIONS),
+    // Counts as loading until the chunk is there
+    loading: computed(() => loaded()?.loading() ?? true),
+    // Chained on one promise, so calls made before the chunk loads keep their order
+    search: (query) => void ready.then((directory) => directory.search(query)),
+    load: (id) => void ready.then((directory) => directory.load(id)),
+  };
+}
+
+// The token arrives as an argument: importing it statically would pull the deals feature into the main bundle
+export function provideContactDirectory(token: InjectionToken<ContactDirectory>): Provider {
+  return { provide: token, useFactory: lazyContactDirectory };
+}
+
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="task" data-tool-name="manage_todo_list"><details>
+<summary>Tool use: **manage_todo_list**</summary>
+
+Updated todo list
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="run_in_terminal"><details>
+<summary>Tool use: **run_in_terminal**</summary>
+
+Running ` cd /c/Projects/sages-angular-adv-1126/src/app && mv -f contact-directory.pro...`
+
+Replace the provider with the token-argument version
+
+```bash
+cd /c/Projects/sages-angular-adv-1126/src/app && mv -f contact-directory.provider-new.ts contact-directory.provider.ts && ls *.ts
+```
+
+**Result:**
+
+```
+app.config.server.ts  app.ts
+app.config.ts         contact-directory.provider.spec.ts
+app.routes.server.ts  contact-directory.provider.ts
+app.routes.ts
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **app.config.ts**</summary>
+
+@@ lines 28-30 @@ (deleted)
+
+@@ lines 10-11 @@ (deleted)
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+
+```
+
+```
+
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **app.routes.ts**</summary>
+
+@@ lines 2-15 @@
+
+```
+import { provideContactDirectory } from './contact-directory.provider';
+
+export const routes: Routes = [
+  {
+    path: '',
+    redirectTo: '/deals',
+    pathMatch: 'full',
+  },
+  {
+    path: 'deals',
+    // eager loading
+    // component : DealsPage,
+
+    // lazy loading; the token comes from the lazy module, so the deals feature stays out of the main bundle
+    loadChildren: () =>
+      import('./features/deals').then((m) => [
+        {
+          path: '',
+          providers: [provideContactDirectory(m.CONTACT_DIRECTORY)],
+          children: m.dealsRoutes,
+        },
+      ]
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+
+```
+
+```
+
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **contact-directory.provider.spec.ts**</summary>
+
+@@ lines 10-10 @@
+
+```
+CONTACT_DIRECTORY
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="run_in_terminal"><details>
+<summary>Tool use: **run_in_terminal**</summary>
+
+Running ` cd /c/Projects/sages-angular-adv-1126 && npx prettier --write src/app/app.ro...`
+
+Rebuild and re-check which chunks hold the store code
+
+```bash
+cd /c/Projects/sages-angular-adv-1126 && npx prettier --write src/app/app.routes.ts src/app/app.config.ts src/app/contact-directory.provider.ts src/app/contact-directory.provider.spec.ts >/dev/null; npx tsc --noEmit -p tsconfig.app.json; echo TSC=$?; rm -rf /tmp/sages-dist; timeout 600 npx ng build --output-path /tmp/sages-dist 2>&1 | grep -E "main-|Initial total|ERROR|error" ; cd "C:/Users/ev45i/AppData/Local/Temp/sages-dist/browser" && for k in "deals:byContact" "contacts:search" "tasks:deal" "inFlightIds" "deals:list"; do echo "== $k: $(grep -l "$k" *.js | tr '\n' ' ')"; done
+```
+
+**Result:**
+
+```
+TSC=0
+main-SU67Z2P2.js      | main                 | 285.77 kB |                66.18 kB
+                      | Initial total        | 568.68 kB |               146.06 kB
+== deals:byContact: chunk-Cz1PVck6.js 
+== contacts:search: chunk-BDo2In7u.js 
+== tasks:deal: chunk-Cz1PVck6.js 
+== inFlightIds: chunk-Cz1PVck6.js 
+== deals:list: chunk-Cz1PVck6.js
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="run_in_terminal"><details>
+<summary>Tool use: **run_in_terminal**</summary>
+
+Running ` cd /c/Projects/sages-angular-adv-1126 && timeout 300 npx ng test --watch=fal...`
+
+Re-run tests and lint after moving the directory provider to the deals route
+
+```bash
+cd /c/Projects/sages-angular-adv-1126 && timeout 300 npx ng test --watch=false 2>&1 | tail -6; npx eslint src/app/app.routes.ts src/app/contact-directory.provider.ts src/app/contact-directory.provider.spec.ts; echo ESLINT=$?; npx eslint src/app/app.config.ts; git status --short | grep -v ai-sessions
+```
+
+**Result:**
+
+```
+
+ Test Files  6 passed (6)
+      Tests  28 passed (28)
+   Start at  17:17:48
+   Duration  4.74s (environment 50%, import 21%, setup 21%, transform 6%, tests 2%, worker 1%)
+
+ESLINT=0
+
+C:\Projects\sages-angular-adv-1126\src\app\app.config.ts
+  10:1  error  './core/http/index-interceptor' is a deep import from a barrel module. Use the module's barrel file (index.ts) instead  @softarc/sheriff/encapsulation
+
+✖ 1 problem (1 error, 0 warnings)
+
+ M src/app/app.config.ts
+ M src/app/app.routes.ts
+ M src/app/contact-directory.provider.spec.ts
+ M src/app/contact-directory.provider.ts
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="run_in_terminal"><details>
+<summary>Tool use: **run_in_terminal**</summary>
+
+Running ` cd /c/Projects/sages-angular-adv-1126 && git add src/app/app.config.ts src/a...`
+
+Commit the bundle fix
+
+```bash
+cd /c/Projects/sages-angular-adv-1126 && git add src/app/app.config.ts src/app/app.routes.ts src/app/contact-directory.provider.spec.ts src/app/contact-directory.provider.ts && git commit -q -m "WIP: provide contact directory on the lazy deals route to keep deals out of main" 2>&1 | grep -v warning; git log --oneline | head -1
+```
+
+**Result:**
+
+```
+warning: in the working copy of 'src/app/app.config.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/app/app.routes.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/app/contact-directory.provider.spec.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/app/contact-directory.provider.ts', LF will be replaced by CRLF the next time Git touches it
+27c4d8f WIP: provide contact directory on the lazy deals route to keep deals out of main
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="read" data-tool-name="read_file"><details>
+<summary>Tool use: **read_file**</summary>
+
+Read skill `module-boundaries`
+
+**Input:**
+
+- endLine: `80`
+- filePath: `c:\Projects\sages-angular-adv-1126\.github\skills\module-boundaries\SKILL.md`
+- startLine: `1`
+
+**Result:**
+
+```
+---
+name: module-boundaries
+description: 'Check changed TypeScript files under src/app against module boundaries and fix violations. Use when the user asks to verify architecture, check imports, fix a boundary or deep-import error, or run Sheriff. Runs ESLint with Sheriff rules on changed files only.'
+---
+
+# Module Boundaries
+
+Procedure for checking and fixing module boundary violations. The dependency rules are defined in [architecture.instructions.md](../../instructions/architecture.instructions.md) and [sheriff.config.ts](../../../sheriff.config.ts). Do not restate them here.
+
+## Steps
+
+1. List changed files under `src/app`: `git diff --name-only HEAD -- src/app` (include staged and unstaged changes).
+2. Run ESLint on those files only: `npx eslint <files>`. Sheriff reports two rules:
+   - `@softarc/sheriff/encapsulation`: deep import into a module.
+   - `@softarc/sheriff/dependency-rule`: import direction is not allowed.
+     Sheriff does not flag deep imports through aliases such as `@feature/deals/pages/...`. TypeScript reports them (step 5).
+3. Fix each violation:
+   - Encapsulation: import the module's alias (`@core`, `@shared`, `@feature/<name>`) instead of a deep path. If the symbol is not exported from `index.ts`, export it there.
+   - Relative import across modules: replace it with the module's alias from `tsconfig.json` `paths`.
+   - Dependency rule: move the shared code to `shared/`, or remove the import. Do not add a rule to `sheriff.config.ts` without the user's approval.
+4. Fix only violations in changed files. Report pre-existing errors in unchanged files without fixing them.
+5. Re-run `npx eslint <files>` on the same files, then run `npx tsc --noEmit -p tsconfig.app.json`.
+6. Report each fixed violation with its file and line.
+
+## When to Stop and Ask
+
+- The fix needs a change to `sheriff.config.ts` (other than a new feature's `modules` entry) or to an ADR.
+- The violation comes from a design decision, not from a wrong import.
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="run_in_terminal"><details>
+<summary>Tool use: **run_in_terminal**</summary>
+
+Running ` cd /c/Projects/sages-angular-adv-1126 && F=$\(git diff --name-only --diff-fil...`
+
+Run the module-boundaries check (ESLint with Sheriff), tsc and prettier over every file changed in this work
+
+```bash
+cd /c/Projects/sages-angular-adv-1126 && F=$(git diff --name-only --diff-filter=d 94398db HEAD -- src/app | grep -E "\.ts$" | grep -v "core/model/api.model.ts" | tr '\n' ' ') && npx eslint $F; echo ESLINT=$?; npx tsc --noEmit -p tsconfig.app.json; echo TSC=$?; npx prettier --check $F 2>&1 | tail -3
+```
+
+**Result:**
+
+```
+
+C:\Projects\sages-angular-adv-1126\src\app\app.config.ts
+  10:1  error  './core/http/index-interceptor' is a deep import from a barrel module. Use the module's barrel file (index.ts) instead  @softarc/sheriff/encapsulation
+
+✖ 1 problem (1 error, 0 warnings)
+
+ESLINT=1
+TSC=0
+Checking formatting...
+All matched files use Prettier code style!
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="run_in_terminal"><details>
+<summary>Tool use: **run_in_terminal**</summary>
+
+Running ` cd /c/Projects/sages-angular-adv-1126 && printf "export \* from './http/index...`
+
+Export the HTTP interceptors from the core public API
+
+```bash
+cd /c/Projects/sages-angular-adv-1126 && printf "export * from './http/index-interceptor';\n" >> src/app/core/index.ts && cat src/app/core/index.ts
+```
+
+**Result:**
+
+```
+export { PageNotFound } from './pages/page-not-found/page-not-found';
+export * from './http/index-interceptor';
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **app.config.ts**</summary>
+
+@@ lines 10-10 @@
+
+```
+@core
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="run_in_terminal"><details>
+<summary>Tool use: **run_in_terminal**</summary>
+
+Running ` cd /c/Projects/sages-angular-adv-1126 && npx prettier --write src/app/core/i...`
+
+Re-verify lint, types, templates, tests and bundle size after the core export change
+
+```bash
+cd /c/Projects/sages-angular-adv-1126 && npx prettier --write src/app/core/index.ts src/app/app.config.ts >/dev/null; npx eslint src/app/app.config.ts src/app/core/index.ts; echo ESLINT=$?; npx tsc --noEmit -p tsconfig.app.json; echo TSC=$?; npx ngc -p tsconfig.app.json --noEmit; echo NGC=$?; timeout 300 npx ng test --watch=false 2>&1 | grep -E "Tests|passed|failed"; rm -rf /tmp/sages-dist; timeout 600 npx ng build --output-path /tmp/sages-dist 2>&1 | grep -E "main-|Initial total|ERROR"
+```
+
+**Result:**
+
+```
+ESLINT=0
+TSC=0
+NGC=0
+ Test Files  6 passed (6)
+      Tests  28 passed (28)
+main-HECDCW4C.js      | main                  | 286.17 kB |                66.31 kB
+                      | Initial total         | 569.07 kB |               146.19 kB
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **app.config.ts**</summary>
+
+@@ lines 17-17 @@
+
+```
+// :contactId -> contactId = input(); 'always' also passes parent params (:dealId) to child routes
+    provideRouter(
+      routes,
+      withComponentInputBinding(),
+      withRouterConfig({ paramsInheritanceStrategy: 'always' }),
+    ),
+```
+
+@@ lines 6-6 @@
+
+```
+, withRouterConfig
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **deal.model.ts**</summary>
+
+@@ lines 22-25 @@
+
+```
+contactId: string;
+  isPublic: boolean;
+}
+
+// Fields the user provides when creating a deal
+export type DealDraft = Omit<Deal, 'id'>;
+
+export type DealChanges = Partial<DealDraft>;
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+
+```
+
+```
+
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **deal-task.model.ts**</summary>
+
+@@ lines 17-17 @@
+
+```
+
+
+export interface TaskDraft {
+  title: string;
+  priority: TaskPriority;
+  dueDate?: string;
+}
+
+export type TaskChanges = Partial<Omit<DealTask, 'id' | 'dealId'>>;
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **deals.mappers.ts**</summary>
+
+@@ lines 1-1 @@
+
+```
+import { Deal, DealChanges, DealDraft, DealStage } from '../model/deal.model';
+import { DealTask, TaskChanges, TaskDraft, TaskPriority } from '../model/deal-task.model';
+
+// Mirrors server/openapi.yaml. Features cannot import core/model, so the shapes are kept here.
+
+export interface DealDto {
+  id: string;
+  title: string;
+  value: number;
+  stage: DealStage;
+  description: string;
+  contactId: string;
+  public: boolean;
+  createdAt: string;
+}
+
+export interface PagedDto<T> {
+  items: T[];
+  total: number;
+  offset: number;
+  limit: number;
+}
+
+export interface DealCreateRequestDto {
+  title: string;
+  contactId: string;
+  value: number;
+  stage: DealStage;
+  description: string;
+  public: boolean;
+}
+
+export type DealUpdateRequestDto = Partial<DealCreateRequestDto>;
+
+export interface TaskDto {
+  id: string;
+  title: string;
+  dueDate?: string;
+  priority: TaskPriority;
+  completed: boolean;
+}
+
+export interface TaskCreateRequestDto {
+  title: string;
+  dueDate?: string;
+  priority?: TaskPriority;
+}
+
+export type TaskUpdateRequestDto = Partial<TaskCreateRequestDto> & { completed?: boolean };
+
+export function toDeal(dto: DealDto): Deal {
+  return {
+    id: dto.id,
+    title: dto.title,
+    summary: dto.description,
+    stage: dto.stage,
+    value: { amount: dto.value, currency: 'USD' },
+    contactId: dto.contactId,
+    isPublic: dto.public,
+  };
+}
+
+export function toDealCreateRequest(draft: DealDraft): DealCreateRequestDto {
+  return {
+    title: draft.title,
+    contactId: draft.contactId,
+    value: draft.value.amount,
+    stage: draft.stage,
+    description: draft.summary,
+    public: draft.isPublic,
+  };
+}
+
+// Only the fields present in `changes` are sent
+export function toDealUpdateRequest(changes: DealChanges): DealUpdateRequestDto {
+  return {
+    ...(changes.title !== undefined && { title: changes.title }),
+    ...(changes.contactId !== undefined && { contactId: changes.contactId }),
+    ...(changes.value !== undefined && { value: changes.value.amount }),
+    ...(changes.stage !== undefined && { stage: changes.stage }),
+    ...(changes.summary !== undefined && { description: changes.summary }),
+    ...(changes.isPublic !== undefined && { public: changes.isPublic }),
+  };
+}
+
+// The server does not repeat the deal id on a task
+export function toTask(dealId: string, dto: TaskDto): DealTask {
+  return {
+    id: dto.id,
+    dealId,
+    title: dto.title,
+    // The server stores a missing due date as ''
+    dueDate: dto.dueDate || undefined,
+    priority: dto.priority,
+    done: dto.completed,
+  };
+}
+
+export function toTaskCreateRequest(draft: TaskDraft): TaskCreateRequestDto {
+  return {
+    title: draft.title,
+    priority: draft.priority,
+    ...(draft.dueDate !== undefined && { dueDate: draft.dueDate }),
+  };
+}
+
+export function toTaskUpdateRequest(changes: TaskChanges): TaskUpdateRequestDto {
+  return {
+    ...(changes.title !== undefined && { title: changes.title }),
+    ...(changes.dueDate !== undefined && { dueDate: changes.dueDate }),
+    ...(changes.priority !== undefined && { priority: changes.priority }),
+    ...(changes.done !== undefined && { completed: changes.done }),
+  };
+}
+
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **deals-api.ts**</summary>
+
+@@ lines 1-4 @@
+
+```
+HttpClient } from '@angular/common/http';
+import { inject, Service } from '@angular/core';
+import { map, Observable } from 'rxjs';
+import { Deal, DealChanges, DealDraft } from '../model/deal.model';
+import {
+  DealDto,
+  PagedDto,
+  toDeal,
+  toDealCreateRequest,
+  toDealUpdateRequest,
+} from './deals.mappers';
+
+@Service()
+export class DealsApi {
+  private readonly http = inject(HttpClient);
+
+  list(filter: { contactId?: string } = {}): Observable<Deal[]> {
+    const params = filter.contactId ? { contactId: filter.contactId } : {};
+    return this.http
+      .get<PagedDto<DealDto>>('deals', { params })
+      .pipe(map((page) => page.items.map(toDeal)));
+  }
+
+  getById(id: string): Observable<Deal> {
+    return this.http.get<DealDto>(`deals/${encodeURIComponent(id)}`).pipe(map(toDeal));
+  }
+
+  create(draft: DealDraft): Observable<Deal> {
+    return this.http.post<DealDto>('deals', toDealCreateRequest(draft)).pipe(map(toDeal));
+  }
+
+  update(id: string, changes: DealChanges): Observable<Deal> {
+    return this.http
+      .put<DealDto>(`deals/${encodeURIComponent(id)}`, toDealUpdateRequest(changes))
+      .pipe(map(toDeal));
+  }
+
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+
+```
+
+```
+
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **tasks-api.ts**</summary>
+
+@@ lines 1-4 @@
+
+```
+HttpClient } from '@angular/common/http';
+import { inject, Service } from '@angular/core';
+import { map, Observable } from 'rxjs';
+import { DealTask, TaskChanges, TaskDraft } from '../model/deal-task.model';
+import { TaskDto, toTask, toTaskCreateRequest, toTaskUpdateRequest } from './deals.mappers';
+
+@Service()
+export class TasksApi {
+  private readonly http = inject(HttpClient);
+
+  list(dealId: string): Observable<DealTask[]> {
+    return this.http
+      .get<TaskDto[]>(this.url(dealId))
+      .pipe(map((tasks) => tasks.map((task) => toTask(dealId, task))));
+  }
+
+  create(dealId: string, draft: TaskDraft): Observable<DealTask> {
+    return this.http
+      .post<TaskDto>(this.url(dealId), toTaskCreateRequest(draft))
+      .pipe(map((task) => toTask(dealId, task)));
+  }
+
+  update(dealId: string, taskId: string, changes: TaskChanges): Observable<DealTask> {
+    return this.http
+      .patch<TaskDto>(this.url(dealId, taskId), toTaskUpdateRequest(changes))
+      .pipe(map((task) => toTask(dealId, task)));
+  }
+
+  delete(dealId: string, taskId: string): Observable<void> {
+    return this.http.delete<void>(this.url(dealId, taskId));
+  }
+
+  private url(dealId: string, taskId?: string): string {
+    const base = `deals/${encodeURIComponent(dealId)}/tasks`;
+    return taskId === undefined ? base : `${base}/${encodeURIComponent(taskId)}`;
+  }
+
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **with-deal-selectors.ts**</summary>
+
+@@ lines 1-1 @@
+
+```
+import { computed } from '@angular/core';
+import { signalStoreFeature, type, withMethods } from '@ngrx/signals';
+import { EntityProps, EntityState } from '@ngrx/signals/entities';
+import { Deal } from '../model/deal.model';
+
+// Selectors read the normalized entity map, so any entity change reaches every selector
+export function withDealSelectors() {
+  return signalStoreFeature(
+    { state: type<EntityState<Deal>>(), props: type<EntityProps<Deal>>() },
+    withMethods((store) => ({
+      selectDealById(id: () => string | undefined) {
+        return computed((): Deal | undefined => {
+          const key = id();
+          return key === undefined ? undefined : store.entityMap()[key];
+        });
+      },
+
+      selectFilteredDeals(query: () => string | undefined) {
+        return computed(() => {
+          const text = (query() ?? '').trim().toLowerCase();
+          const deals = store.entities();
+          return text ? deals.filter((deal) => deal.title.toLowerCase().includes(text)) : deals;
+        });
+      },
+
+      selectDealsByContactId(contactId: () => string | undefined) {
+        return computed(() => {
+          const key = contactId();
+          return key === undefined ? [] : store.entities().filter((deal) => deal.contactId === key);
+        });
+      },
+    })),
+  );
+}
+
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **with-task-selectors.ts**</summary>
+
+@@ lines 1-1 @@
+
+```
+import { computed } from '@angular/core';
+import { signalStoreFeature, type, withMethods } from '@ngrx/signals';
+import { EntityProps, EntityState } from '@ngrx/signals/entities';
+import { DealTask } from '../model/deal-task.model';
+
+export function withTaskSelectors() {
+  return signalStoreFeature(
+    { state: type<EntityState<DealTask>>(), props: type<EntityProps<DealTask>>() },
+    withMethods((store) => ({
+      // Open tasks first; the sort is stable, so insertion order is kept inside each group
+      selectTasksByDealId(dealId: () => string | undefined) {
+        return computed(() => {
+          const key = dealId();
+          if (key === undefined) return [];
+          return store
+            .entities()
+            .filter((task) => task.dealId === key)
+            .sort((a, b) => Number(a.done) - Number(b.done));
+        });
+      },
+    })),
+  );
+}
+
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **deals.store.ts**</summary>
+
+@@ lines 1-111 @@
+
+```
+import { inject } from '@angular/core';
+import { tapResponse } from '@ngrx/operators';
+import { patchState, signalStore, withMethods } from '@ngrx/signals';
+import {
+  addEntity,
+  setEntity,
+  updateEntity,
+  upsertEntities,
+  upsertEntity,
+  withEntities,
+} from '@ngrx/signals/entities';
+import { rxMethod } from '@ngrx/signals/rxjs-interop';
+import {
+  cacheInvalidate,
+  loadingError,
+  loadingFinish,
+  loadingStart,
+  withLoadingState,
+  withStaleWhileRevalidate,
+} from '@shared';
+import { debounceTime, exhaustMap, filter, groupBy, mergeMap, pipe, switchMap } from 'rxjs';
+import { Deal, DealChanges, DealDraft } from '../model/deal.model';
+import { DealsApi } from './deals-api';
+import { withDealSelectors } from './with-deal-selectors';
+
+const TTL_MS = 60_000;
+// Collapses repeated Save clicks into one request
+const SAVE_DEBOUNCE_MS = 300;
+
+// Loading id of the in-flight createDeal request
+export const NEW_DEAL_ID = 'new-deal';
+
+export const dealsCacheKey = {
+  list: 'deals:list',
+  byContact: (contactId: string) => `deals:byContact:${contactId}`,
+  byId: (id: string) => `deal:${id}`,
+};
+
+export interface CreateDealCommand {
+  draft: DealDraft;
+  onCreated?: (deal: Deal) => void;
+}
+
+export interface UpdateDealCommand {
+  id: string;
+  changes: DealChanges;
+  onSaved?: (deal: Deal) => void;
+}
+
+export const DealsStore = signalStore(
+  { providedIn: 'root' },
+  withEntities<Deal>(),
+  withLoadingState(),
+  withStaleWhileRevalidate({ ttlMs: TTL_MS }),
+  withDealSelectors(),
+
+  withMethods((store, api = inject(DealsApi)) => {
+    const upsertDeals = (deals: Deal[]) => patchState(store, upsertEntities(deals));
+
+    return {
+      loadDeals: rxMethod<void>(
+        pipe(
+          switchMap(() =>
+            store._swr({ key: dealsCacheKey.list, source: () => api.list(), onData: upsertDeals }),
+          ),
+        ),
+      ),
+
+      loadDealsByContact: rxMethod<string | undefined>(
+        pipe(
+          filter((contactId): contactId is string => contactId !== undefined),
+          switchMap((contactId) =>
+            store._swr({
+              key: dealsCacheKey.byContact(contactId),
+              source: () => api.list({ contactId }),
+              onData: upsertDeals,
+            }),
+          ),
+        ),
+      ),
+
+      loadDeal: rxMethod<string | undefined>(
+        pipe(
+          filter((id): id is string => id !== undefined),
+          switchMap((id) =>
+            store._swr({
+              key: dealsCacheKey.byId(id),
+              loadingId: id,
+              source: () => api.getById(id),
+              onData: (deal) => patchState(store, upsertEntity(deal)),
+            }),
+          ),
+        ),
+      ),
+
+      createDeal: rxMethod<CreateDealCommand>(
+        pipe(
+          debounceTime(SAVE_DEBOUNCE_MS),
+          // Clicks while a request is running are ignored
+          exhaustMap(({ draft, onCreated }) => {
+            patchState(store, loadingStart(NEW_DEAL_ID));
+
+            return api.create(draft).pipe(
+              tapResponse({
+                next: (deal) => {
+                  patchState(
+                    store,
+                    addEntity(deal),
+                    cacheInvalidate(dealsCacheKey.list),
+                    cacheInvalidate(dealsCacheKey.byContact(deal.contactId)),
+                  );
+                  onCreated?.(deal);
+                },
+                error: (error) => patchState(store, loadingError(error)),
+                finalize: () => patchState(store, loadingFinish(NEW_DEAL_ID)),
+              }),
+            );
+          }),
+        ),
+      ),
+
+      // Debounce and exhaust run per deal id, so saving two deals never drops one
+      updateDeal: rxMethod<UpdateDealCommand>(
+        pipe(
+          groupBy((command) => command.id),
+          mergeMap((commands$) =>
+            commands$.pipe(
+              debounceTime(SAVE_DEBOUNCE_MS),
+              exhaustMap(({ id, changes, onSaved }) => {
+                const original: Deal | undefined = store.entityMap()[id];
+                patchState(store, loadingStart(id), updateEntity<Deal>({ id, changes }));
+
+                return api.update(id, changes).pipe(
+                  tapResponse({
+                    next: (deal) => {
+                      patchState(
+                        store,
+                        upsertEntity(deal),
+                        cacheInvalidate(dealsCacheKey.byContact(deal.contactId)),
+                      );
+                      if (original && original.contactId !== deal.contactId) {
+                        patchState(store, cacheInvalidate(dealsCacheKey.byContact(original.contactId)));
+                      }
+                      onSaved?.(deal);
+                    },
+                    error: (error) => {
+                      if (original) patchState(store, setEntity(original));
+                      patchState(store, loadingError(error));
+                    },
+                    finalize: () => patchState(store, loadingFinish(id)),
+                  }),
+                );
+              }),
+            ),
+          ),
+        ),
+      ),
+    };
+  }),
+);
+
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **tasks.store.ts**</summary>
+
+@@ lines 1-1 @@
+
+```
+import { inject } from '@angular/core';
+import { tapResponse } from '@ngrx/operators';
+import { patchState, signalStore, withMethods } from '@ngrx/signals';
+import {
+  prependEntity,
+  removeEntities,
+  removeEntity,
+  setEntity,
+  updateEntity,
+  upsertEntities,
+  upsertEntity,
+  withEntities,
+} from '@ngrx/signals/entities';
+import { rxMethod } from '@ngrx/signals/rxjs-interop';
+import {
+  loadingError,
+  loadingFinish,
+  loadingStart,
+  withLoadingState,
+  withStaleWhileRevalidate,
+} from '@shared';
+import { concatMap, filter, map, pipe, switchMap } from 'rxjs';
+import { DealTask, TaskChanges, TaskDraft } from '../model/deal-task.model';
+import { TasksApi } from './tasks-api';
+import { withTaskSelectors } from './with-task-selectors';
+
+const TTL_MS = 60_000;
+
+export const tasksCacheKey = {
+  byDeal: (dealId: string) => `tasks:deal:${dealId}`,
+};
+
+export interface CreateTaskCommand {
+  dealId: string;
+  draft: TaskDraft;
+}
+
+export interface UpdateTaskCommand {
+  dealId: string;
+  taskId: string;
+  changes: TaskChanges;
+}
+
+export interface DeleteTaskCommand {
+  dealId: string;
+  taskId: string;
+}
+
+export const TasksStore = signalStore(
+  { providedIn: 'root' },
+  withEntities<DealTask>(),
+  withLoadingState(),
+  withStaleWhileRevalidate({ ttlMs: TTL_MS }),
+  withTaskSelectors(),
+
+  withMethods((store, api = inject(TasksApi)) => ({
+    loadTasksForDeal: rxMethod<string | undefined>(
+      pipe(
+        filter((dealId): dealId is string => dealId !== undefined),
+        switchMap((dealId) =>
+          store._swr({
+            key: tasksCacheKey.byDeal(dealId),
+            loadingId: dealId,
+            source: () => api.list(dealId),
+            // The response is the full task list of the deal, so missing tasks are dropped
+            onData: (tasks) =>
+              patchState(
+                store,
+                removeEntities<DealTask>((task) => task.dealId === dealId),
+                upsertEntities(tasks),
+              ),
+          }),
+        ),
+      ),
+    ),
+
+    createTask: rxMethod<CreateTaskCommand>(
+      pipe(
+        concatMap(({ dealId, draft }) => {
+          patchState(store, loadingStart(dealId));
+
+          return api.create(dealId, draft).pipe(
+            tapResponse({
+              next: (task) => patchState(store, prependEntity(task)),
+              error: (error) => patchState(store, loadingError(error)),
+              finalize: () => patchState(store, loadingFinish(dealId)),
+            }),
+          );
+        }),
+      ),
+    ),
+
+    // The optimistic patch is applied on call, before the request waits in the queue
+    updateTask: rxMethod<UpdateTaskCommand>(
+      pipe(
+        map((command) => {
+          const original: DealTask | undefined = store.entityMap()[command.taskId];
+          patchState(
+            store,
+            loadingStart(command.taskId),
+            updateEntity<DealTask>({ id: command.taskId, changes: command.changes }),
+          );
+          return { ...command, original };
+        }),
+        concatMap(({ dealId, taskId, changes, original }) =>
+          api.update(dealId, taskId, changes).pipe(
+            tapResponse({
+              next: (task) => patchState(store, upsertEntity(task)),
+              error: (error) => {
+                if (original) patchState(store, setEntity(original));
+                patchState(store, loadingError(error));
+              },
+              finalize: () => patchState(store, loadingFinish(taskId)),
+            }),
+          ),
+        ),
+      ),
+    ),
+
+    deleteTask: rxMethod<DeleteTaskCommand>(
+      pipe(
+        concatMap(({ dealId, taskId }) => {
+          patchState(store, loadingStart(taskId));
+
+          return api.delete(dealId, taskId).pipe(
+            tapResponse({
+              next: () => patchState(store, removeEntity(taskId)),
+              error: (error) => patchState(store, loadingError(error)),
+              finalize: () => patchState(store, loadingFinish(taskId)),
+            }),
+          );
+        }),
+      ),
+    ),
+  })),
+);
+
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **contact-directory.port.ts**</summary>
+
+@@ lines 1-1 @@
+
+```
+import { Signal } from '@angular/core';
+import { InjectionToken } from '@angular/core';
+
+export interface ContactOption {
+  id: string;
+  label: string;
+  description?: string;
+}
+
+/**
+ * Contact lookup the deals feature needs. Deals must not import the contacts feature,
+ * so the app provides the implementation (see app.config.ts).
+ * Commands take plain values and may be called before the implementation has loaded.
+ */
+export interface ContactDirectory {
+  // Every contact seen so far, by id
+  readonly optionsById: Signal<Readonly<Record<string, ContactOption>>>;
+  // Result lists of finished searches, by query
+  readonly searchResults: Signal<Readonly<Record<string, readonly ContactOption[]>>>;
+  readonly loading: Signal<boolean>;
+  search(query: string): void;
+  load(id: string): void;
+}
+
+export const CONTACT_DIRECTORY = new InjectionToken<ContactDirectory>('CONTACT_DIRECTORY');
+
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **deals.ports.ts**</summary>
+
+@@ lines 1-1 @@
+
+```
+import { inject, InjectionToken, Signal } from '@angular/core';
+import type { RxMethod } from '@ngrx/signals/rxjs-interop';
+import { Deal } from '../model/deal.model';
+import { DealTask } from '../model/deal-task.model';
+import { DealsStore, CreateDealCommand, UpdateDealCommand } from './deals.store';
+import {
+  CreateTaskCommand,
+  DeleteTaskCommand,
+  TasksStore,
+  UpdateTaskCommand,
+} from './tasks.store';
+
+// Each page injects only the slice of the store it needs.
+
+type Selector<T> = (id: () => string | undefined) => Signal<T>;
+
+export interface DealListSource {
+  readonly selectLoading: Signal<boolean>;
+  readonly selectError: Signal<string | null>;
+  selectFilteredDeals(query: () => string | undefined): Signal<Deal[]>;
+  readonly loadDeals: RxMethod<void>;
+}
+
+export interface DealDetailsSource {
+  readonly selectError: Signal<string | null>;
+  readonly selectDealById: Selector<Deal | undefined>;
+  readonly selectLoadingById: Selector<boolean>;
+  readonly selectRevalidating: Selector<boolean>;
+  readonly loadDeal: RxMethod<string | undefined>;
+}
+
+export interface DealEditSource {
+  readonly selectError: Signal<string | null>;
+  readonly selectDealById: Selector<Deal | undefined>;
+  readonly selectLoadingById: Selector<boolean>;
+  readonly loadDeal: RxMethod<string | undefined>;
+  readonly updateDeal: RxMethod<UpdateDealCommand>;
+}
+
+export interface DealCreateSource {
+  readonly selectError: Signal<string | null>;
+  readonly selectLoadingById: Selector<boolean>;
+  readonly createDeal: RxMethod<CreateDealCommand>;
+}
+
+// Public: other features read a contact's deals through this port
+export interface DealsByContactSource {
+  readonly selectDealsByContactId: Selector<Deal[]>;
+  readonly selectLoadingById: Selector<boolean>;
+  readonly selectRevalidating: Selector<boolean>;
+  readonly loadDealsByContact: RxMethod<string | undefined>;
+}
+
+export interface TasksReader {
+  readonly selectError: Signal<string | null>;
+  readonly selectTasksByDealId: Selector<DealTask[]>;
+  readonly selectLoadingById: Selector<boolean>;
+}
+
+export interface TasksCommands {
+  readonly loadTasksForDeal: RxMethod<string | undefined>;
+  readonly createTask: RxMethod<CreateTaskCommand>;
+  readonly updateTask: RxMethod<UpdateTaskCommand>;
+  readonly deleteTask: RxMethod<DeleteTaskCommand>;
+}
+
+export const DEAL_LIST_SOURCE = new InjectionToken<DealListSource>('DEAL_LIST_SOURCE', {
+  providedIn: 'root',
+  factory: () => inject(DealsStore),
+});
+
+export const DEAL_DETAILS_SOURCE = new InjectionToken<DealDetailsSource>('DEAL_DETAILS_SOURCE', {
+  providedIn: 'root',
+  factory: () => inject(DealsStore),
+});
+
+export const DEAL_EDIT_SOURCE = new InjectionToken<DealEditSource>('DEAL_EDIT_SOURCE', {
+  providedIn: 'root',
+  factory: () => inject(DealsStore),
+});
+
+export const DEAL_CREATE_SOURCE = new InjectionToken<DealCreateSource>('DEAL_CREATE_SOURCE', {
+  providedIn: 'root',
+  factory: () => inject(DealsStore),
+});
+
+export const DEALS_BY_CONTACT = new InjectionToken<DealsByContactSource>('DEALS_BY_CONTACT', {
+  providedIn: 'root',
+  factory: () => inject(DealsStore),
+});
+
+export const TASKS_READER = new InjectionToken<TasksReader>('TASKS_READER', {
+  providedIn: 'root',
+  factory: () => inject(TasksStore),
+});
+
+export const TASKS_COMMANDS = new InjectionToken<TasksCommands>('TASKS_COMMANDS', {
+  providedIn: 'root',
+  factory: () => inject(TasksStore),
+});
+
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **contact-directory.port.ts**</summary>
+
+@@ lines 1-2 @@
+
+```
+InjectionToken, Signal
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **index.ts**</summary>
+
+@@ lines 1-1 @@
+
+```
+
+
+export { CONTACT_DIRECTORY } from './data/contact-directory.port';
+export type { ContactDirectory, ContactOption } from './data/contact-directory.port';
+export { DEALS_BY_CONTACT } from './data/deals.ports';
+export type { DealsByContactSource } from './data/deals.ports';
+export { DEAL_STAGE_LABELS } from './model/deal.model';
+export type { Deal, DealStage } from './model/deal.model';
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **deals-api.ts**</summary>
+
+@@ lines 18-18 @@
+
+```
+: Record<string, string>
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **contacts-api.ts**</summary>
+
+@@ lines 1-4 @@
+
+```
+HttpClient } from '@angular/common/http';
+import { inject, Service } from '@angular/core';
+import { map, Observable } from 'rxjs';
+import { Contact, ContactSearchResponse, PagedContacts } from '../model/contact.model';
+
+@Service()
+export class ContactsApi {
+  private readonly http = inject(HttpClient);
+
+  search(q: string): Observable<PagedContacts> {
+    return this.http
+      .get<ContactSearchResponse>('contacts', { params: { q } })
+      .pipe(map((response) => response.contacts));
+  }
+
+  getById(contactId: string): Observable<Contact> {
+    return this.http.get<Contact>(`contacts/${encodeURIComponent(contactId)}`);
+  }
+
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+
+```
+
+```
+
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **deals.store.ts**</summary>
+
+@@ lines 61-61 @@
+
+```
+selectLoadingByContactId: (contactId: () => string | undefined) =>
+        store.selectLoadingById(() => {
+          const id = contactId();
+          return id === undefined ? undefined : dealsCacheKey.byContact(id);
+        }),
+
+      selectRevalidatingByContactId: (contactId: () => string | undefined) =>
+        store.selectRevalidating(() => {
+          const id = contactId();
+          return id === undefined ? undefined : dealsCacheKey.byContact(id);
+        }),
+
+      
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+
+```
+
+```
+
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **deals.ports.ts**</summary>
+
+@@ lines 44-45 @@
+
+```
+ContactId: Selector<boolean>;
+  readonly selectRevalidatingByContactId
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **with-related-deals.ts**</summary>
+
+@@ lines 1-1 @@
+
+```
+import { computed, inject } from '@angular/core';
+import { signalStoreFeature, withMethods, withProps } from '@ngrx/signals';
+import { DEALS_BY_CONTACT } from '@feature/deals';
+
+// Reads and loads a contact's deals through the deals public port
+export function withRelatedDeals() {
+  return signalStoreFeature(
+    withProps(() => ({ _deals: inject(DEALS_BY_CONTACT) })),
+    withMethods((store) => ({
+      selectRelatedDeals: (contactId: () => string | undefined) =>
+        store._deals.selectDealsByContactId(contactId),
+
+      selectRelatedDealsLoading: (contactId: () => string | undefined) =>
+        store._deals.selectLoadingByContactId(contactId),
+
+      selectRelatedDealsRevalidating: (contactId: () => string | undefined) =>
+        computed(() => store._deals.selectRevalidatingByContactId(contactId)()),
+
+      loadRelatedDeals: store._deals.loadDealsByContact,
+    })),
+  );
+}
+
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **with-related-deals-new.ts**</summary>
+
+@@ lines 1-1 @@
+
+```
+import { inject } from '@angular/core';
+import { signalStoreFeature, withMethods, withProps } from '@ngrx/signals';
+import { DEALS_BY_CONTACT } from '@feature/deals';
+
+// Reads and loads a contact's deals through the deals public port
+export function withRelatedDeals() {
+  return signalStoreFeature(
+    withProps(() => ({ _deals: inject(DEALS_BY_CONTACT) })),
+    withMethods((store) => ({
+      selectRelatedDeals: (contactId: () => string | undefined) =>
+        store._deals.selectDealsByContactId(contactId),
+
+      selectRelatedDealsLoading: (contactId: () => string | undefined) =>
+        store._deals.selectLoadingByContactId(contactId),
+
+      loadRelatedDeals: store._deals.loadDealsByContact,
+    })),
+  );
+}
+
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **contacts.store.ts**</summary>
+
+@@ lines 1-20 @@
+
+```
+import { computed, inject } from '@angular/core';
+import { PartialStateUpdater, patchState, signalStore, withMethods, withState } from '@ngrx/signals';
+import { upsertEntities, upsertEntity, withEntities } from '@ngrx/signals/entities';
+import { rxMethod } from '@ngrx/signals/rxjs-interop';
+import { withLoadingState, withStaleWhileRevalidate } from '@shared';
+import { filter, mergeMap, pipe } from 'rxjs';
+import { Contact } from '../model/contact.model';
+import { ContactsApi } from './contacts-api';
+import { withRelatedDeals } from './with-related-deals';
+
+const TTL_MS = 60_000;
+
+export const contactsCacheKey = {
+  search: (query: string) => `contacts:search:${query}`,
+  byId: (id: string) => `contact:${id}`,
+};
+
+export interface SearchResult {
+  ids: string[];
+  total: number;
+}
+
+interface ContactsState {
+  // Server-side matching cannot be repeated on the client, so each query keeps its own id list
+  searchByQuery: Record<string, SearchResult>;
+}
+
+export const setSearchResult =
+  (query: string, result: SearchResult): PartialStateUpdater<ContactsState> =>
+  (state) => ({ searchByQuery: { ...state.searchByQuery, [query]: result } });
+
+export const ContactsStore = signalStore(
+  { providedIn: 'root' },
+  withEntities<Contact>(),
+  withState<ContactsState>({ searchByQuery: {} }),
+  withLoadingState(),
+  withStaleWhileRevalidate({ ttlMs: TTL_MS }),
+  withRelatedDeals(),
+
+  withMethods((store, api = inject(ContactsApi)) => ({
+    selectContactById: (id: () => string | undefined) =>
+      computed((): Contact | undefined => {
+        const key = id();
+        return key === undefined ? undefined : store.entityMap()[key];
+      }),
+
+    // `query` must be trimmed, as it is when passed to search()
+    selectSearchResults: (query: () => string) =>
+      computed(() => {
+        const result: SearchResult | undefined = store.searchByQuery()[query()];
+        const contacts = store.entityMap();
+        return (result?.ids ?? []).map((id) => contacts[id]);
+      }),
+
+    // Results are stored per query, so overlapping searches cannot overwrite each other
+    search: rxMethod<string>(
+      pipe(
+        mergeMap((query) =>
+          store._swr({
+            key: contactsCacheKey.search(query),
+            source: () => api.search(query),
+            onData: (page) =>
+              patchState(
+                store,
+                upsertEntities(page.items),
+                setSearchResult(query, { ids: page.items.map((c) => c.id), total: page.total }),
+              ),
+          }),
+        ),
+      ),
+    ),
+
+    loadContact: rxMethod<string | undefined>(
+      pipe(
+        filter((id): id is string => id !== undefined),
+        mergeMap((id) =>
+          store._swr({
+            key: contactsCacheKey.byId(id),
+            loadingId: id,
+            source: () => api.getById(id),
+            onData: (contact) => patchState(store, upsertEntity(contact)),
+          }),
+        ),
+      ),
+    ),
+  })),
+);
+
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **contact-directory-adapter.ts**</summary>
+
+@@ lines 1-4 @@
+
+```
+computed, inject, Service } from '@angular/core';
+import { ContactDirectory, ContactOption } from '@feature/deals';
+import { Contact, contactFullName } from '../model/contact.model';
+import { ContactsStore } from './contacts.store';
+
+function toOption(contact: Contact): ContactOption {
+  return {
+    id: contact.id,
+    label: contactFullName(contact),
+    description: contact.company || contact.email,
+  };
+}
+
+// Adapts the contacts store to the lookup port that the deals feature defines
+@Service()
+export class ContactDirectoryAdapter implements ContactDirectory {
+  private readonly store = inject(ContactsStore);
+
+  readonly optionsById = computed(() =>
+    Object.fromEntries(this.store.entities().map((contact) => [contact.id, toOption(contact)])),
+  );
+
+  readonly searchResults = computed(() => {
+    const contacts = this.store.entityMap();
+    return Object.fromEntries(
+      Object.entries(this.store.searchByQuery()).map(([query, result]) => [
+        query,
+        result.ids.map((id) => toOption(contacts[id])),
+      ]),
+    );
+  });
+
+  readonly loading = this.store.selectLoading;
+
+  search(query: string): void {
+    this.store.search(query);
+  }
+
+  load(id: string): void {
+    this.store.loadContact(id);
+  }
+
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **contact-directory.provider.ts**</summary>
+
+@@ lines 1-1 @@
+
+```
+import { computed, inject, Injector, Provider, signal } from '@angular/core';
+import { CONTACT_DIRECTORY, ContactDirectory } from '@feature/deals';
+
+const NO_OPTIONS = Object.freeze({});
+
+// Deals must not import contacts, so the app wires them. The contacts chunk loads on first use.
+function lazyContactDirectory(): ContactDirectory {
+  const injector = inject(Injector);
+  const loaded = signal<ContactDirectory | undefined>(undefined);
+
+  const ready = import('@feature/contacts').then(({ ContactDirectoryAdapter }) => {
+    const directory = injector.get(ContactDirectoryAdapter);
+    loaded.set(directory);
+    return directory;
+  });
+
+  return {
+    optionsById: computed(() => loaded()?.optionsById() ?? NO_OPTIONS),
+    searchResults: computed(() => loaded()?.searchResults() ?? NO_OPTIONS),
+    // Counts as loading until the chunk is there
+    loading: computed(() => loaded()?.loading() ?? true),
+    // Chained on one promise, so calls made before the chunk loads keep their order
+    search: (query) => void ready.then((directory) => directory.search(query)),
+    load: (id) => void ready.then((directory) => directory.load(id)),
+  };
+}
+
+export function provideContactDirectory(): Provider {
+  return { provide: CONTACT_DIRECTORY, useFactory: lazyContactDirectory };
+}
+
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **index.ts**</summary>
+
+@@ lines 1-1 @@
+
+```
+
+
+// Consumed only by the app, which wires it into the deals feature
+export { ContactDirectoryAdapter } from './data/contact-directory-adapter';
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **contacts.routes.ts**</summary>
+
+@@ lines 1-30 @@
+
+```
+Routes } from '@angular/router';
+
+// ContactsStore is root-scoped, so the pages share its cached entities.
+const routes: Routes = [
+  {
+    path: '',
+    pathMatch: 'full',
+    redirectTo: 'search?q=',
+  },
+  {
+    path: 'search',
+    loadComponent: () =>
+      import('./pages/contact-search/contact-search.page').then((m) => m.ContactSearchPage),
+  },
+  {
+    path: ':contactId',
+    loadComponent: () =>
+      import('./pages/contact-details/contact-details.page').then((m) => m.ContactDetailsPage)
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+
+```
+
+```
+
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **app.config.ts**</summary>
+
+@@ lines 27-27 @@
+
+```
+
+
+    provideContactDirectory(),
+```
+
+@@ lines 10-10 @@
+
+```
+
+import { provideContactDirectory } from './contact-directory.provider';
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+
+```
+
+```
+
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **contact-directory.port.ts**</summary>
+
+@@ lines 17-17 @@
+
+```
+trimmed 
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **deal-editor.ts**</summary>
+
+@@ lines 151-154 @@
+
+```
+  }
+        </mat-card-content>
+        <mat-card-actions align="end">
+          <button matButton="text" type="button" (click)="cancelled.emit()">Cancel</button>
+          <button matButton="filled" type="submit" [disabled]="saving()
+```
+
+@@ lines 122-122 @@
+
+```
+@if (showTasks()) {
+            
+```
+
+@@ lines 110-113 @@
+
+```
+app-contact-picker
+              [formField]="dealForm.contactId"
+              [options]="contactOptions()"
+              [selectedLabel]="contactLabel()"
+              [loading]="contactLoading()"
+              (searched)="contactSearch.emit($event)"
+            /
+```
+
+@@ lines 86-86 @@
+
+```
+{{ heading() }}
+```
+
+@@ lines 81-81 @@
+
+```
+, ContactPicker
+```
+
+@@ lines 69-69 @@
+
+```
+
+    contactId: deal?.contactId ?? '',
+```
+
+@@ lines 48-48 @@
+
+```
+
+  contactId: z.string().min(1, 'Contact is required'),
+```
+
+@@ lines 1-31 @@
+
+```
+ Component, effect, input, linkedSignal, output, untracked } from '@angular/core';
+import {
+  form,
+  FormField,
+  SchemaPathTree,
+  submit,
+  validateStandardSchema,
+} from '@angular/forms/signals';
+import { HasUnsavedChanges, SharedImports } from '@shared';
+import { z } from 'zod';
+import { ContactOption } from '../../data/contact-directory.port';
+import { Deal, DEAL_STAGE_LABELS, DealDraft, DealStage } from '../../model/deal.model';
+import { DealTask, TASK_PRIORITY_LABELS, TaskPriority } from '../../model/deal-task.model';
+import { ContactPicker } from '../contact-picker/contact-picker';
+
+export interface DealEditorValue {
+  title: string;
+  summary: string;
+  stage: DealStage;
+  amount: number;
+  contactId: string
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **deal-editor.ts**</summary>
+
+@@ lines 206-216 @@
+
+```
+function toDealDraft(value: DealEditorValue): DealDraft {
+  return {
+    title: value.title,
+    summary: value.summary,
+    stage: value.stage,
+    value: { amount: value.amount, currency: 'USD' },
+    contactId: value.contactId,
+    isPublic: value.isPublic
+```
+
+@@ lines 156-163 @@
+
+```
+})
+export class DealEditor implements HasUnsavedChanges {
+  readonly deal = input<Deal>();
+  readonly tasks = input<readonly DealTask[]>([]);
+  readonly heading = input('Edit Deal');
+  // Tasks need a saved deal, so the create page turns them off
+  readonly showTasks = input(true);
+  readonly saving = input(false);
+  readonly contactOptions = input<readonly ContactOption[]>([]);
+  readonly contactLabel = input('');
+  readonly contactLoading = input(false);
+
+  readonly saved = output<DealEditorValue>();
+  readonly cancelled = output<void>();
+  readonly contactSearch = output<string
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **shared-module.ts**</summary>
+
+@@ lines 37-37 @@
+
+```
+Autocomplete,
+  MatAutocompleteTrigger,
+  Mat
+```
+
+@@ lines 4-4 @@
+
+```
+Autocomplete, MatAutocompleteTrigger } from '@angular/material/autocomplete';
+import { Mat
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **contact-picker.ts**</summary>
+
+@@ lines 1-13 @@
+
+```
+, effect, input, linkedSignal, model, output, signal } from '@angular/core';
+import { FormValueControl, ValidationError } from '@angular/forms/signals';
+import { SharedForms } from '@shared';
+import { ContactOption } from '../../data/contact-directory.port';
+
+const SEARCH_DEBOUNCE_MS = 300;
+
+// Autocomplete over options the parent supplies; `value` is the picked contact id
+@Component({
+  imports: [...SharedForms],
+  selector: 'app-contact-picker',
+  styles: `
+    :host {
+      display: block;
+    }
+  `,
+  template: `
+    <mat-form-field class="w-full">
+      <mat-label>Contact</mat-label>
+      <input
+        matInput
+        type="text"
+        autocomplete="off"
+        [matAutocomplete]="auto"
+        [value]="text()"
+        [disabled]="disabled()"
+        [attr.aria-invalid]="invalid()"
+        (input)="onInput($event)"
+        (focus)="searched.emit(text().trim())"
+        (blur)="touch.emit()"
+      />
+      <mat-autocomplete
+        #auto="matAutocomplete"
+        [displayWith]="displayLabel"
+        (optionSelected)="value.set($event.option.value)"
+      >
+        @for (option of options(); track option.id) {
+          <mat-option [value]="option.id">
+            {{ option.label }}
+            @if (option.description) {
+              <span class="ml-2 text-body-sm text-on-surface-variant">{{ option.description }}</span>
+            }
+          </mat-option>
+        }
+      </mat-autocomplete>
+      @if (loading()) {
+        <mat-hint>Searching ...</mat-hint>
+      }
+    </mat-form-field>
+    @if (touched() && errors()[0]; as error) {
+      <p role="alert" class="px-4 text-body-sm text-error">{{ error.message }}</p>
+    }
+  `,
+})
+export class ContactPicker implements FormValueControl<string> {
+  readonly value = model('');
+  readonly errors = input<readonly ValidationError.WithOptionalFieldTree[]>([]);
+  readonly disabled = input(false);
+  readonly invalid = input(false);
+  readonly touched = input(false);
+  readonly touch = output<void>();
+
+  readonly options = input<readonly ContactOption[]>([]);
+  // Text for the current `value`; the parent knows it, the picker only holds an id
+  readonly selectedLabel = input('');
+  readonly loading = input(false);
+  readonly searched = output<string>();
+
+  protected readonly text = linkedSignal(() => this.selectedLabel());
+
+  // null skips the initial run, so opening the form does not trigger a search
+  private readonly pendingQuery = signal<string | null>(null);
+
+  protected readonly displayLabel = (id: string): string =>
+    this.options().find((option) => option.id === id)?.label ?? this.selectedLabel();
+
+  constructor() {
+    effect((onCleanup) => {
+      const query = this.pendingQuery();
+      if (query === null) return;
+
+      const timerId = setTimeout(() => this.searched.emit(query), SEARCH_DEBOUNCE_MS);
+      onCleanup(() => clearTimeout(timerId));
+    });
+  }
+
+  protected onInput(event: Event): void {
+    const text = (event.target as HTMLInputElement).value;
+    this.text.set(text);
+    // Typing drops the picked contact until the user picks another
+    this.value.set('');
+    this.pendingQuery.set(text.trim());
+  }
+
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **deal-details-card.ts**</summary>
+
+@@ lines 58-58 @@
+
+```
+// Shown instead of the raw contact id once known
+  readonly contactName = input<string>();
+  
+```
+
+@@ lines 35-35 @@
+
+```
+contactName() ?? deal.contactId
+```
+
+@@ lines 21-21 @@ (deleted)
+
+@@ lines 5-11 @@
+
+```
+DealStageBadge } from '../deal-stage-badge/deal-stage-badge';
+
+@Component({
+  selector: 'app-deal-details-card',
+  imports: [SharedImports
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+
+```
+
+```
+
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **deal-list-item.ts**</summary>
+
+@@ lines 16-16 @@ (deleted)
+
+@@ lines 4-9 @@
+
+```
+DealStageBadge } from '../deal-stage-badge/deal-stage-badge';
+
+@Component({
+  selector: 'app-deal-list-item',
+  imports: [
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **deals.store.ts**</summary>
+
+@@ lines 55-55 @@
+
+```
+
+  withComputed(({ inFlightIds }) => ({
+    listLoading: computed(() => inFlightIds().includes(dealsCacheKey.list)),
+  })),
+```
+
+@@ lines 1-3 @@
+
+```
+computed, inject } from '@angular/core';
+import { tapResponse } from '@ngrx/operators';
+import { patchState, signalStore, withComputed
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+
+```
+
+```
+
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **deals.ports.ts**</summary>
+
+@@ lines 13-13 @@
+
+```
+lis
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **deals.store.ts**</summary>
+
+@@ lines 57-57 @@
+
+```
+
+    creating: computed(() => inFlightIds().includes(NEW_DEAL_ID)),
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+
+```
+
+```
+
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **deals.ports.ts**</summary>
+
+@@ lines 37-37 @@
+
+```
+creating: Signal
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+
+```
+
+```
+
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **deal-editor.ts**</summary>
+
+@@ lines 210-210 @@
+
+```
+
+
+  // Lets the parent leave the page right after saving without tripping the unsaved-changes guard
+  markPristine(): void {
+    this.dealForm().reset();
+  }
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **inject-contact-lookup.ts**</summary>
+
+@@ lines 1-1 @@
+
+```
+import { computed, effect, inject, signal, untracked } from '@angular/core';
+import { CONTACT_DIRECTORY } from './contact-directory.port';
+
+// State for a contact picker: options for the typed query, plus the label of the selected contact
+export function injectContactLookup(selectedId: () => string | undefined) {
+  const directory = inject(CONTACT_DIRECTORY);
+  const query = signal('');
+
+  const selected = computed(() => {
+    const id = selectedId();
+    return id ? directory.optionsById()[id] : undefined;
+  });
+
+  effect(() => {
+    const id = selectedId();
+    if (id) untracked(() => directory.load(id));
+  });
+
+  return {
+    label: computed(() => selected()?.label),
+    loading: directory.loading,
+    // Before the search answers, the selected contact keeps its label visible
+    options: computed(() => directory.searchResults()[query()] ?? (selected() ? [selected()!] : [])),
+    search(text: string): void {
+      query.set(text);
+      directory.search(text);
+    },
+  };
+}
+
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **inject-contact-lookup.ts**</summary>
+
+@@ lines 23-23 @@
+
+```
+{
+      const found = directory.searchResults()[query()];
+      if (found) return found;
+      const current = selected();
+      return current ? [current] : [];
+    }
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+
+```
+
+```
+
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **deals-layout.page.ts**</summary>
+
+@@ lines 1-13 @@
+
+```
+, inject, input } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
+import { MasterDetailLayout, SharedUI } from '@shared';
+import { filter, map, startWith } from 'rxjs';
+import { DEAL_LIST_SOURCE } from '../../data/deals.ports';
+import { DealItemTpl } from '../../ui/deal-item-tpl/deal-item-tpl';
+import { DealListItem } from '../../ui/deal-list-item/deal-list-item';
+import { DealMasterList } from '../../ui/deal-master-list/deal-master-list';
+import { DealsFilter } from '../../ui/deals-filter/deals-filter';
+
+@Component({
+  imports: [
+    ...SharedUI,
+    RouterOutlet,
+    MasterDetailLayout,
+    DealMasterList,
+    DealListItem,
+    DealItemTpl,
+    DealsFilter,
+  ],
+  selector: 'app-deals-layout-page',
+  template: `
+    <main class="bg-surface text-on-surface">
+      <app-master-detail-layout>
+        <app-deal-master-list
+          appMasterDetailList
+          [deals]="deals()"
+          [selectedId]="selectedDealId() ?? null"
+          (dealSelected)="onSelectDeal($event)"
+        >
+          <ng-container *appDealItemTpl="let deal; selected as isSelected">
+            <app-deal-list-item [deal]="deal" />
+          </ng-container>
+
+          <app-deals-filter
+            app-master-list-header
+            [value]="dealFilter() ?? ''"
+            (debouncedChange)="onFilterChange($event)"
+          />
+
+          <a
+            app-master-list-footer
+            matButton="outlined"
+            routerLink="new"
+            queryParamsHandling="preserve"
+          >
+            Create new
+          </a>
+        </app-deal-master-list>
+
+        <div>
+          @if (error(); as message) {
+            <p role="alert" class="mb-2 text-body-md text-error">{{ message }}</p>
+          }
+          @if (listLoading()) {
+            <p class="mb-2 text-body-md">Loading ...</p>
+          }
+          <router-outlet />
+        </div>
+      </app-master-detail-layout>
+    </main>
+  `,
+})
+export class DealsLayoutPage {
+  private readonly source = inject(DEAL_LIST_SOURCE);
+  private readonly router = inject(Router);
+
+  // Bound from the ?dealFilter= query param (withComponentInputBinding)
+  readonly dealFilter = input<string>();
+
+  protected readonly deals = this.source.selectFilteredDeals(this.dealFilter);
+  protected readonly listLoading = this.source.listLoading;
+  protected readonly error = this.source.selectError;
+
+  // A parent route does not receive child params, so read them from the router state
+  protected readonly selectedDealId = toSignal(
+    this.router.events.pipe(
+      filter((event) => event instanceof NavigationEnd),
+      startWith(null),
+      map(() => this.deepestRoute().paramMap.get('dealId') ?? undefined),
+    ),
+  );
+
+  constructor() {
+    this.source.loadDeals();
+  }
+
+  protected onSelectDeal(dealId: string | null): void {
+    if (!dealId) return;
+    void this.router.navigate(['/deals', dealId], { queryParamsHandling: 'preserve' });
+  }
+
+  protected onFilterChange(text: string): void {
+    void this.router.navigate([], {
+      queryParams: { dealFilter: text || null },
+      queryParamsHandling: 'merge',
+      replaceUrl: true,
+    });
+  }
+
+  private deepestRoute() {
+    let route = this.router.routerState.snapshot.root;
+    while (route.firstChild) route = route.firstChild;
+    return route;
+  }
+
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+
+```
+
+```
+
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **deal-placeholder.page.ts**</summary>
+
+@@ lines 4-13 @@
+
+```
+selector: 'app-deal-placeholder-page',
+  template: `
+    <p class="my-10 text-center text-body-md text-on-surface-variant">Select a deal</p>
+  `,
+})
+export class DealPlaceholderPage
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **deal-details.page.ts**</summary>
+
+@@ lines 1-13 @@
+
+```
+, inject, input } from '@angular/core';
+import { Router, RouterOutlet } from '@angular/router';
+import { DEAL_DETAILS_SOURCE } from '../../data/deals.ports';
+import { injectContactLookup } from '../../data/inject-contact-lookup';
+import { DealDetailsCard } from '../../ui/deal-details-card/deal-details-card';
+
+@Component({
+  imports: [DealDetailsCard, RouterOutlet],
+  selector: 'app-deal-details-page',
+  template: `
+    @if (error(); as message) {
+      <p role="alert" class="mb-2 text-body-md text-error">{{ message }}</p>
+    }
+    @if (loading()) {
+      <p class="mb-2 text-body-md">Loading ...</p>
+    }
+
+    @if (deal(); as value) {
+      <app-deal-details-card
+        [deal]="value"
+        [contactName]="contact.label()"
+        (editRequested)="onEdit()"
+      />
+      <div class="mt-4">
+        <router-outlet />
+      </div>
+    }
+  `,
+})
+export class DealDetailsPage {
+  private readonly source = inject(DEAL_DETAILS_SOURCE);
+  private readonly router = inject(Router);
+
+  // Bound from the :dealId route param (withComponentInputBinding)
+  readonly dealId = input.required<string>();
+
+  protected readonly deal = this.source.selectDealById(this.dealId);
+  protected readonly loading = this.source.selectLoadingById(this.dealId);
+  protected readonly error = this.source.selectError;
+  protected readonly contact = injectContactLookup(() => this.deal()?.contactId);
+
+  constructor() {
+    this.source.loadDeal(this.dealId);
+  }
+
+  protected onEdit(): void {
+    void this.router.navigate(['/deals', this.dealId(), 'edit'], { queryParamsHandling: 'preserve' });
+  }
+
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+
+```
+
+```
+
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **deal-tasks.page.ts**</summary>
+
+@@ lines 1-13 @@
+
+```
+, inject, input } from '@angular/core';
+import { TASKS_COMMANDS, TASKS_READER } from '../../data/deals.ports';
+import { TaskPriority } from '../../model/deal-task.model';
+import { DealTasksCard } from '../../ui/deal-tasks-card/deal-tasks-card';
+
+@Component({
+  imports: [DealTasksCard],
+  selector: 'app-deal-tasks-page',
+  template: `
+    @if (error(); as message) {
+      <p role="alert" class="mb-2 text-body-md text-error">{{ message }}</p>
+    }
+    <app-deal-tasks-card
+      [tasks]="tasks()"
+      (taskAdded)="onTaskAdded($event)"
+      (taskToggled)="onTaskToggled($event)"
+    />
+  `,
+})
+export class DealTasksPage {
+  private readonly reader = inject(TASKS_READER);
+  private readonly commands = inject(TASKS_COMMANDS);
+
+  // Inherited from the :dealId parent route (paramsInheritanceStrategy: 'always')
+  readonly dealId = input.required<string>();
+
+  protected readonly tasks = this.reader.selectTasksByDealId(this.dealId);
+  protected readonly error = this.reader.selectError;
+
+  constructor() {
+    this.commands.loadTasksForDeal(this.dealId);
+  }
+
+  protected onTaskAdded(task: { title: string; priority: TaskPriority }): void {
+    this.commands.createTask({ dealId: this.dealId(), draft: task });
+  }
+
+  protected onTaskToggled(taskId: string): void {
+    const task = this.tasks().find((candidate) => candidate.id === taskId);
+    if (!task) return;
+    this.commands.updateTask({ dealId: this.dealId(), taskId, changes: { done: !task.done } });
+  }
+
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **deal-edit.page.ts**</summary>
+
+@@ lines 1-13 @@
+
+```
+, inject, input, viewChild } from '@angular/core';
+import { Router } from '@angular/router';
+import { HasUnsavedChanges } from '@shared';
+import { DEAL_EDIT_SOURCE, TASKS_COMMANDS, TASKS_READER } from '../../data/deals.ports';
+import { injectContactLookup } from '../../data/inject-contact-lookup';
+import { DealEditor, DealEditorValue, toDealDraft } from '../../ui/deal-editor/deal-editor';
+
+@Component({
+  imports: [DealEditor],
+  selector: 'app-deal-edit-page',
+  template: `
+    @if (error(); as message) {
+      <p role="alert" class="mb-2 text-body-md text-error">{{ message }}</p>
+    }
+    @if (deal(); as value) {
+      <app-deal-editor
+        [deal]="value"
+        [tasks]="tasks()"
+        [saving]="saving()"
+        [contactOptions]="contact.options()"
+        [contactLabel]="contact.label() ?? ''"
+        [contactLoading]="contact.loading()"
+        (contactSearch)="contact.search($event)"
+        (saved)="onSaved($event)"
+        (cancelled)="goToDetails()"
+      />
+    }
+  `,
+})
+export class DealEditPage implements HasUnsavedChanges {
+  private readonly source = inject(DEAL_EDIT_SOURCE);
+  private readonly tasksReader = inject(TASKS_READER);
+  private readonly tasksCommands = inject(TASKS_COMMANDS);
+  private readonly router = inject(Router);
+
+  // Bound from the :dealId route param (withComponentInputBinding)
+  readonly dealId = input.required<string>();
+
+  private readonly editor = viewChild(DealEditor);
+
+  protected readonly deal = this.source.selectDealById(this.dealId);
+  protected readonly saving = this.source.selectLoadingById(this.dealId);
+  protected readonly error = this.source.selectError;
+  protected readonly tasks = this.tasksReader.selectTasksByDealId(this.dealId);
+  protected readonly contact = injectContactLookup(() => this.deal()?.contactId);
+
+  constructor() {
+    this.source.loadDeal(this.dealId);
+    this.tasksCommands.loadTasksForDeal(this.dealId);
+  }
+
+  hasUnsavedChanges(): boolean {
+    return this.editor()?.hasUnsavedChanges() ?? false;
+  }
+
+  protected onSaved(value: DealEditorValue): void {
+    this.source.updateDeal({
+      id: this.dealId(),
+      changes: toDealDraft(value),
+      onSaved: () => {
+        this.editor()?.markPristine();
+        this.goToDetails();
+      },
+    });
+  }
+
+  protected goToDetails(): void {
+    void this.router.navigate(['/deals', this.dealId()], { queryParamsHandling: 'preserve' });
+  }
+
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+
+```
+
+```
+
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **deal-create.page.ts**</summary>
+
+@@ lines 1-13 @@
+
+```
+, inject, viewChild } from '@angular/core';
+import { Router } from '@angular/router';
+import { HasUnsavedChanges } from '@shared';
+import { DEAL_CREATE_SOURCE } from '../../data/deals.ports';
+import { injectContactLookup } from '../../data/inject-contact-lookup';
+import { DealEditor, DealEditorValue, toDealDraft } from '../../ui/deal-editor/deal-editor';
+
+@Component({
+  imports: [DealEditor],
+  selector: 'app-deal-create-page',
+  template: `
+    @if (error(); as message) {
+      <p role="alert" class="mb-2 text-body-md text-error">{{ message }}</p>
+    }
+    <app-deal-editor
+      heading="New Deal"
+      [showTasks]="false"
+      [saving]="creating()"
+      [contactOptions]="contact.options()"
+      [contactLoading]="contact.loading()"
+      (contactSearch)="contact.search($event)"
+      (saved)="onSaved($event)"
+      (cancelled)="onCancel()"
+    />
+  `,
+})
+export class DealCreatePage implements HasUnsavedChanges {
+  private readonly source = inject(DEAL_CREATE_SOURCE);
+  private readonly router = inject(Router);
+
+  private readonly editor = viewChild(DealEditor);
+
+  protected readonly creating = this.source.creating;
+  protected readonly error = this.source.selectError;
+  protected readonly contact = injectContactLookup(() => undefined);
+
+  hasUnsavedChanges(): boolean {
+    return this.editor()?.hasUnsavedChanges() ?? false;
+  }
+
+  protected onSaved(value: DealEditorValue): void {
+    this.source.createDeal({
+      draft: toDealDraft(value),
+      onCreated: (deal) => {
+        this.editor()?.markPristine();
+        void this.router.navigate(['/deals', deal.id], { queryParamsHandling: 'preserve' });
+      },
+    });
+  }
+
+  protected onCancel(): void {
+    void this.router.navigate(['/deals'], { queryParamsHandling: 'preserve' });
+  }
+
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **deals.routes.ts**</summary>
+
+@@ lines 2-8 @@
+
+```
+unsavedChangesGuard } from '@shared';
+
+// DealsStore and TasksStore are root-scoped, so their cached entities outlive these routes.
+const routes: Routes = [
+  {
+    path: '',
+    loadComponent: () =>
+      import('./pages/deals-layout/deals-layout.page').then((m) => m.DealsLayoutPage),
+    children: [
+      {
+        path: '',
+        pathMatch: 'full',
+        loadComponent: () =>
+          import('./pages/deal-placeholder/deal-placeholder.page').then((m) => m.DealPlaceholderPage),
+      },
+      {
+        path: 'new',
+        canDeactivate: [unsavedChangesGuard],
+        loadComponent: () =>
+          import('./pages/deal-create/deal-create.page').then((m) => m.DealCreatePage),
+      },
+      {
+        path: ':dealId',
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import('./pages/deal-details/deal-details.page').then((m) => m.DealDetailsPage),
+            children: [
+              {
+                path: '',
+                loadComponent: () =>
+                  import('./pages/deal-tasks/deal-tasks.page').then((m) => m.DealTasksPage),
+              },
+            ],
+          },
+          {
+            path: 'edit',
+            canDeactivate: [unsavedChangesGuard],
+            loadComponent: () =>
+              import('./pages/deal-edit/deal-edit.page').then((m) => m.DealEditPage),
+          },
+        ],
+      },
+    ]
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **shared-module.ts**</summary>
+
+@@ lines 29-30 @@ (deleted)
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **contacts.store.ts**</summary>
+
+@@ lines 61-61 @@
+
+```
+True once the query has an answer, so "no results" is not shown before it arrives
+    selectSearched: (query: () => string) =>
+      computed(() => query() in store.searchByQuery()),
+
+    selectSearchLoading: (query: () => string) =>
+      store.selectLoadingById(() => contactsCacheKey.search(query())),
+
+    // 
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **contact-related-deals.ts**</summary>
+
+@@ lines 1-13 @@
+
+```
+urrencyPipe } from '@angular/common';
+import { Component, input } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { Deal, DEAL_STAGE_LABELS } from '@feature/deals';
+
+@Component({
+  imports: [CurrencyPipe, RouterLink],
+  selector: 'app-contact-related-deals',
+  host: {
+    class: 'block',
+  },
+  template: `
+    <section aria-labelledby="related-deals-title" class="flex flex-col gap-2">
+      <h2 id="related-deals-title" class="text-title-md">Related deals</h2>
+
+      @if (loading()) {
+        <p class="text-body-md">Loading ...</p>
+      }
+
+      <ul class="flex flex-col gap-2">
+        @for (deal of deals(); track deal.id) {
+          <li>
+            <a
+              class="flex items-center justify-between gap-4 rounded-xl bg-surface-container-low p-4 text-on-surface no-underline hover:bg-surface-container focus-visible:outline-2 focus-visible:outline-offset-2"
+              [routerLink]="['/deals', deal.id]"
+            >
+              <span class="min-w-0 truncate text-title-sm">{{ deal.title }}</span>
+              <span class="shrink-0 text-body-sm text-on-surface-variant">
+                {{ stageLabels[deal.stage] }} ·
+                {{ deal.value.amount | currency: deal.value.currency : 'symbol' : '1.0-0' }}
+              </span>
+            </a>
+          </li>
+        } @empty {
+          @if (!loading()) {
+            <li class="text-body-md text-on-surface-variant">No deals for this contact.</li>
+          }
+        }
+      </ul>
+    </section>
+  `,
+})
+export class ContactRelatedDeals {
+  readonly deals = input.required<readonly Deal[]>();
+  readonly loading = input(false);
+
+  protected readonly stageLabels = DEAL_STAGE_LABELS;
+
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+
+```
+
+```
+
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **contact-search.page.ts**</summary>
+
+@@ lines 2-59 @@
+
+```
+ActivatedRoute, Router } from '@angular/router';
+import { ContactsStore } from '../../data/contacts.store';
+import { ContactCard } from '../../ui/contact-card/contact-card';
+import { ContactSearchForm } from '../../ui/contact-search-form/contact-search-form';
+
+@Component({
+  selector: 'app-contact-search-page',
+  imports: [ContactCard, ContactSearchForm],
+  template: `
+    <main class="flex flex-col gap-4 bg-surface p-4 text-on-surface">
+      <h1 class="text-title-lg">Contacts</h1>
+
+      <app-contact-search-form [initialQuery]="query()" (queryChange)="onQueryChange($event)" />
+
+      @if (loading()) {
+        <p class="text-body-md">Loading ...</p>
+      }
+
+      @if (error(); as message) {
+        <p role="alert" class="text-body-md text-error">{{ message }}</p>
+      }
+
+      @if (searched() && contacts().length === 0) {
+        <p class="text-body-md text-on-surface-variant">No contacts found.</p>
+      }
+
+      <ul class="grid grid-cols-1 gap-4 md:grid-cols-2">
+        @for (contact of contacts(); track contact.id) {
+          <li>
+            <app-contact-card [contact]="contact" />
+          </li>
+        }
+      </ul>
+    </main>
+  `,
+})
+export class ContactSearchPage {
+  private readonly store = inject(ContactsStore);
+  private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
+
+  // Bound from the ?q= query param (withComponentInputBinding)
+  readonly q = input<string>();
+
+  protected readonly query = computed(() => (this.q() ?? '').trim());
+  protected readonly contacts = this.store.selectSearchResults(this.query);
+  protected readonly searched = this.store.selectSearched(this.query);
+  protected readonly loading = this.store.selectSearchLoading(this.query);
+  protected readonly error = this.store.selectError;
+
+  constructor() {
+    this.store.search(this.query);
+  }
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **contact-details.page.ts**</summary>
+
+@@ lines 1-46 @@
+
+```
+inject, input } from '@angular/core';
+import { SharedForms } from '@shared';
+import { ContactsStore } from '../../data/contacts.store';
+import { ContactFullDetailsCard } from '../../ui/contact-full-details-card/contact-full-details-card';
+import { ContactRelatedDeals } from '../../ui/contact-related-deals/contact-related-deals';
+
+@Component({
+  selector: 'app-contact-details-page',
+  imports: [...SharedForms, ContactFullDetailsCard, ContactRelatedDeals],
+  template: `
+    <main class="flex flex-col gap-4 bg-surface p-4 text-on-surface">
+      <div>
+        <button matButton="text" type="button" (click)="back()">Back to search</button>
+      </div>
+
+      @if (loading()) {
+        <p class="text-body-md">Loading ...</p>
+      }
+
+      @if (error(); as message) {
+        <p role="alert" class="text-body-md text-error">{{ message }}</p>
+      }
+
+      @if (contact(); as value) {
+        <app-contact-full-details-card [contact]="value" />
+        <app-contact-related-deals [deals]="relatedDeals()" [loading]="relatedDealsLoading()" />
+      }
+    </main>
+  `,
+})
+export class ContactDetailsPage {
+  private readonly store = inject(ContactsStore);
+
+  // Bound from the :contactId route param (withComponentInputBinding)
+  readonly contactId = input.required<string>();
+
+  protected readonly contact = this.store.selectContactById(this.contactId);
+  protected readonly loading = this.store.selectLoadingById(this.contactId);
+  protected readonly error = this.store.selectError;
+  protected readonly relatedDeals = this.store.selectRelatedDeals(this.contactId);
+  protected readonly relatedDealsLoading = this.store.selectRelatedDealsLoading(this.contactId);
+
+  constructor() {
+    this.store.loadContact(this.contactId);
+    this.store.loadRelatedDeals(this.contactId);
+  }
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **angular.json**</summary>
+
+@@ lines 109-109 @@
+
+```
+,
+        "test": {
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "tsConfig": "tsconfig.spec.json"
+          }
+        }
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **with-loading-state.spec.ts**</summary>
+
+@@ lines 1-1 @@
+
+```
+import { TestBed } from '@angular/core/testing';
+import { patchState, signalStore } from '@ngrx/signals';
+import { unprotected } from '@ngrx/signals/testing';
+import {
+  loadingError,
+  loadingFinish,
+  loadingStart,
+  withLoadingState,
+} from './with-loading-state';
+
+const TestStore = signalStore({ providedIn: 'root' }, withLoadingState());
+
+describe('withLoadingState', () => {
+  function setup() {
+    const store = TestBed.inject(TestStore);
+    return { store, state: unprotected(store) };
+  }
+
+  it('is loading while any request is in flight', () => {
+    const { store, state } = setup();
+
+    patchState(state, loadingStart('a'));
+    expect(store.selectLoading()).toBe(true);
+    expect(store.selectLoadingById(() => 'a')()).toBe(true);
+    expect(store.selectLoadingById(() => 'b')()).toBe(false);
+
+    patchState(state, loadingFinish('a'));
+    expect(store.selectLoading()).toBe(false);
+  });
+
+  it('counts overlapping requests with the same id', () => {
+    const { store, state } = setup();
+
+    patchState(state, loadingStart('a'), loadingStart('a'), loadingFinish('a'));
+    expect(store.selectLoadingById(() => 'a')()).toBe(true);
+
+    patchState(state, loadingFinish('a'));
+    expect(store.selectLoadingById(() => 'a')()).toBe(false);
+  });
+
+  it('keeps the error when the request finishes', () => {
+    const { store, state } = setup();
+
+    patchState(state, loadingStart('a'), loadingError(new Error('boom')), loadingFinish('a'));
+
+    expect(store.selectError()).toBe('boom');
+  });
+
+  it('clears the error when a new request starts', () => {
+    const { store, state } = setup();
+
+    patchState(state, loadingError(new Error('boom')), loadingStart('a'));
+
+    expect(store.selectError()).toBeNull();
+  });
+});
+
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **with-stale-while-revalidate.spec.ts**</summary>
+
+@@ lines 1-1 @@
+
+```
+import { TestBed } from '@angular/core/testing';
+import { patchState, signalStore, withMethods, withState } from '@ngrx/signals';
+import { rxMethod } from '@ngrx/signals/rxjs-interop';
+import { unprotected } from '@ngrx/signals/testing';
+import { Observable, pipe, Subject, switchMap } from 'rxjs';
+import { withLoadingState } from './with-loading-state';
+import { CLOCK, cacheInvalidate, withStaleWhileRevalidate } from './with-stale-while-revalidate';
+
+const TTL_MS = 1000;
+const KEY = 'items:list';
+
+describe('withStaleWhileRevalidate', () => {
+  let now: number;
+  let request: Subject<string[]>;
+  let calls: number;
+
+  const TestStore = signalStore(
+    { providedIn: 'root' },
+    withState({ items: [] as string[] }),
+    withLoadingState(),
+    withStaleWhileRevalidate({ ttlMs: TTL_MS }),
+    withMethods((store) => ({
+      load: rxMethod<void>(
+        pipe(
+          switchMap(() =>
+            store._swr({
+              key: KEY,
+              source: (): Observable<string[]> => {
+                calls++;
+                request = new Subject<string[]>();
+                return request;
+              },
+              onData: (items) => patchState(store, { items }),
+            }),
+          ),
+        ),
+      ),
+    })),
+  );
+
+  beforeEach(() => {
+    now = 10_000;
+    calls = 0;
+    TestBed.configureTestingModule({ providers: [{ provide: CLOCK, useValue: () => now }] });
+  });
+
+  function loadOnce(store: InstanceType<typeof TestStore>, items: string[]) {
+    store.load();
+    request.next(items);
+    request.complete();
+  }
+
+  it('blocks on a cold load and stores the response', () => {
+    const store = TestBed.inject(TestStore);
+
+    store.load();
+    expect(store.selectLoadingById(() => KEY)()).toBe(true);
+    expect(store.selectRevalidating(() => KEY)()).toBe(false);
+
+    request.next(['a']);
+    request.complete();
+
+    expect(store.items()).toEqual(['a']);
+    expect(store.selectLoadingById(() => KEY)()).toBe(false);
+  });
+
+  it('does not fetch while the data is fresh', () => {
+    const store = TestBed.inject(TestStore);
+    loadOnce(store, ['a']);
+
+    now += TTL_MS - 1;
+    store.load();
+
+    expect(calls).toBe(1);
+  });
+
+  it('serves cached data and revalidates quietly once stale', () => {
+    const store = TestBed.inject(TestStore);
+    loadOnce(store, ['a']);
+
+    now += TTL_MS;
+    store.load();
+
+    expect(calls).toBe(2);
+    expect(store.items()).toEqual(['a']);
+    expect(store.selectLoadingById(() => KEY)()).toBe(false);
+    expect(store.selectRevalidating(() => KEY)()).toBe(true);
+
+    request.next(['a', 'b']);
+    request.complete();
+
+    expect(store.items()).toEqual(['a', 'b']);
+    expect(store.selectRevalidating(() => KEY)()).toBe(false);
+  });
+
+  it('keeps cached data when revalidation fails and retries on the next call', () => {
+    const store = TestBed.inject(TestStore);
+    loadOnce(store, ['a']);
+
+    now += TTL_MS;
+    store.load();
+    request.error(new Error('offline'));
+
+    expect(store.items()).toEqual(['a']);
+    expect(store.selectError()).toBe('offline');
+    expect(store.selectRevalidating(() => KEY)()).toBe(false);
+
+    store.load();
+    expect(calls).toBe(3);
+  });
+
+  it('treats invalidated keys as stale but keeps their data', () => {
+    const store = TestBed.inject(TestStore);
+    loadOnce(store, ['a']);
+
+    patchState(unprotected(store), cacheInvalidate('items:'));
+    store.load();
+
+    expect(calls).toBe(2);
+    expect(store.items()).toEqual(['a']);
+    expect(store.selectLoadingById(() => KEY)()).toBe(false);
+  });
+});
+
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **deals.store.spec.ts**</summary>
+
+@@ lines 1-1 @@
+
+```
+import { TestBed } from '@angular/core/testing';
+import { of, Subject } from 'rxjs';
+import { Deal } from '../model/deal.model';
+import { DealsApi } from './deals-api';
+import { DealsStore } from './deals.store';
+
+const SAVE_DEBOUNCE_MS = 300;
+
+function makeDeal(overrides: Partial<Deal> = {}): Deal {
+  return {
+    id: 'd1',
+    title: 'Enterprise License',
+    summary: '',
+    stage: 'new',
+    value: { amount: 1000, currency: 'USD' },
+    contactId: 'c1',
+    isPublic: false,
+    ...overrides,
+  };
+}
+
+describe('DealsStore', () => {
+  const api = { list: vi.fn(), getById: vi.fn(), create: vi.fn(), update: vi.fn() };
+
+  beforeEach(() => {
+    vi.useFakeTimers();
+    api.list.mockReset().mockReturnValue(
+      of([makeDeal(), makeDeal({ id: 'd2', title: 'Pilot Program', contactId: 'c2' })]),
+    );
+    TestBed.configureTestingModule({ providers: [{ provide: DealsApi, useValue: api }] });
+  });
+
+  afterEach(() => vi.useRealTimers());
+
+  it('selects deals by title and by contact from the entity map', () => {
+    const store = TestBed.inject(DealsStore);
+    store.loadDeals();
+
+    expect(store.selectFilteredDeals(() => 'pilot')().map((deal) => deal.id)).toEqual(['d2']);
+    expect(store.selectDealsByContactId(() => 'c1')().map((deal) => deal.id)).toEqual(['d1']);
+  });
+
+  it('shows a saved change in every selector, optimistically', () => {
+    const response = new Subject<Deal>();
+    api.update.mockReturnValue(response);
+    const store = TestBed.inject(DealsStore);
+    store.loadDeals();
+
+    const byId = store.selectDealById(() => 'd1');
+    const byContact = store.selectDealsByContactId(() => 'c1');
+    const byTitle = store.selectFilteredDeals(() => 'enterprise');
+
+    store.updateDeal({ id: 'd1', changes: { stage: 'proposal' } });
+    vi.advanceTimersByTime(SAVE_DEBOUNCE_MS);
+
+    expect(byId()?.stage).toBe('proposal');
+    expect(byContact()[0].stage).toBe('proposal');
+    expect(byTitle()[0].stage).toBe('proposal');
+    expect(store.selectLoadingById(() => 'd1')()).toBe(true);
+
+    response.next(makeDeal({ stage: 'proposal', title: 'Enterprise (renewed)' }));
+    response.complete();
+
+    expect(byId()?.title).toBe('Enterprise (renewed)');
+    expect(store.selectLoadingById(() => 'd1')()).toBe(false);
+  });
+
+  it('collapses repeated saves of one deal into a single request', () => {
+    api.update.mockReturnValue(of(makeDeal({ title: 'Third' })));
+    const store = TestBed.inject(DealsStore);
+    store.loadDeals();
+
+    store.updateDeal({ id: 'd1', changes: { title: 'First' } });
+    store.updateDeal({ id: 'd1', changes: { title: 'Second' } });
+    store.updateDeal({ id: 'd1', changes: { title: 'Third' } });
+    vi.advanceTimersByTime(SAVE_DEBOUNCE_MS);
+
+    expect(api.update).toHaveBeenCalledTimes(1);
+    expect(api.update).toHaveBeenCalledWith('d1', { title: 'Third' });
+  });
+
+  it('saves two different deals independently', () => {
+    api.update.mockReturnValue(of(makeDeal()));
+    const store = TestBed.inject(DealsStore);
+    store.loadDeals();
+
+    store.updateDeal({ id: 'd1', changes: { title: 'A' } });
+    store.updateDeal({ id: 'd2', changes: { title: 'B' } });
+    vi.advanceTimersByTime(SAVE_DEBOUNCE_MS);
+
+    expect(api.update).toHaveBeenCalledTimes(2);
+  });
+
+  it('reverts the optimistic change and exposes the error when saving fails', () => {
+    const response = new Subject<Deal>();
+    api.update.mockReturnValue(response);
+    const store = TestBed.inject(DealsStore);
+    store.loadDeals();
+
+    store.updateDeal({ id: 'd1', changes: { stage: 'closed-won' } });
+    vi.advanceTimersByTime(SAVE_DEBOUNCE_MS);
+    expect(store.selectDealById(() => 'd1')()?.stage).toBe('closed-won');
+
+    response.error(new Error('Server down'));
+
+    expect(store.selectDealById(() => 'd1')()?.stage).toBe('new');
+    expect(store.selectError()).toBe('Server down');
+    expect(store.selectLoadingById(() => 'd1')()).toBe(false);
+  });
+
+  it('creates one deal for repeated clicks and reports the created deal', () => {
+    const response = new Subject<Deal>();
+    api.create.mockReturnValue(response);
+    const onCreated = vi.fn();
+    const store = TestBed.inject(DealsStore);
+    const { id: _id, ...draft } = makeDeal({ title: 'Brand new' });
+
+    store.createDeal({ draft, onCreated });
+    store.createDeal({ draft, onCreated });
+    vi.advanceTimersByTime(SAVE_DEBOUNCE_MS);
+
+    expect(store.creating()).toBe(true);
+    expect(api.create).toHaveBeenCalledTimes(1);
+
+    response.next(makeDeal({ id: 'd9', title: 'Brand new' }));
+    response.complete();
+
+    expect(store.creating()).toBe(false);
+    expect(onCreated).toHaveBeenCalledWith(expect.objectContaining({ id: 'd9' }));
+    expect(store.selectDealById(() => 'd9')()?.title).toBe('Brand new');
+  });
+
+  it('refetches the list after a deal was created', () => {
+    api.create.mockReturnValue(of(makeDeal({ id: 'd9' })));
+    const store = TestBed.inject(DealsStore);
+    const { id: _id, ...draft } = makeDeal();
+
+    store.loadDeals();
+    store.loadDeals();
+    expect(api.list).toHaveBeenCalledTimes(1);
+
+    store.createDeal({ draft });
+    vi.advanceTimersByTime(SAVE_DEBOUNCE_MS);
+    store.loadDeals();
+
+    expect(api.list).toHaveBeenCalledTimes(2);
+    expect(store.selectLoadingById(() => 'deals:list')()).toBe(false);
+  });
+});
+
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **tasks.store.spec.ts**</summary>
+
+@@ lines 1-1 @@
+
+```
+import { TestBed } from '@angular/core/testing';
+import { CLOCK } from '@shared';
+import { of, Subject } from 'rxjs';
+import { DealTask } from '../model/deal-task.model';
+import { TasksApi } from './tasks-api';
+import { TasksStore } from './tasks.store';
+
+const TTL_MS = 60_000;
+
+function makeTask(overrides: Partial<DealTask> = {}): DealTask {
+  return { id: 't1', dealId: 'd1', title: 'Send proposal', priority: 'high', done: false, ...overrides };
+}
+
+describe('TasksStore', () => {
+  const api = { list: vi.fn(), create: vi.fn(), update: vi.fn(), delete: vi.fn() };
+  let now: number;
+
+  beforeEach(() => {
+    now = 1_000_000;
+    api.list.mockReset().mockReturnValue(of([makeTask(), makeTask({ id: 't2', title: 'Call' })]));
+    TestBed.configureTestingModule({
+      providers: [
+        { provide: TasksApi, useValue: api },
+        { provide: CLOCK, useValue: () => now },
+      ],
+    });
+  });
+
+  it('lists the open tasks of a deal first', () => {
+    const store = TestBed.inject(TasksStore);
+    api.list.mockReturnValue(of([makeTask({ done: true }), makeTask({ id: 't2', title: 'Call' })]));
+
+    store.loadTasksForDeal('d1');
+
+    expect(store.selectTasksByDealId(() => 'd1')().map((task) => task.id)).toEqual(['t2', 't1']);
+    expect(store.selectTasksByDealId(() => 'other')()).toEqual([]);
+  });
+
+  it('applies a change at once and keeps it when the server confirms', () => {
+    const response = new Subject<DealTask>();
+    api.update.mockReturnValue(response);
+    const store = TestBed.inject(TasksStore);
+    store.loadTasksForDeal('d1');
+    const tasks = store.selectTasksByDealId(() => 'd1');
+
+    store.updateTask({ dealId: 'd1', taskId: 't1', changes: { done: true } });
+
+    expect(tasks().map((task) => [task.id, task.done])).toEqual([
+      ['t2', false],
+      ['t1', true],
+    ]);
+    expect(store.selectLoadingById(() => 't1')()).toBe(true);
+
+    response.next(makeTask({ done: true }));
+    response.complete();
+
+    expect(store.selectLoadingById(() => 't1')()).toBe(false);
+    expect(tasks().find((task) => task.id === 't1')?.done).toBe(true);
+  });
+
+  it('reverts the change when the server rejects it', () => {
+    const response = new Subject<DealTask>();
+    api.update.mockReturnValue(response);
+    const store = TestBed.inject(TasksStore);
+    store.loadTasksForDeal('d1');
+
+    store.updateTask({ dealId: 'd1', taskId: 't1', changes: { done: true } });
+    response.error(new Error('Rejected'));
+
+    expect(store.selectTasksByDealId(() => 'd1')().find((task) => task.id === 't1')?.done).toBe(false);
+    expect(store.selectError()).toBe('Rejected');
+  });
+
+  it('drops tasks that disappeared on the server when the list is refetched', () => {
+    const store = TestBed.inject(TasksStore);
+    store.loadTasksForDeal('d1');
+
+    now += TTL_MS;
+    api.list.mockReturnValue(of([makeTask()]));
+    store.loadTasksForDeal('d1');
+
+    expect(store.selectTasksByDealId(() => 'd1')().map((task) => task.id)).toEqual(['t1']);
+  });
+
+  it('removes a task after the server deleted it', () => {
+    api.delete.mockReturnValue(of(undefined));
+    const store = TestBed.inject(TasksStore);
+    store.loadTasksForDeal('d1');
+
+    store.deleteTask({ dealId: 'd1', taskId: 't2' });
+
+    expect(store.selectTasksByDealId(() => 'd1')().map((task) => task.id)).toEqual(['t1']);
+  });
+});
+
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **contacts.store.spec.ts**</summary>
+
+@@ lines 1-1 @@
+
+```
+import { computed, signal } from '@angular/core';
+import { TestBed } from '@angular/core/testing';
+import { Deal, DEALS_BY_CONTACT, DealsByContactSource } from '@feature/deals';
+import { of } from 'rxjs';
+import { Contact } from '../model/contact.model';
+import { ContactsApi } from './contacts-api';
+import { ContactsStore } from './contacts.store';
+
+function makeContact(overrides: Partial<Contact> = {}): Contact {
+  return {
+    id: 'c1',
+    firstName: 'Anna',
+    lastName: 'Kowalska',
+    email: 'anna@example.com',
+    status: 'customer',
+    createdAt: '2025-06-15T10:30:00Z',
+    company: 'Tech Solutions',
+    ...overrides,
+  };
+}
+
+function makeDeal(overrides: Partial<Deal> = {}): Deal {
+  return {
+    id: 'd1',
+    title: 'Enterprise License',
+    summary: '',
+    stage: 'new',
+    value: { amount: 1000, currency: 'USD' },
+    contactId: 'c1',
+    isPublic: false,
+    ...overrides,
+  };
+}
+
+describe('ContactsStore', () => {
+  const api = { search: vi.fn(), getById: vi.fn() };
+  const deals = signal<Deal[]>([]);
+  const loadDealsByContact = vi.fn();
+
+  const dealsPort = {
+    selectDealsByContactId: (contactId: () => string | undefined) =>
+      computed(() => deals().filter((deal) => deal.contactId === contactId())),
+    selectLoadingByContactId: () => computed(() => false),
+    selectRevalidatingByContactId: () => computed(() => false),
+    loadDealsByContact,
+  } as unknown as DealsByContactSource;
+
+  beforeEach(() => {
+    deals.set([]);
+    api.search.mockReset().mockImplementation((q: string) =>
+      of({
+        items: q === 'ann' ? [makeContact()] : [makeContact({ id: 'c2', firstName: 'Marek' })],
+        total: 1,
+        offset: 0,
+        limit: 20,
+      }),
+    );
+    api.getById.mockReset().mockReturnValue(of(makeContact({ company: 'New Company' })));
+    TestBed.configureTestingModule({
+      providers: [
+        { provide: ContactsApi, useValue: api },
+        { provide: DEALS_BY_CONTACT, useValue: dealsPort },
+      ],
+    });
+  });
+
+  it('keeps the result list of every query, so overlapping searches do not overwrite each other', () => {
+    const store = TestBed.inject(ContactsStore);
+
+    store.search('ann');
+    store.search('mar');
+
+    expect(store.selectSearchResults(() => 'ann')().map((c) => c.id)).toEqual(['c1']);
+    expect(store.selectSearchResults(() => 'mar')().map((c) => c.id)).toEqual(['c2']);
+  });
+
+  it('reports a query as searched only after its response arrived', () => {
+    const store = TestBed.inject(ContactsStore);
+    const searched = store.selectSearched(() => 'ann');
+
+    expect(searched()).toBe(false);
+    store.search('ann');
+    expect(searched()).toBe(true);
+  });
+
+  it('reflects a reloaded contact in earlier search results', () => {
+    const store = TestBed.inject(ContactsStore);
+    store.search('ann');
+    const results = store.selectSearchResults(() => 'ann');
+    expect(results()[0].company).toBe('Tech Solutions');
+
+    store.loadContact('c1');
+
+    expect(results()[0].company).toBe('New Company');
+    expect(store.selectContactById(() => 'c1')()?.company).toBe('New Company');
+  });
+
+  it('does not fetch a query again while it is fresh', () => {
+    const store = TestBed.inject(ContactsStore);
+
+    store.search('ann');
+    store.search('ann');
+
+    expect(api.search).toHaveBeenCalledTimes(1);
+  });
+
+  it('follows deal changes of the related deals port', () => {
+    const store = TestBed.inject(ContactsStore);
+    const related = store.selectRelatedDeals(() => 'c1');
+    expect(related()).toEqual([]);
+
+    deals.set([makeDeal(), makeDeal({ id: 'd2', contactId: 'c2' })]);
+    expect(related().map((deal) => deal.id)).toEqual(['d1']);
+
+    deals.update((list) => list.map((deal) => ({ ...deal, stage: 'closed-won' as const })));
+    expect(related()[0].stage).toBe('closed-won');
+
+    store.loadRelatedDeals('c1');
+    expect(loadDealsByContact).toHaveBeenCalledWith('c1');
+  });
+});
+
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **contact-directory.provider.spec.ts**</summary>
+
+@@ lines 1-1 @@
+
+```
+import { provideHttpClient } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
+import { CONTACT_DIRECTORY } from '@feature/deals';
+import { provideContactDirectory } from './contact-directory.provider';
+
+describe('lazy contact directory', () => {
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [provideHttpClient(), provideHttpClientTesting(), provideContactDirectory()],
+    });
+  });
+
+  it('is empty and loading until the contacts chunk has loaded', () => {
+    const directory = TestBed.inject(CONTACT_DIRECTORY);
+
+    expect(directory.loading()).toBe(true);
+    expect(directory.optionsById()).toEqual({});
+    expect(directory.searchResults()).toEqual({});
+  });
+
+  it('runs commands issued before the chunk loaded, in order, and exposes the results', async () => {
+    const http = TestBed.inject(HttpTestingController);
+    const directory = TestBed.inject(CONTACT_DIRECTORY);
+
+    directory.search('ann');
+    directory.search('mar');
+
+    const first = await vi.waitFor(() => http.expectOne((r) => r.url === 'contacts' && r.params.get('q') === 'ann'));
+    const second = http.expectOne((r) => r.url === 'contacts' && r.params.get('q') === 'mar');
+
+    first.flush({
+      contacts: {
+        items: [
+          {
+            id: 'c1',
+            firstName: 'Anna',
+            lastName: 'Kowalska',
+            email: 'anna@example.com',
+            status: 'customer',
+            createdAt: '2025-06-15T10:30:00Z',
+            company: 'Tech Solutions',
+          },
+        ],
+        total: 1,
+        offset: 0,
+        limit: 20,
+      },
+    });
+    second.flush({ contacts: { items: [], total: 0, offset: 0, limit: 20 } });
+
+    expect(directory.loading()).toBe(false);
+    expect(directory.searchResults()['ann']).toEqual([
+      { id: 'c1', label: 'Anna Kowalska', description: 'Tech Solutions' },
+    ]);
+    expect(directory.searchResults()['mar']).toEqual([]);
+    expect(directory.optionsById()['c1']?.label).toBe('Anna Kowalska');
+  });
+});
+
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **deals.store.spec.ts**</summary>
+
+@@ lines 146-146 @@
+
+```
+draft = makeDraft
+```
+
+@@ lines 126-126 @@
+
+```
+draft = makeDraft
+```
+
+@@ lines 3-19 @@
+
+```
+, DealDraft } from '../model/deal.model';
+import { DealsApi } from './deals-api';
+import { DealsStore } from './deals.store';
+
+const SAVE_DEBOUNCE_MS = 300;
+
+function makeDraft(overrides: Partial<DealDraft> = {}): DealDraft {
+  return {
+    title: 'Enterprise License',
+    summary: '',
+    stage: 'new',
+    value: { amount: 1000, currency: 'USD' },
+    contactId: 'c1',
+    isPublic: false,
+    ...overrides,
+  };
+}
+
+function makeDeal(overrides: Partial<Deal> = {}): Deal {
+  return { id: 'd1', ...makeDraft(), ...overrides
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **contact-directory.provider-new.ts**</summary>
+
+@@ lines 1-1 @@
+
+```
+import { computed, inject, InjectionToken, Injector, Provider, signal } from '@angular/core';
+import type { ContactDirectory } from '@feature/deals';
+
+const NO_OPTIONS = Object.freeze({});
+
+// Deals must not import contacts, so the app wires them. The contacts chunk loads on first use.
+function lazyContactDirectory(): ContactDirectory {
+  const injector = inject(Injector);
+  const loaded = signal<ContactDirectory | undefined>(undefined);
+
+  const ready = import('@feature/contacts').then(({ ContactDirectoryAdapter }) => {
+    const directory = injector.get(ContactDirectoryAdapter);
+    loaded.set(directory);
+    return directory;
+  });
+
+  return {
+    optionsById: computed(() => loaded()?.optionsById() ?? NO_OPTIONS),
+    searchResults: computed(() => loaded()?.searchResults() ?? NO_OPTIONS),
+    // Counts as loading until the chunk is there
+    loading: computed(() => loaded()?.loading() ?? true),
+    // Chained on one promise, so calls made before the chunk loads keep their order
+    search: (query) => void ready.then((directory) => directory.search(query)),
+    load: (id) => void ready.then((directory) => directory.load(id)),
+  };
+}
+
+// The token arrives as an argument: importing it statically would pull the deals feature into the main bundle
+export function provideContactDirectory(token: InjectionToken<ContactDirectory>): Provider {
+  return { provide: token, useFactory: lazyContactDirectory };
+}
+
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **app.config.ts**</summary>
+
+@@ lines 28-30 @@ (deleted)
+
+@@ lines 10-11 @@ (deleted)
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+
+```
+
+```
+
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **app.routes.ts**</summary>
+
+@@ lines 2-15 @@
+
+```
+import { provideContactDirectory } from './contact-directory.provider';
+
+export const routes: Routes = [
+  {
+    path: '',
+    redirectTo: '/deals',
+    pathMatch: 'full',
+  },
+  {
+    path: 'deals',
+    // eager loading
+    // component : DealsPage,
+
+    // lazy loading; the token comes from the lazy module, so the deals feature stays out of the main bundle
+    loadChildren: () =>
+      import('./features/deals').then((m) => [
+        {
+          path: '',
+          providers: [provideContactDirectory(m.CONTACT_DIRECTORY)],
+          children: m.dealsRoutes,
+        },
+      ]
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+
+```
+
+```
+
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **contact-directory.provider.spec.ts**</summary>
+
+@@ lines 10-10 @@
+
+```
+CONTACT_DIRECTORY
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **app.config.ts**</summary>
+
+@@ lines 10-10 @@
+
+```
+@core
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="run_in_terminal"><details>
+<summary>Tool use: **run_in_terminal**</summary>
+
+Running ` cd /c/Projects/sages-angular-adv-1126 && git add src/app/core/index.ts src/a...`
+
+Commit the core export fix and show the commit list
+
+```bash
+cd /c/Projects/sages-angular-adv-1126 && git add src/app/core/index.ts src/app/app.config.ts && git commit -q -m "WIP: import interceptors through the core public API" 2>&1 | grep -v warning; git log --oneline | head -12; git status --short
+```
+
+**Result:**
+
+```
+warning: in the working copy of 'src/app/app.config.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/app/core/index.ts', LF will be replaced by CRLF the next time Git touches it
+702d194 WIP: import interceptors through the core public API
+27c4d8f WIP: provide contact directory on the lazy deals route to keep deals out of main
+bd5e658 WIP phase 7: unit-test target (vitest) and store specs
+2677a2d WIP phase 6b: contacts pages on store, related deals list
+baaa29d WIP phase 6a: routed deals pages, contact picker, editor and card updates
+dfb2cf8 WIP phase 5: contacts store, related deals, lazy contact directory
+fd05a30 WIP phase 4: deals data layer (APIs, signal stores, SWR, ports)
+e55e86e WIP phase 3: router paramsInheritanceStrategy always
+f3a4fc1 WIP phase 2: server deals contactId filter and POST /deals
+7610294 WIP phase 1: shared loading state, SWR cache feature, unsaved-changes guard
+b3811a5 WIP phase 0: add @ngrx/signals and @ngrx/operators
+94398db Signal Store plan
+ M docs/ai-sessions/2026-11-06_15-12-55Z-angular-ngrx-signal-store.md
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="kill_terminal"><details>
+<summary>Tool use: **kill_terminal**</summary>
+
+Killed terminal
+
+**Input:**
+
+- id: `5fcf783c-1d11-4474-aec1-47a4c46f1498`
+
+**Result:**
+
+```
+Successfully killed persistent terminal 5fcf783c-1d11-4474-aec1-47a4c46f1498. Final output before termination:
+🚀 CRM API server running at http://localhost:3000/api
+📖 Swagger UI at http://localhost:3000/api-docs
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+All seven phases are implemented and committed, one WIP commit per phase. I haven't run the app in a browser, so the end-to-end flows are untested, including the unsaved-changes guard and the debounced save. Tests (28) pass, and `tsc`, `ngc` (template check) and ESLint with Sheriff pass on the changed files.
+
+**What was built**
+- **Shared store features** (`store`):
+  - `withLoadingState` keeps the error after a request finishes, which the version you attached did not.
+  -  caches per key with a 60 s TTL. A fresh key skips the request. A stale key shows cached data and refetches without a spinner.
+- **Deals data** (`features/deals/data`):
+  - `DealsApi` and `TasksApi` map the server shapes to the client model.
+  -  and `TasksStore` are root-scoped entity stores with optimistic updates and revert on error.
+  - Save and Create are debounced 300 ms, and Create ignores clicks while a request runs.
+  - Pages inject narrow port tokens such as `DEAL_LIST_SOURCE` and `TASKS_READER`.
+- **Contacts**:
+  -  keeps a result list per search query, so overlapping searches don't overwrite each other.
+  - It reads related deals through the `DEALS_BY_CONTACT` token from `@feature/deals`.
+  - The contact picker sits in the deals editor and loads contacts lazily through a  token. The token is provided on the lazy deals route in `app.routes.ts`.
+- **Routing**: `/deals` is a layout page with children `new`, `:dealId` (details + tasks) and `:dealId/edit`. The unsaved-changes guard is on `new` and `edit`.
+- **Server**: `GET /deals?contactId=` and `POST /deals`, added to `openapi.yaml`; the generated `api.model.ts` is refreshed. I checked both with curl.
+
+**Deviations and decisions**
+- `paramsInheritanceStrategy: 'always'` only passes parent params down. The layout page can't read `:dealId` from its child, so it derives the selected id from router state.
+- I first provided the contact directory in `app.config.ts`. A build showed that pulled the deals stores into the main bundle. Moving it to the deals route cut `main` from 412 kB to 286 kB.
+- The repo had no test target. I added `@angular/build:unit-test`, `vitest` and `jsdom` in `angular.json` and `package.json` so `ng test` works.
+- I fixed two lint errors that were already there: an unused import in `shared-module.ts`, and the deep interceptor import in `app.config.ts`, now exported from `@core`.
+- The editor still shows tasks and lets you edit them on the edit page, but task edits aren't saved. That matches the old behaviour and the "deal fields only" decision. The create page hides tasks.
+
+The only uncommitted change is the auto-modified `ai-sessions` log. I stopped the API server I had started.
+
+Do you want me to start `ng serve` and the API and run the manual checks in a browser? I'd cover the TTL refetch, the single request on repeated Save, a new deal appearing on its contact, and the unsaved-changes guard.
+
+_**Agent (copilot/claude-sonnet-5.5)**_
+
+<tool-use data-tool-type="task" data-tool-name="manage_todo_list"><details>
+<summary>Tool use: **manage_todo_list**</summary>
+
+Starting: *Add POST /deals to server and client with debounced mutation logic* (3/6)
+</details></tool-use>
