@@ -81,6 +81,8 @@ export const IHaveUnsavedChanges = new InjectionToken<IHaveUnsavedChanges>('IHav
       </mat-card>
     </form>
   `,
+  // providers: [{ provide: IHaveUnsavedChanges, useClass: CosInnegoWPrzyszloci }],
+  providers: [{ provide: IHaveUnsavedChanges, useExisting: DealEditor }],
 })
 export class DealEditor /* implements IHaveUnsavedChanges */ {
   submit() {
