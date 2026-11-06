@@ -1,4 +1,4 @@
-import { inject, Service, signal } from '@angular/core';
+import { computed, inject, Service, signal } from '@angular/core';
 import { Account } from '../model/account.model';
 import { Contact } from '../model/contact.model';
 import { Deal } from '../model/deal.model';
@@ -13,6 +13,17 @@ import { map, Observable } from 'rxjs';
 export class DealsStore {
   // Read-Write Side - Private to Owner (my wallet!)
   private readonly dealsState = signal<Deal[]>(SEED_DEALS);
+
+  // Normalized Entity Primary Index - id -> Entity
+  private readonly dealsState2 = signal<Readonly<Record<Deal['id'], Deal>>>({
+    d1: SEED_DEALS[0],
+    d2: SEED_DEALS[1],
+    /* id: { value: null, loading: true  } */
+  });
+  pageAdealsIds = signal<Deal['id'][]>(['d1', 'd2']);
+  dealsByNameIds = signal<Deal['id'][]>(['d1', 'd2']);
+  
+  dealsByName = computed(() => this.dealsByNameIds().map((id) => this.dealsState2()[id]));
 
   // private readonly tasksState = signal<DealTask[]>(SEED_TASKS);
   private readonly tasksState = signal<ReadonlyArray<DealTask>>(SEED_TASKS);
