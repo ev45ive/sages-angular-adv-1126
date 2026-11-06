@@ -78,24 +78,15 @@ export class DealsStore {
   http = inject(HttpClient);
 
   fetchDeals(query = ''): Observable<Deal[]> {
-    // Unicast Observable - lazy, 1-1 - RECIPE
     return this.http
-      .get<PagingObject<Deal>>(`http://localhost:3000/api/deals`, {
+      .get<PagingObject<Deal>>(`deals`, {
         params: { query },
-        headers: { Authorization: `Bearer ${'mock-access-u1'}` },
       })
-      .pipe(
-        //
-        map((data) => data.items),
-      );
-
-    // .subscribe().unsubscribe()
+      .pipe(map((data) => data.items));
   }
 
-  fetchDealById(id = '', init?: RequestInit) {
-    return this.http.get<Deal>(`http://localhost:3000/api/deals/${id}`, {
-      headers: { Authorization: `Bearer ${'mock-access-u1'}` },
-    });
+  fetchDealById(id = '') {
+    return this.http.get<Deal>(`deals/${id}`, {});
   }
 }
 
