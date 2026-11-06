@@ -46,10 +46,12 @@ import { DealItemTpl } from '../deal-item-tpl/deal-item-tpl';
 })
 export class DealMasterList {
   readonly deals = input.required<Deal[]>();
+  
   readonly itemTpl = contentChild.required(DealItemTpl);
+  
   readonly selectedId = input<string | null>(null);
   readonly dealSelected = output<string | null>();
-
+  
   protected readonly selectedValue = computed(() => {
     return [this.selectedId()];
   });

@@ -29,20 +29,6 @@ type DealViewMode = 'details' | 'editor' | 'creator';
   template: `
     <main class="bg-surface text-on-surface">
 
-
-    <!-- function myTemplateUchtyt($implicit, {x,y,z}) -->
-      <ng-template #uchywt let-owoc let-liczba="x">
-          <h1>{{owoc}}</h1>
-          {{liczba}}
-      </ng-template>
-      
-      
-      <ng-container [ngTemplateOutlet]="uchywt" [ngTemplateOutletContext]="{$implicit:'apple',x:1}" />
-      <ng-container [ngTemplateOutlet]="uchywt" [ngTemplateOutletContext]="{$implicit:'banana',x:2}" />
-      
-      <!-- <div [innerHTML]="'<h1>Banana</h1>'"></div> Script injection + Sanitizer -->
-
-
       <app-master-detail-layout>
         <!-- --- -->
         <app-deal-master-list
@@ -56,14 +42,17 @@ type DealViewMode = 'details' | 'editor' | 'creator';
             [deal]="deal" [selected]="isSelected" 
           /> -->
 
-
+          <!-- ng-template[appDealHeader] -->
+          <!-- ng-template[appDealFooter] -->
+          
           <ng-container *appDealItemTpl="let deal; selected as isSelected">
             <app-deal-list-item [deal]="deal" [selected]="isSelected"  />
+            <!-- {{viewMode()}} -->
           </ng-container>
-
+          
           <app-deals-filter app-master-list-header [(value)]="filterText" />
+          <button           app-master-list-header matButton="outlined" type="button" (click)="onCreateDeal()">Create new</button>
 
-          <button matButton="outlined" type="button" (click)="onCreateDeal()">Create new</button>
         </app-deal-master-list>
 
         @if (viewMode() === 'details') {
