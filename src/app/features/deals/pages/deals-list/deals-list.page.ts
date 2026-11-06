@@ -28,7 +28,6 @@ type DealViewMode = 'details' | 'editor' | 'creator';
   ],
   template: `
     <main class="bg-surface text-on-surface">
-
       <app-master-detail-layout>
         <!-- --- -->
         <app-deal-master-list
@@ -37,22 +36,20 @@ type DealViewMode = 'details' | 'editor' | 'creator';
           [selectedId]="selectedDeal()?.id ?? null"
           (dealSelected)="onSelectDeal($event)"
         >
-          <!-- <app-deal-list-item 
-            *appDealItemTpl="let deal; selected as isSelected" 
-            [deal]="deal" [selected]="isSelected" 
-          /> -->
-
-          <!-- ng-template[appDealHeader] -->
-          <!-- ng-template[appDealFooter] -->
-          
           <ng-container *appDealItemTpl="let deal; selected as isSelected">
-            <app-deal-list-item [deal]="deal" [selected]="isSelected"  />
-            <!-- {{viewMode()}} -->
+            <app-deal-list-item [deal]="deal" [selected]="isSelected" />
           </ng-container>
-          
-          <app-deals-filter app-master-list-header [(value)]="filterText" />
-          <button           app-master-list-header matButton="outlined" type="button" (click)="onCreateDeal()">Create new</button>
 
+          <app-deals-filter app-master-list-header [(value)]="filterText" />
+
+          <button
+            app-master-list-header
+            matButton="outlined"
+            type="button"
+            (click)="onCreateDeal()"
+          >
+            Create new
+          </button>
         </app-deal-master-list>
 
         @if (viewMode() === 'details') {

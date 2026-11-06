@@ -14,9 +14,7 @@ import { DealStageBadge } from '../deal-stage-badge/deal-stage-badge';
   template: `
     <p class="truncate text-title-sm">{{ deal().title }} — {{ deal().accountId | accountName }}</p>
     <div class=" flex justify-between">
-      <p
-        class="text-body-sm text-on-surface-variant flex-1 group-data-[selected=true]:text-on-secondary-container"
-      >
+      <p class="text-body-sm text-on-surface-variant flex-1 group-data-[selected=true]:text-on-secondary-container">
         {{ deal().value.amount | currency: deal().value.currency : 'symbol' : '1.0-0' }}
       </p>
       <app-deal-stage-badge [stage]="deal().stage" />
