@@ -2827,3 +2827,288 @@ _**Agent (copilot/claude-haiku-5.5)**_
 
 Created 3 todos
 </details></tool-use>
+
+---
+
+_**User (2026-11-06 10:55:17Z)**_
+
+move error messages to form schema fn
+
+---
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+I'll check how the Signal Forms validators accept custom messages in this Angular version before moving them.     
+
+---
+
+_**User (2026-11-06 10:55:24Z)**_
+
+for all fields
+
+---
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<think><details><summary>Thought Process</summary>
+Built-in validators take a config argument. I'll confirm `BaseValidatorConfig` accepts a `message` and check how custom validators return one.     
+
+Built-in validators accept `{ message }` in their config, and each error exposes `message` through `errors()`. I'll move every message into the schema and have the template read `errors()[0]?.message`, which keeps the same precedence as the old `@if` chains.
+</details></think>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+I'll check the Signal Forms typings for message support on built-in and custom validators before editing.    
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="search" data-tool-name="grep_search"><details>
+<summary>Tool use: **grep_search**</summary>
+
+Searched for regex `message\?|message:|interface .*ValidationError|NgValidationError|errorSummary|kind: string` (`**/node_modules/@angular/forms/types/_structure-chunk.d.ts`), 34 results
+
+**Input:**
+
+- includeIgnoredFiles: `true`
+- includePattern: `node_modules/@angular/forms/types/_structure-chunk.d.ts`
+- isRegexp: `true`
+- maxResults: `40`
+- query: `message\?|message:|interface .*ValidationError|NgValidationError|errorSummary|kind: string`
+
+**Result:**
+
+```
+Found 34 matches in 1 file for "message\?|message:|interface .*ValidationError|NgValidationError|errorSummary|kind: string"
+
+node_modules/@angular/forms/types/_structure-chunk.d.ts
+480:declare class StandardSchemaValidationError extends BaseNgValidationError {
+489:interface ValidationErrorOptions {
+491:    message?: string;
+732:interface ValidationError {
+734:    readonly kind: string;
+736:    readonly message?: string;
+745:    interface WithFieldTree extends ValidationError {
+764:    interface WithOptionalFieldTree extends ValidationError {
+775:    interface WithoutFieldTree extends ValidationError {
+784: * Internal version of `NgValidationError`, we create this separately so we can change its type on
+791:declare abstract class BaseNgValidationError implements ValidationError {
+795:    readonly kind: string;
+799:    readonly message?: string;
+810:declare class RequiredValidationError extends BaseNgValidationError {
+821:declare class MinValidationError extends BaseNgValidationError {
+834:declare class MinDateValidationError extends BaseNgValidationError {
+847:declare class MaxValidationError extends BaseNgValidationError {
+860:declare class MaxDateValidationError extends BaseNgValidationError {
+873:declare class MinLengthValidationError extends BaseNgValidationError {
+886:declare class MaxLengthValidationError extends BaseNgValidationError {
+899:declare class PatternValidationError extends BaseNgValidationError {
+912:declare class EmailValidationError extends BaseNgValidationError {
+923:declare class NativeInputParseError extends BaseNgValidationError {
+934: *   if (e instanceof NgValidationError) {
+953:declare const NgValidationError: abstract new () => NgValidationError;
+954:type NgValidationError = RequiredValidationError | MinValidationError | MinDateValidationError | MaxValidationError | MaxDateValidationError | MinLengthValidationError | MaxLengthValidationError | PatternValidationError | EmailValidationError | StandardSchemaValidationError | NativeInputParseE
+… (output truncated)
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="search" data-tool-name="grep_search"><details>
+<summary>Tool use: **grep_search**</summary>
+
+Searched for regex `declare function (required|minLength|maxLength|min)\b` (`**/node_modules/@angular/forms/types/signals.d.ts`), 4 results
+
+**Input:**
+
+- includeIgnoredFiles: `true`
+- includePattern: `node_modules/@angular/forms/types/signals.d.ts`
+- isRegexp: `true`
+- maxResults: `40`
+- query: `declare function (required|minLength|maxLength|min)\b`
+
+**Result:**
+
+```
+Found 4 matches in 1 file for "declare function (required|minLength|maxLength|min)\b"
+
+node_modules/@angular/forms/types/signals.d.ts
+204:declare function maxLength<TValue extends ValueWithLengthOrSize, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, maxLength: number | LogicFn<TValue, number | undefined, TPathKind>, config?: BaseValidatorConfig<TValue, TPathKind>): void;
+224:declare function min<TValue extends number | null, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, minValue: number | LogicFn<TValue, number | undefined, TPathKind>, config?: BaseValidatorConfig<TValue, TPathKind>): void;
+268:declare function minLength<TValue extends ValueWithLengthOrSize, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, minLength: number | LogicFn<TValue, number | undefined, TPathKind>, config?: BaseValidatorConfig<TValue, TPathKind>): void;
+314:declare function required<TValue, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, config?: BaseValidatorConfig<TValue, TPathKind> & {
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+Built-in validators take a config argument. I'll confirm `BaseValidatorConfig` accepts a  and check how custom validators return one.     
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="search" data-tool-name="grep_search"><details>
+<summary>Tool use: **grep_search**</summary>
+
+Searched for regex `BaseValidatorConfig|message\?:|ValidationErrorOptions` (`**/node_modules/@angular/forms/types/signals.d.ts`), 13 results
+
+**Input:**
+
+- includeIgnoredFiles: `true`
+- includePattern: `node_modules/@angular/forms/types/signals.d.ts`
+- isRegexp: `true`
+- maxResults: `20`
+- query: `BaseValidatorConfig|message\?:|ValidationErrorOptions`
+
+**Result:**
+
+```
+Found 13 matches in 1 file for "BaseValidatorConfig|message\?:|ValidationErrorOptions"
+
+node_modules/@angular/forms/types/signals.d.ts
+8:edValidationError, RootFieldContext, Schema, SchemaFn, SchemaOrSchemaFn, SchemaPathTree, SignalFormsConfig, StandardSchemaValidationError, Subfields, ValidationErrorOptions, ValidationResult, ValidationSuccess, Validator, WithFieldTree, WithoutFieldTree, apply, applyEach, appl [match at col 1061 · line truncated, 1,553 chars]
+109:type BaseValidatorConfig<TValue, TPathKind extends PathKind = PathKind.Root> = {
+111:    message?: string | LogicFn<TValue, string, TPathKind>;
+121:    message?: never;
+140:declare function email<TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<string, SchemaPathRules.Supported, TPathKind>, config?: BaseValidatorConfig<string, TPathKind>): void;
+160:declare function max<TValue extends number | null, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, maxValue: number | LogicFn<TValue, number | undefined, TPathKind>, config?: BaseValidatorConfig<TValue, TPathKind>): void;
+184:declare function maxDate<TValue extends Date | null, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, maxDateValue: Date | LogicFn<TValue, Date | undefined, TPathKind>, config?: BaseValidatorConfig<TValue, TPathKind>): void;
+204:declare function maxLength<TValue extends ValueWithLengthOrSize, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, maxLength: number | LogicFn<TValue, number | undefined, TPathKind>, config?: BaseValidatorConfig<TValue, TPathKind>): void;
+224:declare function min<TValue extends number | null, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, minValue: number | LogicFn<TValue, number | undefined, TPathKind>, config?: BaseValidatorConfig<TValue, TPathKind>): void;
+248:declar
+… (output truncated)
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="search" data-tool-name="grep_search"><details>
+<summary>Tool use: **grep_search**</summary>
+
+No matches found.
+
+**Input:**
+
+- includeIgnoredFiles: `true`
+- includePattern: `node_modules/@angular/forms/types/_structure-chunk.d.ts`
+- isRegexp: `true`
+- maxResults: `20`
+- query: `interface BaseValidatorConfig|type BaseValidatorConfig|message\?: string \| `
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+Built-in validators accept `{ message }` in their config, and each error exposes  through . I'll move every message into the schema and have the template read `errors()[0]?.message`, which keeps the same precedence as the old `@if` chains.    
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="write" data-tool-name="textEditGroup"><details>
+<summary>Edit: **deal-editor.ts**</summary>
+
+@@ lines 150-158 @@
+
+```
+{{ task.title().errors()[0]?.message }}
+```
+
+@@ lines 111-117 @@
+
+```
+{{ dealForm.amount().errors()[0]?.message }}
+```
+
+@@ lines 95-105 @@
+
+```
+{{ dealForm.title().errors()[0]?.message }}
+```
+
+@@ lines 50-60 @@
+
+```
+, { message: 'Title is required' });
+  minLength(p.title, 3, { message: 'At least 3 characters' });
+  maxLength(p.title, 100, { message: 'Max 100 characters' });
+  validate(p.title, forbiddenNames(FORBIDDEN_NAMES));
+
+  required(p.amount, { message: 'Value is required' });
+  min(p.amount, 0, { message: 'Value cannot be negative' });
+
+  applyEach(p.tasks, (task) => {
+    required(task.title, { message: 'Title is required' });
+    minLength(task.title, 3, { message: 'At least 3 characters' }
+```
+
+@@ lines 46-46 @@
+
+```
+
+      ? { kind: 'forbiddenName', message: 'This name is not allowed' }
+     
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="run_in_terminal"><details>
+<summary>Tool use: **run_in_terminal**</summary>
+
+Running ` cd /c/Projects/sages-angular-adv-1126 && npx prettier --write src/app/featur...`
+
+Format, type-check, and lint the editor
+
+```bash
+cd /c/Projects/sages-angular-adv-1126 && npx prettier --write src/app/features/deals/ui/deal-editor/deal-editor.ts && npx tsc --noEmit -p tsconfig.app.json; echo "TSC_EXIT=$?"; npx eslint src/app/features/deals/ui/deal-editor/deal-editor.ts; echo "ESLINT_EXIT=$?"
+```
+
+**Result:**
+
+```
+src/app/features/deals/ui/deal-editor/deal-editor.ts 388ms (unchanged)
+TSC_EXIT=0
+ESLINT_EXIT=0
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="generic" data-tool-name="get_errors"><details>
+<summary>Tool use: **get_errors**</summary>
+
+Checked `deal-editor.ts`, no problems found
+
+**Input:**
+
+- filePaths:
+
+```
+[
+  "c:\\Projects\\sages-angular-adv-1126\\src\\app\\features\\deals\\ui\\deal-editor\\deal-editor.ts"
+]
+```
+
+
+**Result:**
+
+```
+<errors path="c:\\Projects\\sages-angular-adv-1126\\src\\app\\features\\deals\\ui\\deal-editor\\deal-editor.ts">
+No errors found
+</errors>
+```
+</details></tool-use>
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+Error messages now live in the schema, and the template reads them from `errors()[0]?.message`. `prettier`, `tsc`, `eslint`, and `get_errors` all pass on `src/app/features/deals/ui/deal-editor/deal-editor.ts`.
+
+- **Title:** , , and  carry their messages. The forbidden-names validator returns its own message.
+- **Amount:**  and  carry their messages.
+- **Task title:** , , and the forbidden-names validator carry their messages.
+
+The template still shows only the first error, as the old `@if` chains did. Stage, description, and task priority have no validators, so they have no messages to move. The browser behaviour is not verified; I can check it if you approve browser tools.
+
+_**Agent (copilot/claude-haiku-5.5)**_
+
+<tool-use data-tool-type="task" data-tool-name="manage_todo_list"><details>
+<summary>Tool use: **manage_todo_list**</summary>
+
+Created 4 todos
+</details></tool-use>

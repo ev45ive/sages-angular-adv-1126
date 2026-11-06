@@ -43,21 +43,23 @@ const FORBIDDEN_NAMES = ['admin', 'root', 'test'];
 export function forbiddenNames(names: readonly string[]): FieldValidator<string> {
   const blocked = new Set(names.map((name) => name.toLowerCase()));
   return ({ value }) =>
-    blocked.has(value().trim().toLowerCase()) ? { kind: 'forbiddenName' } : null;
+    blocked.has(value().trim().toLowerCase())
+      ? { kind: 'forbiddenName', message: 'This name is not allowed' }
+      : null;
 }
 
 function dealSchema(p: SchemaPathTree<DealEditorValue>): void {
-  required(p.title);
-  minLength(p.title, 3);
-  maxLength(p.title, 100);
+  required(p.title, { message: 'Title is required' });
+  minLength(p.title, 3, { message: 'At least 3 characters' });
+  maxLength(p.title, 100, { message: 'Max 100 characters' });
   validate(p.title, forbiddenNames(FORBIDDEN_NAMES));
 
-  required(p.amount);
-  min(p.amount, 0);
+  required(p.amount, { message: 'Value is required' });
+  min(p.amount, 0, { message: 'Value cannot be negative' });
 
   applyEach(p.tasks, (task) => {
-    required(task.title);
-    minLength(task.title, 3);
+    required(task.title, { message: 'Title is required' });
+    minLength(task.title, 3, { message: 'At least 3 characters' });
     validate(task.title, forbiddenNames(FORBIDDEN_NAMES));
   });
 }
@@ -92,29 +94,13 @@ function emptyTask(): DealEditorValue['tasks'][number] {
             <mat-form-field>
               <mat-label>Title</mat-label>
               <input matInput type="text" [formField]="dealForm.title" />
-              <mat-error>
-                @if (dealForm.title().getError('required')) {
-                  Title is required
-                } @else if (dealForm.title().getError('minLength')) {
-                  At least 3 characters
-                } @else if (dealForm.title().getError('forbiddenName')) {
-                  This name is not allowed
-                } @else if (dealForm.title().getError('maxLength')) {
-                  Max 100 characters
-                }
-              </mat-error>
+              <mat-error>{{ dealForm.title().errors()[0]?.message }}</mat-error>
               <mat-hint align="end">{{ dealForm.title().value().length }} / 100</mat-hint>
             </mat-form-field>
             <mat-form-field>
               <mat-label>Value ($)</mat-label>
               <input matInput type="number" [formField]="dealForm.amount" />
-              <mat-error>
-                @if (dealForm.amount().getError('required')) {
-                  Value is required
-                } @else if (dealForm.amount().getError('min')) {
-                  Value cannot be negative
-                }
-              </mat-error>
+              <mat-error>{{ dealForm.amount().errors()[0]?.message }}</mat-error>
             </mat-form-field>
             <mat-form-field>
               <mat-label>Stage</mat-label>
@@ -147,15 +133,7 @@ function emptyTask(): DealEditorValue['tasks'][number] {
                 <mat-form-field>
                   <mat-label>Task title</mat-label>
                   <input matInput type="text" [formField]="task.title" />
-                  <mat-error>
-                    @if (task.title().getError('required')) {
-                      Title is required
-                    } @else if (task.title().getError('minLength')) {
-                      At least 3 characters
-                    } @else if (task.title().getError('forbiddenName')) {
-                      This name is not allowed
-                    }
-                  </mat-error>
+                  <mat-error>{{ task.title().errors()[0]?.message }}</mat-error>
                 </mat-form-field>
                 <mat-form-field>
                   <mat-label>Priority</mat-label>
