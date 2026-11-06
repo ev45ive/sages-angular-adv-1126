@@ -1,5 +1,5 @@
 import { Component, computed, inject, signal } from '@angular/core';
-import { MasterDetailLayout, SharedModule } from '@shared';
+import { MasterDetailLayout, NeverPipe, SharedModule } from '@shared';
 import { DealsStore } from '../../data/deals.store';
 import { Deal } from '../../model/deal.model';
 import { TaskPriority } from '../../model/deal-task.model';
@@ -74,6 +74,8 @@ type DealViewMode = 'details' | 'editor' | 'creator';
           />
         } @else if (mode === 'creator') {
           <app-deal-editor (saved)="onSaveNewDeal()" (cancelled)="onCancelEdit()" />
+        } @else {
+          {{ mode | never: 'Invalid View Mode' }}
         }
       </app-master-detail-layout>
     </main>
@@ -120,10 +122,9 @@ export class DealsPage {
     } else if (mode === 'editor') {
     } else {
       // mode satisfies never; // never
-      exhaustivenessCheck(mode)
+      exhaustivenessCheck(mode);
 
-
-      const x = 123 // Unreachable code detected
+      const x = 123; // Unreachable code detected
     }
 
     function exhaustivenessCheck(value: never, message = 'Invalid value ' + value): never {

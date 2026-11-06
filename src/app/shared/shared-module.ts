@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, JsonPipe } from '@angular/common';
 
 import { MatButton } from '@angular/material/button';
 import {
@@ -27,6 +27,7 @@ import { MatOption, MatSelect } from '@angular/material/select';
 import { MatToolbar } from '@angular/material/toolbar';
 import { MatLineModule } from '@angular/material/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
+import { NeverPipe } from './pipes/never-pipe';
 
 // const SharedImports = [
 // ]
@@ -44,7 +45,8 @@ export const SharedForms = [
 
 export const SharedUI = [
   CommonModule,
-
+  NeverPipe,
+  JsonPipe,
   MatButton,
   MatCard,
   MatCardActions,
