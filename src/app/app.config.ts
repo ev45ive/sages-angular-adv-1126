@@ -13,7 +13,9 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideZoneChangeDetection({ eventCoalescing: true }),
-    provideRouter(routes, withComponentInputBinding()),
+    
+    provideRouter(routes, withComponentInputBinding()), // :contactId -> contactId = input()
+
     provideClientHydration(),
 
     // Composite Providers
