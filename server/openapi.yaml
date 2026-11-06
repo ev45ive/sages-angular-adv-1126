@@ -156,9 +156,15 @@ paths:
   /deals:
     get:
       tags: [Deals]
-      summary: List all deals
+      summary: List deals
       security:
         - bearerAuth: []
+      parameters:
+        - name: contactId
+          in: query
+          description: Return only deals of this contact
+          schema:
+            type: string
       responses:
         '200':
           description: List of deals (without embedded tasks)
@@ -166,6 +172,31 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PagingObject_Deal'
+
+    post:
+      tags: [Deals]
+      summary: Create a deal
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DealCreateRequest'
+      responses:
+        '201':
+          description: Created deal
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Deal'
+        '400':
+          description: Validation error (missing title/contactId or unknown contact)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
 
   /deals/{dealId}:
     get:
@@ -436,6 +467,28 @@ components:
         createdAt:
           type: string
           format: date-time
+
+    DealCreateRequest:
+      type: object
+      required: [title, contactId]
+      properties:
+        title:
+          type: string
+        contactId:
+          type: string
+        value:
+          type: number
+          default: 0
+        stage:
+          type: string
+          enum: [new, negotiation, proposal, closed-won, closed-lost]
+          default: new
+        description:
+          type: string
+          default: ''
+        public:
+          type: boolean
+          default: false
 
     DealUpdateRequest:
       type: object

@@ -1,6 +1,7 @@
 import type {
   Contact,
   Deal,
+  DealCreateRequest,
   DealRecord,
   DealUpdateRequest,
   PagingObject,
@@ -63,8 +64,10 @@ class Store {
 
   // ── Deals (responses never include tasks) ─────────
 
-  getDeals(): PagingObject<Deal> {
-    const items = this.deals.map(stripTasks);
+  getDeals(contactId?: string): PagingObject<Deal> {
+    const items = this.deals
+      .filter((d) => !contactId || d.contactId === contactId)
+      .map(stripTasks);
     return {
       items: clone(items),
       total: items.length,
@@ -76,6 +79,22 @@ class Store {
   getDeal(id: string): Deal | undefined {
     const deal = this.deals.find((d) => d.id === id);
     return deal ? clone(stripTasks(deal)) : undefined;
+  }
+
+  createDeal(data: DealCreateRequest): Deal {
+    const record: DealRecord = {
+      id: crypto.randomUUID(),
+      title: data.title,
+      value: data.value ?? 0,
+      stage: data.stage ?? 'new',
+      description: data.description ?? '',
+      contactId: data.contactId,
+      public: data.public ?? false,
+      tasks: [],
+      createdAt: new Date().toISOString(),
+    };
+    this.deals.push(record);
+    return clone(stripTasks(record));
   }
 
   updateDeal(id: string, data: DealUpdateRequest): Deal | undefined {

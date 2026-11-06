@@ -36,6 +36,15 @@ export interface DealRecord extends Deal {
   tasks: Task[];
 }
 
+export interface DealCreateRequest {
+  title: string;
+  contactId: string;
+  value?: number;
+  stage?: DealStage;
+  description?: string;
+  public?: boolean;
+}
+
 export interface DealUpdateRequest {
   title?: string;
   value?: number;

@@ -271,10 +271,13 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** List all deals */
+        /** List deals */
         get: {
             parameters: {
-                query?: never;
+                query?: {
+                    /** @description Return only deals of this contact */
+                    contactId?: string;
+                };
                 header?: never;
                 path?: never;
                 cookie?: never;
@@ -293,7 +296,40 @@ export interface paths {
             };
         };
         put?: never;
-        post?: never;
+        /** Create a deal */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["DealCreateRequest"];
+                };
+            };
+            responses: {
+                /** @description Created deal */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Deal"];
+                    };
+                };
+                /** @description Validation error (missing title/contactId or unknown contact) */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ApiError"];
+                    };
+                };
+            };
+        };
         delete?: never;
         options?: never;
         head?: never;
@@ -561,6 +597,21 @@ export interface components {
             public: boolean;
             /** Format: date-time */
             createdAt: string;
+        };
+        DealCreateRequest: {
+            title: string;
+            contactId: string;
+            /** @default 0 */
+            value: number;
+            /**
+             * @default new
+             * @enum {string}
+             */
+            stage: "new" | "negotiation" | "proposal" | "closed-won" | "closed-lost";
+            /** @default  */
+            description: string;
+            /** @default false */
+            public: boolean;
         };
         DealUpdateRequest: {
             title?: string;
