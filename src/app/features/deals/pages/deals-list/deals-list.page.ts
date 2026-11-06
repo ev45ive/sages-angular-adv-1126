@@ -19,6 +19,7 @@ import { DealListItem } from '../../ui/deal-list-item/deal-list-item';
 import { DealMasterList } from '../../ui/deal-master-list/deal-master-list';
 import { DealTasksCard } from '../../ui/deal-tasks-card/deal-tasks-card';
 import { DealsFilter } from '../../ui/deals-filter/deals-filter';
+import { lastValueFrom } from 'rxjs';
 
 type DealViewMode = 'details' | 'editor' | 'creator';
 
@@ -116,7 +117,9 @@ export class DealsPage {
 
   dealsResource = resource<Deal[], { q: string }>({
     params: () => ({ q: this.filterText() }),
-    loader: ({ params: { q }, abortSignal: signal }) => this.store.fetchDeals(q, { signal }),
+    loader: ({ params: { q } }) => {
+      return lastValueFrom(this.store.fetchDeals(q)); // no abort!
+    },
     defaultValue: [],
   });
   filteredDeals = computed(() => this.dealsResource.value());

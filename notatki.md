@@ -93,3 +93,15 @@ page - Komponent "kontrolujący" - ładuje dane dla dzieci (ui)
 - Is app layout core/shared/feature? Depends on ... ?
 
 # Core/Shared/Features
+
+
+
+
+# RxJS Marble Diagrams // ^--------X>
+
+https://rxjs.dev/guide/operators
+http://rxmarbles.com/
+https://www.learnrxjs.io/
+
+http://rxviz.vercel.com/
+https://rx-viz.vercel.app/

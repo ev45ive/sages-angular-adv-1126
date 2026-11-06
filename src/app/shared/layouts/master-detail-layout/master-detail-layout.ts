@@ -27,7 +27,7 @@ import { Component } from '@angular/core';
   selector: 'app-master-detail-layout',
   host: {
     class:
-      'grid min-h-screen  grid-cols-1 gap-5 md:grid-cols-[minmax(250px,1fr)_3fr] md:items-start',
+      'grid min-h-screen grid-cols-1 gap-5 md:grid-cols-[minmax(250px,1fr)_3fr] md:items-start',
     '[class.banana]': '1 < 2',
   },
   template: `

@@ -1,9 +1,11 @@
-import { Service, signal } from '@angular/core';
+import { inject, Service, signal } from '@angular/core';
 import { Account } from '../model/account.model';
 import { Contact } from '../model/contact.model';
 import { Deal } from '../model/deal.model';
 import { DealTask, TaskPriority } from '../model/deal-task.model';
 import { SEED_ACCOUNTS, SEED_CONTACTS, SEED_DEALS, SEED_TASKS } from './deals-seed';
+import { HttpClient } from '@angular/common/http';
+import { map, Observable } from 'rxjs';
 
 // @Injectable({providedIn:'root'}) // default o root lifecycle if non other available
 
@@ -73,20 +75,21 @@ export class DealsStore {
     return this.contactsState().find((contact) => contact.id === id)?.fullName ?? '';
   }
 
-  async fetchDeals(query = '', init?: RequestInit) {
-    // API Service:
-    const resp = await fetch(`http://localhost:3000/api/deals?query=${query}`, {
-      ...init,
-      headers: { ...init?.headers, Authorization: `Bearer ${'mock-access-u1'}` },
-    });
+  http = inject(HttpClient);
 
-    if (!resp.ok) {
-      const e = await resp.json();
-      return Promise.reject(new Error(e.error.message));
-    }
-    const data = await resp.json();
+  fetchDeals(query = ''): Observable<Deal[]> {
+    // Unicast Observable - lazy, 1-1 - RECIPE
+    return this.http
+      .get<PagingObject<Deal>>(`http://localhost:3000/api/deals`, {
+        params: { query },
+        headers: { Authorization: `Bearer ${'mock-access-u1'}` },
+      })
+      .pipe(
+        //
+        map((data) => data.items),
+      );
 
-    return data.items;
+    // .subscribe().unsubscribe()
   }
 
   async fetchDealById(id = '', init?: RequestInit) {
