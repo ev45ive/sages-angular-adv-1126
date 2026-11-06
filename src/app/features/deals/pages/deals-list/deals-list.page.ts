@@ -71,6 +71,7 @@ type DealViewMode = 'details' | 'editor' | 'creator';
           <app-deal-editor
             #editorRef
             [deal]="selectedDeal()"
+            [tasks]="selectedTasks()"
             (saved)="onSaveDeal()"
             (cancelled)="onCancelEdit()"
           />
