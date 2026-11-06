@@ -1,8 +1,8 @@
-import { Component, computed, contentChild, input, output } from '@angular/core';
+import { Component, computed, contentChild, input, output, TemplateRef } from '@angular/core';
 import { NgTemplateOutlet } from '@angular/common';
 import { Listbox, Option } from '@angular/aria/listbox';
 import { Deal } from '../../model/deal.model';
-import { DealItemTpl } from '../deal-item-tpl/deal-item-tpl';
+import { DealItemContext, DealItemTpl } from '../deal-item-tpl/deal-item-tpl';
 
 @Component({
   selector: 'app-deal-master-list',
@@ -47,6 +47,9 @@ import { DealItemTpl } from '../deal-item-tpl/deal-item-tpl';
 export class DealMasterList {
   readonly deals = input.required<Deal[]>();
   
+  // <app-deal-master-list [itemTplInput]="templateReferece" />
+  readonly itemTplInput = input<TemplateRef<DealItemContext>>()
+
   readonly itemTpl = contentChild.required(DealItemTpl);
   
   readonly selectedId = input<string | null>(null);
