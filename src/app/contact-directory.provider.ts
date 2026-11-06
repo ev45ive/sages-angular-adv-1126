@@ -1,5 +1,5 @@
-import { computed, inject, Injector, Provider, signal } from '@angular/core';
-import { CONTACT_DIRECTORY, ContactDirectory } from '@feature/deals';
+import { computed, inject, InjectionToken, Injector, Provider, signal } from '@angular/core';
+import type { ContactDirectory } from '@feature/deals';
 
 const NO_OPTIONS = Object.freeze({});
 
@@ -25,6 +25,7 @@ function lazyContactDirectory(): ContactDirectory {
   };
 }
 
-export function provideContactDirectory(): Provider {
-  return { provide: CONTACT_DIRECTORY, useFactory: lazyContactDirectory };
+// The token arrives as an argument: importing it statically would pull the deals feature into the main bundle
+export function provideContactDirectory(token: InjectionToken<ContactDirectory>): Provider {
+  return { provide: token, useFactory: lazyContactDirectory };
 }

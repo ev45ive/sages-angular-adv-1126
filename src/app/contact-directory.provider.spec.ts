@@ -7,7 +7,11 @@ import { provideContactDirectory } from './contact-directory.provider';
 describe('lazy contact directory', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [provideHttpClient(), provideHttpClientTesting(), provideContactDirectory()],
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        provideContactDirectory(CONTACT_DIRECTORY),
+      ],
     });
   });
 
