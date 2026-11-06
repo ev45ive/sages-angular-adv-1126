@@ -1,4 +1,13 @@
-import { Component, effect, InjectionToken, input, linkedSignal, output, signal, viewChild } from '@angular/core';
+import {
+  Component,
+  effect,
+  InjectionToken,
+  input,
+  linkedSignal,
+  output,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { SharedForms, SharedImports } from '@shared';
 import { Deal } from '../../model/deal.model';
 import { ControlContainer, FormsModule, NgForm } from '@angular/forms';
@@ -6,7 +15,7 @@ import { ControlContainer, FormsModule, NgForm } from '@angular/forms';
 export interface IHaveUnsavedChanges {
   hasUnsavedChanges(): boolean;
 }
-export const IHaveUnsavedChanges = new InjectionToken<IHaveUnsavedChanges>('IHaveUnsavedChanges')
+export const IHaveUnsavedChanges = new InjectionToken<IHaveUnsavedChanges>('IHaveUnsavedChanges');
 
 @Component({
   selector: 'app-deal-editor',
@@ -73,7 +82,7 @@ export const IHaveUnsavedChanges = new InjectionToken<IHaveUnsavedChanges>('IHav
     </form>
   `,
 })
-export class DealEditor  implements IHaveUnsavedChanges{
+export class DealEditor /* implements IHaveUnsavedChanges */ {
   submit() {
     const formRef = this.formRef();
     // this.form()?.getControl('title').setValue('')

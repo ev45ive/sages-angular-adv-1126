@@ -111,6 +111,7 @@ export class DealsPage {
 
   // editorRef = viewChild<DealEditor>('editorRef');
   // editorRef = viewChild<IHaveUnsavedChanges>(DealEditor);
+  // editorRef = viewChild<IHaveUnsavedChanges>(IHaveUnsavedChanges);
   editorRef = viewChild(IHaveUnsavedChanges);
 
   protected onSelectDeal(dealId: string | null): void {
