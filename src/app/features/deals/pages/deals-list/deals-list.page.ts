@@ -51,7 +51,7 @@ type DealViewMode = 'details' | 'editor' | 'creator';
           (dealSelected)="onSelectDeal($event ?? undefined)"
         >
           <ng-container *appDealItemTpl="let deal; selected as isSelected">
-            <app-deal-list-item [deal]="deal" [selected]="isSelected" />
+            <app-deal-list-item [deal]="deal" />
           </ng-container>
 
           <app-deals-filter

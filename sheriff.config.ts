@@ -5,6 +5,7 @@ export const config: SheriffConfig = {
     'src/app/core': 'core',
     'src/app/shared': 'shared',
     'src/app/features/deals': 'feature:deals',
+    'src/app/features/contacts': 'feature:contacts',
   },
   depRules: {
     root: ['root', 'core', 'shared', 'feature:*'],

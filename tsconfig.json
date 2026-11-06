@@ -17,7 +17,8 @@
     "paths": {
       "@core": ["./src/app/core/index.ts"],
       "@shared": ["./src/app/shared/index.ts"],
-      "@feature/deals": ["./src/app/features/deals/index.ts"]
+      "@feature/deals": ["./src/app/features/deals/index.ts"],
+      "@feature/contacts": ["./src/app/features/contacts/index.ts"]
     }
   },
   "angularCompilerOptions": {
