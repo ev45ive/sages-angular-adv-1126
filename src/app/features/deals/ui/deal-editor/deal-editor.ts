@@ -16,8 +16,8 @@ import { FormsModule } from '@angular/forms';
         <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
           <mat-form-field>
             <mat-label>Title</mat-label>
-            <input matInput type="text" [(ngModel)]="draft().title" />
-            <mat-hint align="end">{{ draft().title.length }} / 100</mat-hint>
+            <input matInput type="text" [(ngModel)]="draftTitle" />
+            <mat-hint align="end">{{ draftTitle().length }} / 100</mat-hint>
           </mat-form-field>
           <mat-form-field>
             <mat-label>Value ($)</mat-label>
@@ -57,20 +57,13 @@ export class DealEditor {
 
   readonly deal = input<Deal>(); // External Readable
 
-  readonly draft = linkedSignal<DealFormDraft>(() =>
-    // this.deal() // immutable reference - only replace! 
-    structuredClone({ ...emptyDeal(), ...this.deal() }), // Mutable Copy
+  readonly draft = linkedSignal<DealFormDraft>(
+    () =>
+      // this.deal() // immutable reference - only replace!
+      structuredClone({ ...emptyDeal(), ...this.deal() }), // Mutable Copy
   );
 
-  // readonly draft = signal<DealFormDraft>(emptyDeal()); // Private ReadWrite
-
-  // // Async
-  // _copy = effect(() => {
-  //   // this.draft.set({ ...emptyDeal(), ...this.deal() }); // Money is still shared!
-  //   // this.draft.set({ ...emptyDeal(), ...this.deal() }); // Money is still shared!
-
-  //   this.draft.set(structuredClone(this.deal()!));
-  // });
+  draftTitle = linkedSignal(() => this.deal()?.title ?? '');
 
   readonly saved = output<void>();
   readonly cancelled = output<void>();
