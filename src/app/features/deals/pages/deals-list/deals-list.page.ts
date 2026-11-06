@@ -36,8 +36,15 @@ type DealViewMode = 'details' | 'editor' | 'creator';
           [selectedId]="selectedDeal()?.id ?? null"
           (dealSelected)="onSelectDeal($event)"
         >
-          <ng-container *appDealItemTpl="let deal; let isSelected = selected">
-            <app-deal-list-item [deal]="deal" [selected]="isSelected" />
+          <!-- <app-deal-list-item 
+            *appDealItemTpl="let deal; selected as isSelected" 
+            [deal]="deal" [selected]="isSelected" 
+          /> -->
+
+          <!-- <div [innerHTML]="'<h1>Banana</h1>'"></div> Script injection + Sanitizer -->
+
+          <ng-container *appDealItemTpl="let deal; selected as isSelected">
+            <app-deal-list-item [deal]="deal" [selected]="isSelected"  />
           </ng-container>
 
           <app-deals-filter app-master-list-header [(value)]="filterText" />
