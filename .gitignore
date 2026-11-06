@@ -6,6 +6,8 @@
 /out-tsc
 /bazel-out
 
+.playwright-mcp
+
 # Node
 /node_modules
 npm-debug.log

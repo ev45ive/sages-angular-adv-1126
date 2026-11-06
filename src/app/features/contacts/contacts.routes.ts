@@ -1,4 +1,4 @@
-import { Routes } from '@angular/router';
+import { ActivatedRouteSnapshot, Routes } from '@angular/router';
 import { ContactsStore } from './data/contacts.store';
 
 // One ContactsStore for the whole feature, shared by the search and details pages.
@@ -19,6 +19,11 @@ const routes: Routes = [
       },
       {
         path: ':contactId',
+        resolve:{
+            contact:(route: ActivatedRouteSnapshot) => {
+                
+            }
+        },
         loadComponent: () =>
           import('./pages/contact-details/contact-details.page').then((m) => m.ContactDetailsPage),
       },

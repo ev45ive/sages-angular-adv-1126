@@ -1,8 +1,8 @@
-import { Component, input, linkedSignal, output } from '@angular/core';
+import { Component, effect, input, output, signal } from '@angular/core';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { form, FormField } from '@angular/forms/signals';
 import { SharedForms } from '@shared';
-import { debounceTime, distinctUntilChanged, map, skip } from 'rxjs';
+import { debounceTime, distinctUntilChanged, filter, map } from 'rxjs';
 
 @Component({
   selector: 'app-contact-search-form',
@@ -11,7 +11,7 @@ import { debounceTime, distinctUntilChanged, map, skip } from 'rxjs';
     <form role="search" class="flex items-end gap-3" (submit)="onSubmit($event)">
       <mat-form-field class="flex-1">
         <mat-label>Search contacts</mat-label>
-        <input matInput type="search" [formField]="searchForm.q" />
+        <input matInput type="text" [formField]="searchForm.q" />
       </mat-form-field>
       <button matButton="filled" type="submit">Search</button>
     </form>
@@ -24,17 +24,19 @@ export class ContactSearchForm {
   readonly initialQuery = input<string>('');
   readonly queryChange = output<string>();
 
-  // Resets when the URL query changes (e.g. browser back)
-  private readonly draft = linkedSignal(() => ({ q: this.initialQuery() }));
+  private readonly draft = signal({ q: '' });
   protected readonly searchForm = form(this.draft);
 
   constructor() {
+    // Mirrors the URL query into the draft (e.g. browser back)
+    effect(() => this.draft.set({ q: this.initialQuery() }));
+
     toObservable(this.draft)
       .pipe(
         map((draft) => draft.q.trim()),
         debounceTime(300),
         distinctUntilChanged(),
-        skip(1), // first value is the initial query, already in the URL
+        filter((q) => q !== this.initialQuery()), // already in the URL
         takeUntilDestroyed(),
       )
       .subscribe((q) => this.queryChange.emit(q));
