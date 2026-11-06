@@ -25,6 +25,7 @@ type DealViewMode = 'details' | 'editor' | 'creator';
     DealEditor,
     DealsFilter,
     SharedModule,
+    NeverPipe,
   ],
   template: `
     <main class="bg-surface text-on-surface">
@@ -90,7 +91,7 @@ export class DealsPage {
   private readonly store = inject(DealsStore); // Abstract Dependency
 
   // protected readonly viewMode = signal<DealViewMode>('details');
-  protected readonly viewMode = signal<'details' | 'editor' | 'creator'>('details');
+  protected readonly viewMode = signal<'details' | 'editor' | 'creator'>('editor');
 
   protected readonly filterText = signal('');
   protected readonly selectedDealId = signal<string | null>(null);

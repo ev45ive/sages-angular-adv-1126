@@ -15,8 +15,6 @@ import { ContactNamePipe } from '../pipes/contact-name-pipe';
     }
   `,
   template: `
-    <!-- @let dealData = deal(); -->
-
     <mat-card appearance="outlined">
       @if (deal(); as deal) {
         <mat-card-header>

@@ -12,7 +12,7 @@ import {
 } from '@angular/material/card';
 import { MatCheckbox } from '@angular/material/checkbox';
 import { MatChip, MatChipSet } from '@angular/material/chips';
-import { MatFormField, MatLabel, MatSuffix } from '@angular/material/form-field';
+import { MatError, MatFormField, MatHint, MatLabel, MatSuffix } from '@angular/material/form-field';
 import { MatIcon } from '@angular/material/icon';
 import { MatInput } from '@angular/material/input';
 import {
@@ -28,12 +28,17 @@ import { MatToolbar } from '@angular/material/toolbar';
 import { MatLineModule } from '@angular/material/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { NeverPipe } from './pipes/never-pipe';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 // const SharedImports = [
 // ]
 
 export const SharedForms = [
   MatOption,
+  MatHint,
+  MatError,
+  FormsModule,
+  ReactiveFormsModule,
   MatSelect,
   MatSuffix,
   MatCheckbox,
