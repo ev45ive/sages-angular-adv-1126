@@ -3,6 +3,7 @@ import {
   computed,
   contentChild,
   input,
+  model,
   output,
   TemplateRef,
   viewChild,
@@ -27,7 +28,7 @@ import { DealItemContext, DealItemTpl } from '../deal-item-tpl/deal-item-tpl';
       aria-label="Deals"
       selectionMode="follow"
       class=" flex flex-col gap-1"
-      [value]="selectedValue()"
+      [value]="[]"
       (valueChange)="onValueChange($event)"
     >
       @for (deal of deals(); track deal.id) {
@@ -73,7 +74,7 @@ export class DealMasterList {
   readonly dealSelected = output<string | null>();
 
   protected readonly selectedValue = computed(() => {
-    return [this.selectedId()];
+    return this.selectedId() ? [this.selectedId()] : null;
   });
 
   protected onValueChange([id]: (string | null)[]): void {

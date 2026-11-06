@@ -52,20 +52,18 @@ type DealViewMode = 'details' | 'editor' | 'creator';
         </app-deal-master-list>
 
         @if (viewMode() === 'details') {
-          @if (selectedDeal(); as deal) {
-            <div>
-              <app-deal-details-card [deal]="deal" (editRequested)="onEditDeal()" />
-              <app-deal-tasks-card
-                class="mt-4"
-                [tasks]="selectedTasks()"
-                (taskAdded)="addTask(deal.id, $event)"
-                (taskToggled)="toggleTask($event)"
-                (archiveCompletedRequested)="onArchiveCompleted()"
-              />
-            </div>
-          } @else {
-            <p>Select a deal</p>
-          }
+          <div>
+            <app-deal-details-card [deal]="selectedDeal()" (editRequested)="onEditDeal()">
+              <!-- <div empty-state>No deals found </div> -->
+            </app-deal-details-card>
+            <app-deal-tasks-card
+              class="mt-4"
+              [tasks]="selectedTasks()"
+              (taskAdded)="addTask(selectedDealId()!, $event)"
+              (taskToggled)="toggleTask($event)"
+              (archiveCompletedRequested)="onArchiveCompleted()"
+            />
+          </div>
         } @else if (viewMode() === 'editor') {
           <app-deal-editor
             [deal]="selectedDeal()"
